@@ -38,6 +38,8 @@
       box-shadow:0 8px 30px rgba(2,6,23,0.2);
     }
     .empty{padding:18px;text-align:center;color:var(--muted);background:transparent}
+    .preview{display:flex;gap:10px;align-items:center;margin-bottom:18px}
+    .preview img{width:160px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #eee}
     @media (max-width:720px){
       header{flex-direction:column;align-items:flex-start}
       .grid{grid-template-columns:56px 1fr}
@@ -51,9 +53,15 @@
         <div style="width:48px;height:48px;border-radius:10px;background:#ff6b6b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">YC</div>
         <div>
           <h1>Y Combinator Companies</h1>
+          <div class="search-help">This page reads your Google Sheet and shows companies. Rows with empty names or error values (like <code>#VALUE!</code>) are ignored.</div>
         </div>
       </div>
     </header>
+
+    <!-- Preview image (uses the uploaded file path from this session) -->
+    <div class="preview">
+      <img src="/mnt/data/Screenshot 2025-11-24 at 6.49.34 PM.png" alt="preview">
+    </div>
 
     <div id="listContainer" class="grid-list">
       <div class="empty">Loading companies…</div>
@@ -61,15 +69,27 @@
   </div>
 
 <script>
-  // Google Sheet CSV export (auto-loaded). 
-  // Sheet ID from your shared sheet: 1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U
-  // GID: 1286166919
+  // Google Sheet CSV export (auto-loaded).
   const autoCSV = 'https://docs.google.com/spreadsheets/d/1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U/export?format=csv&gid=1286166919';
-
   const listContainer = document.getElementById('listContainer');
 
-  function faviconFor(website){
-    try { const url = new URL(website); return `${url.origin}/favicon.ico`; } catch(e){ return null; }
+  function normalizeSite(site){
+    if(!site) return null;
+    let s = site.toString().trim();
+    if (!s) return null;
+    if (!s.startsWith('http://') && !s.startsWith('https://')) s = 'https://' + s;
+    try { return new URL(s).hostname.replace(/^www\./,''); }
+    catch(e){ return null; }
+  }
+
+  function logoCandidatesFor(site){
+    const domain = normalizeSite(site);
+    if (!domain) return [];
+    return [
+      `https://logo.clearbit.com/${domain}`,
+      `https://www.google.com/s2/favicons?domain=${domain}&sz=128`,
+      `https://${domain}/favicon.ico`
+    ];
   }
 
   function makeCard(item, index){
@@ -80,11 +100,25 @@
 
     const logoBox = document.createElement('div'); logoBox.className = 'logo';
     const img = document.createElement('img'); img.className = 'logo-img';
-    const logoUrl = (item.Logo || item.logo || '').trim();
-    if (logoUrl){ img.src = logoUrl; }
-    else { const fav = faviconFor(item.Website || item.website || ''); if (fav) img.src = fav; else img.src = `https://via.placeholder.com/200x200.png?text=${encodeURIComponent(((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase())}`; }
-    img.onerror = function(){ this.style.display='none'; logoBox.textContent = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); }
-    logoBox.appendChild(img);
+
+    const explicitLogo = (item.Logo || item.logo || '').toString().trim();
+    if (explicitLogo){
+      img.src = explicitLogo;
+      img.onerror = function(){ this.style.display='none'; logoBox.textContent = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); };
+      logoBox.appendChild(img);
+    } else {
+      // try candidates in sequence using onerror
+      const candidates = logoCandidatesFor(item.Website || item.website || '');
+      let idx = 0;
+      function tryNext(){
+        if (idx >= candidates.length){ img.style.display='none'; logoBox.textContent = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); return; }
+        img.src = candidates[idx++];
+      }
+      img.onerror = tryNext;
+      img.onload = function(){ /* loaded successfully */ };
+      logoBox.appendChild(img);
+      tryNext();
+    }
 
     const meta = document.createElement('div'); meta.className = 'meta';
     const titleRow = document.createElement('div'); titleRow.className = 'title-row';
@@ -104,11 +138,9 @@
     if (yc){ const a2 = document.createElement('a'); a2.href = yc; a2.target='_blank'; a2.className='badge'; a2.textContent='YC'; right.appendChild(a2); }
 
     titleRow.appendChild(left); titleRow.appendChild(right);
-
     const links = document.createElement('div'); links.className='links'; links.appendChild(tagline);
 
     meta.appendChild(titleRow); meta.appendChild(links);
-
     cardWrap.appendChild(rank); cardWrap.appendChild(logoBox); cardWrap.appendChild(meta);
 
     cardWrap.addEventListener('mouseenter', ()=> cardWrap.style.transform='translateY(-3px)');
@@ -119,11 +151,9 @@
   }
 
   function renderRows(rows){
-    // Filter out empty names and any rows where name contains #VALUE!
     const cleaned = (rows || []).filter(r => {
       const name = (r['Correct Name'] || r.Name || '').toString().trim();
       if (!name) return false;
-      // remove Excel/Sheets error labels like #VALUE! or ones that start with #
       const up = name.toUpperCase();
       if (up.includes('#VALUE!') || up === '#VALUE!' || up.startsWith('#')) return false;
       return true;
@@ -133,7 +163,7 @@
     if (!cleaned.length){ listContainer.innerHTML = '<div class="empty">No valid companies found in the sheet (after filtering).</div>'; return; }
 
     const grid = document.createElement('div'); grid.style.display='grid'; grid.style.gap='12px';
-    cleaned.forEach((r,i)=>{ grid.appendChild(makeCard(r, i)); });
+    cleaned.forEach((r,i)=>{ grid.appendChild(makeCard(r, i+1)); });
     listContainer.appendChild(grid);
   }
 
@@ -156,7 +186,7 @@
     }
   }
 
-  // Auto-load the sheet
+  // Auto-load the sheet on open
   window.addEventListener('load', ()=> fetchAndRender(autoCSV));
 </script>
 </body>
