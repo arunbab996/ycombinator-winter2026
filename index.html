@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Y Combinator Companies</title>
+  <title>Y Combinator Companies — by Date</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     :root{
@@ -19,11 +19,10 @@
     header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
     h1{margin:0;font-size:20px}
 
-    /* list and cards */
+    .day-header{margin:28px 0 12px 0;font-size:18px;font-weight:700;color:#333}
+
     .list{display:flex;flex-direction:column;gap:12px}
     .card{display:flex;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);border:1px solid #efeff2}
-
-    /* rank: reduced size, normal number look */
     .rank{font-size:16px;font-weight:600;color:#555;background:none;width:auto;height:auto;padding:0;margin-right:8px;box-shadow:none;border:none}
 
     .logo{width:52px;height:52px;border-radius:10px;flex-shrink:0;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee}
@@ -34,7 +33,6 @@
     .title{font-weight:700;font-size:16px;margin-right:12px}
     .tagline{color:var(--muted);margin-top:6px;font-size:14px;max-width:72ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-    /* icon links on right */
     .actions{display:flex;gap:8px;align-items:center}
     .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#f1f5f9;border:1px solid #eef2f7;text-decoration:none}
     .icon-svg{width:18px;height:18px;display:block}
@@ -51,7 +49,7 @@
 
     @media (max-width:720px){
       header{flex-direction:column;align-items:flex-start}
-      .rank{width:34px;height:34px;font-size:13px}
+      .rank{font-size:14px}
     }
   </style>
 </head>
@@ -62,32 +60,29 @@
         <div style="width:40px;height:40px;border-radius:8px;background:#ff6b6b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">YC</div>
         <div>
           <h1>Y Combinator Companies</h1>
+          <div style="color:var(--muted);font-size:13px">Grouped by the date they were sourced. "Today" appears first.</div>
         </div>
       </div>
     </header>
 
-    <div id="listContainer">
-      <div class="empty">Loading companies…</div>
-    </div>
+    <!-- preview image (local path from this session) -->
+    <div style="margin-bottom:8px"><img src="/mnt/data/Screenshot 2025-11-24 at 6.49.34 PM.png" alt="preview" style="width:240px;height:135px;object-fit:cover;border-radius:8px;border:1px solid #eee"></div>
+
+    <div id="content"></div>
   </div>
 
 <script>
-  // Google Sheet CSV export (auto-loaded).
+  // Auto CSV (your sheet). Supported date column names: Date, Date Added, Added On, Created, created_at
   const autoCSV = 'https://docs.google.com/spreadsheets/d/1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U/export?format=csv&gid=1286166919';
-  const listContainer = document.getElementById('listContainer');
+  const content = document.getElementById('content');
 
   function normalizeSite(site){
-    if(!site) return null;
-    let s = site.toString().trim();
-    if (!s) return null;
-    if (!s.startsWith('http://') && !s.startsWith('https://')) s = 'https://' + s;
-    try { return new URL(s).hostname.replace(/^www\./,''); }
-    catch(e){ return null; }
+    if(!site) return null; let s = site.toString().trim(); if(!s) return null;
+    if(!s.startsWith('http://') && !s.startsWith('https://')) s = 'https://' + s;
+    try { return new URL(s).hostname.replace(/^www\./,''); } catch(e){ return null; }
   }
-
   function logoCandidatesFor(site){
-    const domain = normalizeSite(site);
-    if (!domain) return [];
+    const domain = normalizeSite(site); if(!domain) return [];
     return [
       `https://logo.clearbit.com/${domain}`,
       `https://www.google.com/s2/favicons?domain=${domain}&sz=128`,
@@ -103,111 +98,103 @@
     const logoBox = document.createElement('div'); logoBox.className = 'logo';
     const img = document.createElement('img'); img.className = 'logo-img';
     const explicitLogo = (item.Logo || item.logo || '').toString().trim();
-
-    function showInitials(){ logoBox.innerHTML = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); }
-
-    if (explicitLogo){
-      img.src = explicitLogo;
-      img.onerror = showInitials;
-      logoBox.appendChild(img);
-    } else {
-      const candidates = logoCandidatesFor(item.Website || item.website || '');
-      let idx = 0;
-      function tryNext(){
-        if (idx >= candidates.length){ showInitials(); return; }
-        img.src = candidates[idx++];
-      }
-      img.onerror = tryNext;
-      img.onload = function(){ /* ok */ };
-      logoBox.appendChild(img);
-      tryNext();
-    }
+    function showInitials(){ logoBox.textContent = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); }
+    if (explicitLogo){ img.src = explicitLogo; img.onerror = showInitials; logoBox.appendChild(img); }
+    else { const candidates = logoCandidatesFor(item.Website||item.website||''); let idx=0; img.onerror = tryNext; img.onload = function(){}; logoBox.appendChild(img); tryNext(); function tryNext(){ if(idx>=candidates.length){ showInitials(); return; } img.src = candidates[idx++]; } }
 
     const meta = document.createElement('div'); meta.className = 'meta';
     const titleRow = document.createElement('div'); titleRow.className = 'title-row';
 
-    const left = document.createElement('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='12px';
-    left.style.flex = '1';
+    const left = document.createElement('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='12px'; left.style.flex='1';
     left.appendChild(logoBox);
-
     const textual = document.createElement('div');
     const title = document.createElement('div'); title.className = 'title'; title.textContent = (item['Correct Name']||item.Name||'Untitled');
     const taglineText = item['Correct Tagline'] || item.Tagline || item.tagline || '';
     const tagline = document.createElement('div'); tagline.className = 'tagline tooltip'; tagline.setAttribute('data-tip', taglineText); tagline.textContent = taglineText;
     textual.appendChild(title); textual.appendChild(tagline);
-
     left.appendChild(textual);
 
-    // actions (icons) on the right
     const actions = document.createElement('div'); actions.className = 'actions';
-
     const website = (item.Website || item.website || '').toString().trim();
-    if (website){
-      const a = document.createElement('a'); a.className = 'icon-btn'; a.href = website; a.target = '_blank';
-      a.title = 'Website';
-      a.innerHTML = `
-        <!-- globe icon -->
-        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h20M12 2c2.5 2.5 3.5 6 3.5 10s-1 7.5-3.5 10M12 2c-2.5 2.5-3.5 6-3.5 10S9.5 19.5 12 22" stroke="#111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-      actions.appendChild(a);
-    }
-
+    if(website){ const a = document.createElement('a'); a.className='icon-btn'; a.href=website; a.target='_blank'; a.rel='noopener noreferrer'; a.title='Website'; a.innerHTML = `<svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h20M12 2c2.5 2.5 3.5 6 3.5 10s-1 7.5-3.5 10M12 2c-2.5 2.5-3.5 6-3.5 10S9.5 19.5 12 22" stroke="#111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>`; actions.appendChild(a); }
     const ycLink = (item['YC URL'] || item['YC'] || item['YC Link'] || '').toString().trim();
-    if (ycLink){
-      const a2 = document.createElement('a'); a2.className='icon-btn'; a2.href = ycLink; a2.target='_blank'; a2.title='Y Combinator page';
-      // YC logo: orange rounded square with YC letters (SVG)
-      a2.innerHTML = `
-        <svg class="icon-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect rx="10" width="64" height="64" fill="#f63"/><text x="50%" y="54%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" fill="#fff" font-weight="700">YC</text></svg>`;
-      actions.appendChild(a2);
-    }
+    if(ycLink){ const a2 = document.createElement('a'); a2.className='icon-btn'; a2.href=ycLink; a2.target='_blank'; a2.rel='noopener noreferrer'; a2.title='Y Combinator page'; a2.innerHTML = `<svg class="icon-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect rx="10" width="64" height="64" fill="#f63"/><text x="50%" y="54%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" fill="#fff" font-weight="700">YC</text></svg>`; actions.appendChild(a2); }
 
-    titleRow.appendChild(left);
-    titleRow.appendChild(actions);
-
+    titleRow.appendChild(left); titleRow.appendChild(actions);
     meta.appendChild(titleRow);
-
-    card.appendChild(rank);
-    card.appendChild(meta);
-
+    card.appendChild(rank); card.appendChild(meta);
     return card;
   }
 
-  function renderRows(rows){
-    const cleaned = (rows || []).filter(r => {
-      const name = (r['Correct Name'] || r.Name || '').toString().trim();
-      if (!name) return false;
-      const up = name.toUpperCase();
-      if (up.includes('#VALUE!') || up === '#VALUE!' || up.startsWith('#')) return false;
-      return true;
+  function groupByDate(rows){
+    // find date column (support multiple names)
+    const sample = rows[0] || {};
+    let dateKey = null;
+    for(const k of Object.keys(sample)){
+      const up = k.toString().toLowerCase();
+      if(['date','date added','added on','created','created at','added_at','created_at'].includes(up)) { dateKey = k; break; }
+    }
+    const groups = {};
+    const unknown = [];
+    rows.forEach(r=>{
+      // filter out bad names
+      const name = (r['Correct Name'] || r.Name || '')+'';
+      if(!name || name.trim()==="") return;
+      const up = name.toUpperCase(); if(up.includes('#VALUE!')||up.startsWith('#')) return;
+
+      if(dateKey){
+        const raw = (r[dateKey]||'').toString().trim();
+        if(!raw){ unknown.push(r); return; }
+        // try parse date
+        let d = new Date(raw);
+        if(isNaN(d)){
+          const iso = raw.match(/(\d{4}-\d{2}-\d{2})/);
+          if(iso) d = new Date(iso[0]);
+        }
+        if(isNaN(d)) { unknown.push(r); return; }
+        const isoDay = d.toISOString().slice(0,10);
+        if(!groups[isoDay]) groups[isoDay] = [];
+        groups[isoDay].push(r);
+      } else {
+        unknown.push(r);
+      }
+    });
+    return {groups, unknown};
+  }
+
+  function formatHeaderLabel(isoDay){
+    const d = new Date(isoDay + 'T00:00:00Z');
+    const today = new Date(); const todayIso = today.toISOString().slice(0,10);
+    const yesterday = new Date(Date.now() - 24*60*60*1000); const yIso = yesterday.toISOString().slice(0,10);
+    if(isoDay === todayIso) return `Today — ${d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}`;
+    if(isoDay === yIso) return `Yesterday — ${d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}`;
+    return d.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  }
+
+  function renderGrouped(rows){
+    content.innerHTML = '';
+    const {groups, unknown} = groupByDate(rows);
+    const days = Object.keys(groups).sort((a,b)=> b.localeCompare(a));
+    if(days.length===0 && unknown.length===0){ content.innerHTML = '<div class="empty">No valid companies found in the sheet.</div>'; return; }
+
+    days.forEach(day=>{
+      const header = document.createElement('div'); header.className='day-header'; header.textContent = formatHeaderLabel(day);
+      content.appendChild(header);
+      const list = document.createElement('div'); list.className='list';
+      groups[day].forEach((r,i)=> list.appendChild(makeCard(r, i+1)));
+      content.appendChild(list);
     });
 
-    listContainer.innerHTML = '';
-    if (!cleaned.length){ listContainer.innerHTML = '<div class="empty">No valid companies found in the sheet (after filtering).</div>'; return; }
-
-    const list = document.createElement('div'); list.className = 'list';
-    cleaned.forEach((r,i)=>{ list.appendChild(makeCard(r, i+1)); });
-    listContainer.appendChild(list);
-  }
-
-  function csvToObjects(csvText){
-    const parsed = Papa.parse(csvText, {header:true, skipEmptyLines:true});
-    return parsed.data;
-  }
-
-  async function fetchAndRender(url){
-    listContainer.innerHTML = '<div class="empty">Loading CSV…</div>';
-    try{
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Network error: ' + res.status + ' — check sheet sharing settings (must be viewable by anyone with link)');
-      const text = await res.text();
-      const data = csvToObjects(text);
-      renderRows(data);
-    } catch(err){
-      listContainer.innerHTML = '<div class="empty">Error loading CSV: ' + err.message + '</div>';
-      console.error(err);
+    if(unknown.length){
+      const header = document.createElement('div'); header.className='day-header'; header.textContent = 'Unsorted / No date provided'; content.appendChild(header);
+      const list = document.createElement('div'); list.className='list'; unknown.forEach((r,i)=> list.appendChild(makeCard(r, i+1))); content.appendChild(list);
     }
   }
 
-  // Auto-load the sheet on open
+  function csvToObjects(csvText){ const parsed = Papa.parse(csvText, {header:true, skipEmptyLines:true}); return parsed.data; }
+
+  async function fetchAndRender(url){ content.innerHTML = '<div class="empty">Loading CSV…</div>'; try{ const res = await fetch(url); if(!res.ok) throw new Error('Network error: '+res.status+' — check sheet sharing settings'); const text = await res.text(); const data = csvToObjects(text); renderGrouped(data); } catch(err){ content.innerHTML = '<div class="empty">Error loading CSV: '+err.message+'</div>'; console.error(err); } }
+
   window.addEventListener('load', ()=> fetchAndRender(autoCSV));
 </script>
 </body>
