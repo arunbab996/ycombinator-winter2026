@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mini Product Hunt — CSV -> Products</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    :root{
+      --bg:#f6f7f9;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#ff6b6b;
+      --shadow: 0 6px 18px rgba(12, 15, 20, 0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    html,body{height:100%;margin:0;background:var(--bg);color:#111;}
+    .wrap{max-width:980px;margin:28px auto;padding:20px;}
+    header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
+    h1{margin:0;font-size:20px}
+    .controls{display:flex;gap:10px;align-items:center;margin-left:auto}
+    input[type=text]{padding:10px 12px;border-radius:8px;border:1px solid #e6e9ee;width:420px}
+    button{padding:10px 12px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer}
+    .grid{display:grid;grid-template-columns:64px 1fr;gap:12px;background:transparent}
+    .card{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);border:1px solid #efeff2}
+    .rank{width:48px;height:48px;border-radius:8px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+    .meta{flex:1}
+    .meta .title-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .title{font-weight:700;font-size:16px;margin-right:12px}
+    .tagline{color:var(--muted);margin-top:6px;font-size:14px;max-width:72ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .links{display:flex;gap:8px;margin-top:10px;align-items:center}
+    a.badge{display:inline-block;padding:6px 8px;border-radius:999px;background:#f1f5f9;border:1px solid #eef2f7;font-size:13px;text-decoration:none;color:#111}
+    .logo{width:52px;height:52px;border-radius:10px;flex-shrink:0;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee}
+    img.logo-img{width:100%;height:100%;object-fit:cover}
+    .search-help{font-size:13px;color:var(--muted);margin-top:8px}
+    .top-preview{display:flex;gap:8px;align-items:center}
+    .preview-thumb{width:80px;height:52px;border-radius:8px;overflow:hidden;border:1px solid #eee;background:#fff}
+    img.preview-img{width:100%;height:100%;object-fit:cover}
+    .tooltip{
+      position:relative;
+    }
+    .tooltip:hover::after{
+      content: attr(data-tip);
+      position:absolute;
+      left:0; top:calc(100% + 8px);
+      background:#111;color:#fff;padding:8px 10px;border-radius:8px;font-size:13px;white-space:normal;max-width:480px;z-index:40;
+      box-shadow:0 8px 30px rgba(2,6,23,0.2);
+    }
+    .empty{padding:18px;text-align:center;color:var(--muted);background:transparent}
+    @media (max-width:720px){
+      header{flex-direction:column;align-items:flex-start}
+      input[type=text]{width:100%}
+      .grid{grid-template-columns:56px 1fr}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div style="width:48px;height:48px;border-radius:10px;background:#ff6b6b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">P</div>
+        <div>
+          <h1>Mini Product Hunt — CSV → Products</h1>
+          <div class="search-help">Using your Google Sheet. Expected CSV columns (case-insensitive): <strong>Name, Correct Name, Website, YC URL, Tagline, Correct Tagline, Logo</strong></div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <input id="csvUrl" type="text" placeholder="Enter CSV URL (eg: https://docs.google.com/.../export?format=csv&gid=0)" />
+        <button id="loadBtn">Load</button>
+        <select id="sortBy" title="Sort">
+          <option value="index">As in CSV</option>
+          <option value="name">Name A→Z</option>
+        </select>
+      </div>
+    </header>
+
+    <div style="display:flex;gap:14px;align-items:center;margin-bottom:14px">
+      <div class="top-preview">
+        <div style="font-size:12px;color:var(--muted)">Uploaded previews:</div>
+        <div class="preview-thumb"><img class="preview-img" src="/mnt/data/Screenshot 2025-11-24 at 6.29.48 PM.png" alt="preview 1" onerror="this.style.display='none'"></div>
+        <div class="preview-thumb"><img class="preview-img" src="/mnt/data/Screenshot 2025-11-24 at 6.31.01 PM.png" alt="preview 2" onerror="this.style.display='none'"></div>
+      </div>
+    </div>
+
+    <div id="listContainer" class="grid-list">
+      <div class="empty">No data loaded. Paste CSV URL above and press Load.</div>
+    </div>
+  </div>
+
+<script>
+  const csvUrlInput = document.getElementById('csvUrl');
+  const loadBtn = document.getElementById('loadBtn');
+  const listContainer = document.getElementById('listContainer');
+  const sortBy = document.getElementById('sortBy');
+
+  // Build the Google Sheets CSV export URL for the sheet you provided.
+  // Sheet ID from your link: 1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U
+  // GID from your link: 1286166919
+  const autoCSV = 'https://docs.google.com/spreadsheets/d/1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U/export?format=csv&gid=1286166919';
+
+  // Put the URL into the input so user sees it
+  csvUrlInput.value = autoCSV;
+
+  function faviconFor(website){
+    try {
+      const url = new URL(website);
+      return `${url.origin}/favicon.ico`;
+    } catch(e){ return null; }
+  }
+
+  function makeCard(item, index){
+    const cardWrap = document.createElement('div');
+    cardWrap.className = 'card';
+
+    const rank = document.createElement('div');
+    rank.className = 'rank';
+    rank.textContent = index + 1;
+
+    const logoBox = document.createElement('div');
+    logoBox.className = 'logo';
+    const img = document.createElement('img');
+    img.className = 'logo-img';
+    if (item.Logo && item.Logo.trim()){
+      img.src = item.Logo;
+    } else {
+      const fav = faviconFor(item.Website || item['Website']);
+      if (fav) img.src = fav;
+      else img.src = `https://via.placeholder.com/200x200.png?text=${encodeURIComponent((item['Correct Name']||item.Name||'').slice(0,2).toUpperCase())}`;
+    }
+    img.onerror = function(){ this.style.display = 'none'; logoBox.textContent = (item['Correct Name']||item.Name||'').slice(0,2).toUpperCase() };
+    logoBox.appendChild(img);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+
+    const titleRow = document.createElement('div');
+    titleRow.className = 'title-row';
+
+    const left = document.createElement('div');
+    left.style.display = 'flex'; left.style.alignItems='center'; left.style.gap='8px';
+    const title = document.createElement('div');
+    title.className = 'title';
+    title.textContent = (item['Correct Name']||item.Name||'Untitled');
+
+    const taglineText = item['Correct Tagline'] || item.Tagline || item['Tagline'] || '';
+    const tagline = document.createElement('div');
+    tagline.className = 'tagline tooltip';
+    tagline.setAttribute('data-tip', taglineText);
+    tagline.textContent = taglineText;
+
+    left.appendChild(title);
+
+    const right = document.createElement('div');
+    right.style.display = 'flex'; right.style.gap='8px'; right.style.alignItems='center';
+
+    const website = item.Website || item['Website'] || '';
+    const yc = item['YC URL'] || item['YC'] || item['YC Link'] || item['YC URL '];
+
+    if (website){
+      const a = document.createElement('a');
+      a.href = website; a.target='_blank';
+      a.className = 'badge'; a.textContent = 'Website';
+      right.appendChild(a);
+    }
+    if (yc){
+      const a2 = document.createElement('a');
+      a2.href = yc; a2.target='_blank';
+      a2.className = 'badge'; a2.textContent = 'YC';
+      right.appendChild(a2);
+    }
+
+    titleRow.appendChild(left);
+    titleRow.appendChild(right);
+
+    const links = document.createElement('div');
+    links.className = 'links';
+    links.appendChild(tagline);
+
+    meta.appendChild(titleRow);
+    meta.appendChild(links);
+
+    cardWrap.appendChild(rank);
+    cardWrap.appendChild(logoBox);
+    cardWrap.appendChild(meta);
+
+    cardWrap.addEventListener('mouseenter', ()=> cardWrap.style.transform='translateY(-3px)');
+    cardWrap.addEventListener('mouseleave', ()=> cardWrap.style.transform='translateY(0)');
+    cardWrap.style.transition = 'transform 120ms ease';
+
+    return cardWrap;
+  }
+
+  function renderRows(rows){
+    listContainer.innerHTML = '';
+    if (!rows || rows.length === 0){
+      listContainer.innerHTML = '<div class="empty">CSV parsed but no rows found.</div>';
+      return;
+    }
+
+    const sortValue = sortBy.value;
+    let ordered = rows.slice();
+    if (sortValue === 'name'){
+      ordered.sort((a,b)=> ((a['Correct Name']||a.Name||'').localeCompare((b['Correct Name']||b.Name||''), undefined, {sensitivity:'base'})));
+    }
+
+    const grid = document.createElement('div');
+    grid.style.display = 'grid';
+    grid.style.gap = '12px';
+
+    ordered.forEach((r,i)=>{
+      const item = r;
+      const card = makeCard(item, i);
+      grid.appendChild(card);
+    });
+
+    listContainer.appendChild(grid);
+  }
+
+  function csvToObjects(csvText){
+    const parsed = Papa.parse(csvText, {header:true, skipEmptyLines:true});
+    return parsed.data;
+  }
+
+  async function fetchAndRender(url){
+    listContainer.innerHTML = '<div class="empty">Loading CSV…</div>';
+    try{
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Network error: ' + res.status + ' — check sheet sharing settings (must be viewable by anyone with link)');
+      const text = await res.text();
+      const data = csvToObjects(text);
+      // save for resorting
+      window._lastCSVRows = data;
+      renderRows(data);
+    } catch(err){
+      listContainer.innerHTML = '<div class="empty">Error loading CSV: ' + err.message + '</div>';
+      console.error(err);
+    }
+  }
+
+  loadBtn.addEventListener('click', ()=>{
+    const url = csvUrlInput.value.trim();
+    if (!url){ listContainer.innerHTML = '<div class="empty">Please paste a CSV URL above and press Load.</div>'; return; }
+    fetchAndRender(url);
+  });
+
+  sortBy.addEventListener('change', ()=>{
+    if (window._lastCSVRows) renderRows(window._lastCSVRows);
+  });
+
+  // Auto-load the sheet you shared on page open
+  window.addEventListener('load', ()=>{
+    // Auto-click load
+    setTimeout(()=> loadBtn.click(), 200);
+  });
+</script>
+</body>
+</html>
