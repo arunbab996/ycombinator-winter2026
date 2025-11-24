@@ -18,18 +18,27 @@
     .wrap{max-width:980px;margin:28px auto;padding:20px;}
     header{display:flex;gap:16px;align-items:center;margin-bottom:18px}
     h1{margin:0;font-size:20px}
-    .grid{display:grid;grid-template-columns:64px 1fr;gap:12px;background:transparent}
-    .card{display:flex;gap:14px;align-items:flex-start;padding:14px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);border:1px solid #efeff2}
-    .rank{width:48px;height:48px;border-radius:8px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px}
+
+    /* list and cards */
+    .list{display:flex;flex-direction:column;gap:12px}
+    .card{display:flex;gap:14px;align-items:center;padding:14px;border-radius:12px;background:var(--card);box-shadow:var(--shadow);border:1px solid #efeff2}
+
+    /* rank: reduced size, normal number look */
+    .rank{width:36px;height:36px;border-radius:8px;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+
+    .logo{width:52px;height:52px;border-radius:10px;flex-shrink:0;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee}
+    img.logo-img{width:100%;height:100%;object-fit:cover}
+
     .meta{flex:1}
     .meta .title-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
     .title{font-weight:700;font-size:16px;margin-right:12px}
     .tagline{color:var(--muted);margin-top:6px;font-size:14px;max-width:72ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .links{display:flex;gap:8px;margin-top:10px;align-items:center}
-    a.badge{display:inline-block;padding:6px 8px;border-radius:999px;background:#f1f5f9;border:1px solid #eef2f7;font-size:13px;text-decoration:none;color:#111}
-    .logo{width:52px;height:52px;border-radius:10px;flex-shrink:0;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #eee}
-    img.logo-img{width:100%;height:100%;object-fit:cover}
-    .search-help{font-size:13px;color:var(--muted);margin-top:8px}
+
+    /* icon links on right */
+    .actions{display:flex;gap:8px;align-items:center}
+    .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:#f1f5f9;border:1px solid #eef2f7;text-decoration:none}
+    .icon-svg{width:18px;height:18px;display:block}
+
     .tooltip{position:relative}
     .tooltip:hover::after{
       content: attr(data-tip);
@@ -37,12 +46,12 @@
       background:#111;color:#fff;padding:8px 10px;border-radius:8px;font-size:13px;white-space:normal;max-width:480px;z-index:40;
       box-shadow:0 8px 30px rgba(2,6,23,0.2);
     }
+
     .empty{padding:18px;text-align:center;color:var(--muted);background:transparent}
-    .preview{display:flex;gap:10px;align-items:center;margin-bottom:18px}
-    .preview img{width:160px;height:90px;object-fit:cover;border-radius:8px;border:1px solid #eee}
+
     @media (max-width:720px){
       header{flex-direction:column;align-items:flex-start}
-      .grid{grid-template-columns:56px 1fr}
+      .rank{width:34px;height:34px;font-size:13px}
     }
   </style>
 </head>
@@ -50,20 +59,14 @@
   <div class="wrap">
     <header>
       <div style="display:flex;gap:12px;align-items:center">
-        <div style="width:48px;height:48px;border-radius:10px;background:#ff6b6b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">YC</div>
+        <div style="width:40px;height:40px;border-radius:8px;background:#ff6b6b;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">YC</div>
         <div>
           <h1>Y Combinator Companies</h1>
-          <div class="search-help">This page reads your Google Sheet and shows companies. Rows with empty names or error values (like <code>#VALUE!</code>) are ignored.</div>
         </div>
       </div>
     </header>
 
-    <!-- Preview image (uses the uploaded file path from this session) -->
-    <div class="preview">
-      <img src="/mnt/data/Screenshot 2025-11-24 at 6.49.34 PM.png" alt="preview">
-    </div>
-
-    <div id="listContainer" class="grid-list">
+    <div id="listContainer">
       <div class="empty">Loading companies…</div>
     </div>
   </div>
@@ -93,29 +96,29 @@
   }
 
   function makeCard(item, index){
-    const cardWrap = document.createElement('div');
-    cardWrap.className = 'card';
+    const card = document.createElement('div'); card.className = 'card';
 
-    const rank = document.createElement('div'); rank.className = 'rank'; rank.textContent = index + 1;
+    const rank = document.createElement('div'); rank.className = 'rank'; rank.textContent = index;
 
     const logoBox = document.createElement('div'); logoBox.className = 'logo';
     const img = document.createElement('img'); img.className = 'logo-img';
-
     const explicitLogo = (item.Logo || item.logo || '').toString().trim();
+
+    function showInitials(){ logoBox.innerHTML = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); }
+
     if (explicitLogo){
       img.src = explicitLogo;
-      img.onerror = function(){ this.style.display='none'; logoBox.textContent = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); };
+      img.onerror = showInitials;
       logoBox.appendChild(img);
     } else {
-      // try candidates in sequence using onerror
       const candidates = logoCandidatesFor(item.Website || item.website || '');
       let idx = 0;
       function tryNext(){
-        if (idx >= candidates.length){ img.style.display='none'; logoBox.textContent = ((item['Correct Name']||item.Name||'')||'').slice(0,2).toUpperCase(); return; }
+        if (idx >= candidates.length){ showInitials(); return; }
         img.src = candidates[idx++];
       }
       img.onerror = tryNext;
-      img.onload = function(){ /* loaded successfully */ };
+      img.onload = function(){ /* ok */ };
       logoBox.appendChild(img);
       tryNext();
     }
@@ -123,31 +126,49 @@
     const meta = document.createElement('div'); meta.className = 'meta';
     const titleRow = document.createElement('div'); titleRow.className = 'title-row';
 
-    const left = document.createElement('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='8px';
-    const title = document.createElement('div'); title.className = 'title'; title.textContent = (item['Correct Name']||item.Name||'Untitled');
+    const left = document.createElement('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='12px';
+    left.style.flex = '1';
+    left.appendChild(logoBox);
 
+    const textual = document.createElement('div');
+    const title = document.createElement('div'); title.className = 'title'; title.textContent = (item['Correct Name']||item.Name||'Untitled');
     const taglineText = item['Correct Tagline'] || item.Tagline || item.tagline || '';
     const tagline = document.createElement('div'); tagline.className = 'tagline tooltip'; tagline.setAttribute('data-tip', taglineText); tagline.textContent = taglineText;
+    textual.appendChild(title); textual.appendChild(tagline);
 
-    left.appendChild(title);
+    left.appendChild(textual);
 
-    const right = document.createElement('div'); right.style.display='flex'; right.style.gap='8px'; right.style.alignItems='center';
-    const website = item.Website || item.website || '';
-    const yc = item['YC URL'] || item['YC'] || item['YC Link'] || item['YC URL '] || '';
-    if (website){ const a = document.createElement('a'); a.href = website; a.target='_blank'; a.className='badge'; a.textContent='Website'; right.appendChild(a); }
-    if (yc){ const a2 = document.createElement('a'); a2.href = yc; a2.target='_blank'; a2.className='badge'; a2.textContent='YC'; right.appendChild(a2); }
+    // actions (icons) on the right
+    const actions = document.createElement('div'); actions.className = 'actions';
 
-    titleRow.appendChild(left); titleRow.appendChild(right);
-    const links = document.createElement('div'); links.className='links'; links.appendChild(tagline);
+    const website = (item.Website || item.website || '').toString().trim();
+    if (website){
+      const a = document.createElement('a'); a.className = 'icon-btn'; a.href = website; a.target = '_blank';
+      a.title = 'Website';
+      a.innerHTML = `
+        <!-- globe icon -->
+        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h20M12 2c2.5 2.5 3.5 6 3.5 10s-1 7.5-3.5 10M12 2c-2.5 2.5-3.5 6-3.5 10S9.5 19.5 12 22" stroke="#111" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      actions.appendChild(a);
+    }
 
-    meta.appendChild(titleRow); meta.appendChild(links);
-    cardWrap.appendChild(rank); cardWrap.appendChild(logoBox); cardWrap.appendChild(meta);
+    const ycLink = (item['YC URL'] || item['YC'] || item['YC Link'] || '').toString().trim();
+    if (ycLink){
+      const a2 = document.createElement('a'); a2.className='icon-btn'; a2.href = ycLink; a2.target='_blank'; a2.title='Y Combinator page';
+      // YC logo: orange rounded square with YC letters (SVG)
+      a2.innerHTML = `
+        <svg class="icon-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect rx="10" width="64" height="64" fill="#f63"/><text x="50%" y="54%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="34" fill="#fff" font-weight="700">YC</text></svg>`;
+      actions.appendChild(a2);
+    }
 
-    cardWrap.addEventListener('mouseenter', ()=> cardWrap.style.transform='translateY(-3px)');
-    cardWrap.addEventListener('mouseleave', ()=> cardWrap.style.transform='translateY(0)');
-    cardWrap.style.transition = 'transform 120ms ease';
+    titleRow.appendChild(left);
+    titleRow.appendChild(actions);
 
-    return cardWrap;
+    meta.appendChild(titleRow);
+
+    card.appendChild(rank);
+    card.appendChild(meta);
+
+    return card;
   }
 
   function renderRows(rows){
@@ -162,9 +183,9 @@
     listContainer.innerHTML = '';
     if (!cleaned.length){ listContainer.innerHTML = '<div class="empty">No valid companies found in the sheet (after filtering).</div>'; return; }
 
-    const grid = document.createElement('div'); grid.style.display='grid'; grid.style.gap='12px';
-    cleaned.forEach((r,i)=>{ grid.appendChild(makeCard(r, i+1)); });
-    listContainer.appendChild(grid);
+    const list = document.createElement('div'); list.className = 'list';
+    cleaned.forEach((r,i)=>{ list.appendChild(makeCard(r, i+1)); });
+    listContainer.appendChild(list);
   }
 
   function csvToObjects(csvText){
