@@ -3,7 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DiscoveryOS — YC feed</title>
+
+<!-- Updated tab title -->
+<title>DiscoveryOS</title>
+
+<!-- Favicon: uses your ghost GIF -->
+<link rel="icon" type="image/gif" href="icons8-ghost.gif" />
+
 <style>
 :root{
   --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --accent:#ff6a00;
@@ -13,11 +19,11 @@
 html,body{height:100%;margin:0;background:linear-gradient(180deg,#fbfcfe,#f3f5f7)}
 .app{max-width:980px;margin:36px auto;padding:22px}
 
-/* header: logo (GIF) + title aligned vertically */
+/* header: logo (GIF) + title aligned */
 .header{
   display:flex;
   gap:14px;
-  align-items:center; /* centers GIF and title vertically */
+  align-items:center;
   margin-bottom:8px;
 }
 .logo{
@@ -33,9 +39,19 @@ html,body{height:100%;margin:0;background:linear-gradient(180deg,#fbfcfe,#f3f5f7
   flex-shrink:0;
 }
 .logo img{width:40px;height:40px;object-fit:contain;display:block}
-.title-wrapper{display:flex;flex-direction:column;justify-content:center}
+
+.title-wrapper{
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
 h1{font-size:20px;margin:0}
-.subtitle{margin:6px 0 18px;color:var(--muted);font-size:13px}
+.subtitle{
+  margin:6px 0 18px;
+  color:var(--muted);
+  font-size:13px;
+}
 
 /* controls */
 .controls{display:flex;align-items:center;gap:12px;margin-bottom:18px}
@@ -68,11 +84,24 @@ h1{font-size:20px;margin:0}
 .btn--site{border-color:#dbeafe}
 .btn--yc{border-color:#ffd8cc;background:#fff}
 
-/* place actions to the right (keeps layout consistent) */
-.title-row > .actions{min-width:86px;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.title-row > .actions{
+  min-width:86px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+}
 
 /* empty */
-.empty{color:var(--muted);padding:28px;background:var(--card);border:1px dashed var(--border);border-radius:8px;text-align:center;margin-top:16px}
+.empty{
+  color:var(--muted);
+  padding:28px;
+  background:var(--card);
+  border:1px dashed var(--border);
+  border-radius:8px;
+  text-align:center;
+  margin-top:16px
+}
 footer{margin-top:26px;color:var(--muted);font-size:13px}
 
 /* responsive */
@@ -86,13 +115,14 @@ footer{margin-top:26px;color:var(--muted);font-size:13px}
 </head>
 <body>
   <div class="app">
+
+    <!-- Updated Header: logo + new title -->
     <div class="header">
       <div class="logo">
-        <!-- make sure this path matches where you store the GIF -->
         <img src="icons8-ghost.gif" alt="DiscoveryOS logo">
       </div>
       <div class="title-wrapper">
-        <h1>DiscoveryOS — YC feed</h1>
+        <h1>DiscoveryOS</h1>
         <div class="subtitle">Your radar for breakout startups 🚀</div>
       </div>
     </div>
@@ -103,18 +133,17 @@ footer{margin-top:26px;color:var(--muted);font-size:13px}
 
     <div id="content"></div>
 
-    <footer id="footer-note">
-      <!-- kept intentionally empty as requested -->
-    </footer>
+    <footer id="footer-note"></footer>
+
   </div>
 
 <script>
-/* ---------- CONFIG - hardcoded sheet you provided ---------- */
+/* ---------- CONFIG ---------- */
 const SHEET_ID = '1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
 const GID = '1286166919';
 const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
-/* ---------- CSV parsing helpers ---------- */
+/* ---------- CSV parsing ---------- */
 function splitCsvLine(line){
   const out=[]; let cur='', inQ=false;
   for(let i=0;i<line.length;i++){
@@ -145,25 +174,30 @@ function csvToObjects(csv){
   return rows;
 }
 
-/* ---------- helpers for mapping sheet columns ---------- */
+/* ---------- helpers ---------- */
 function pickField(row, keys){
   for(const k of keys){
-    if(k in row && row[k] !== undefined && row[k] !== null && String(row[k]).trim()!=='') return String(row[k]).trim();
+    if(k in row && row[k] && String(row[k]).trim()!=='')
+      return String(row[k]).trim();
   }
   return '';
 }
-
 function normalizeName(raw){
   if(!raw) return '';
-  return raw.replace(/\s*\|\s*Y\s*Combinator\s*$/i, '').replace(/\s*Y\s*Combinator\s*$/i, '').trim();
+  return raw.replace(/\|?\s*Y\s*Combinator/i,'').trim();
 }
-
 function getDomain(url){
-  try{ if(!url) return null; const u = new URL(url.startsWith('http')? url : 'https://'+url); return u.hostname; }catch(e){ return null; }
+  try{
+    if(!url) return null;
+    const u = new URL(url.startsWith('http')? url : 'https://'+url);
+    return u.hostname;
+  }catch(e){ return null; }
 }
 function favIconFor(row){
-  const candidates = ['IconURL','icon','Logo','logo'];
-  for(const k of candidates){ if(row[k] && String(row[k]).trim()!=='') return row[k].trim(); }
+  const candidates=['IconURL','icon','Logo','logo'];
+  for(const k of candidates){
+    if(row[k] && row[k].trim()!=='') return row[k].trim();
+  }
   const site = pickField(row, ['Correct Website','Website','Site','URL','Company Website']);
   const domain = getDomain(site);
   if(domain) return `https://www.google.com/s2/favicons?sz=128&domain=${domain}`;
@@ -173,33 +207,31 @@ function parseDate(row){
   let d = pickField(row, ['Extracted Date','ExtractedDate','Date','Extracted_Date']);
   if(!d) return '';
   const parsed = new Date(d);
-  if(!isNaN(parsed)) return parsed.toISOString().slice(0,10);
-  return d.trim();
+  return !isNaN(parsed) ? parsed.toISOString().slice(0,10) : d.trim();
 }
 function formatDateReadable(ds){
   const d = new Date(ds);
-  if(isNaN(d)) return ds;
-  return d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+  return isNaN(d) ? ds : d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
 }
 
-/* ---------- grouping & rendering ---------- */
 function groupByDate(rows){
-  const groups = {};
+  const groups={};
   rows.forEach(r=>{
-    const key = parseDate(r) || 'Unknown';
+    const key=parseDate(r)||'Unknown';
     if(!groups[key]) groups[key]=[];
     groups[key].push(r);
   });
   return groups;
 }
+function escapeHtml(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
 
-function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* official icons (globe + YC orange badge) */
+/* official icons */
 const siteSvg = `
 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
-  <path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M2 12h20M12 2c2.5 2.8 4 6.5 4 10s-1.5 7.2-4 10M12 2C9.5 4.8 8 8.5 8 12s1.5 7.2 4 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.6"/>
+  <path d="M2 12h20M12 2c2.5 2.8 4 6.5 4 10s-1.5 7.2-4 10M12 2C9.5 4.8 8 8.5 8 12s1.5 7.2 4 10" stroke="currentColor" stroke-width="1.2"/>
 </svg>
 `;
 
@@ -210,105 +242,116 @@ const ycSvg = `
 </svg>
 `;
 
-/* render function */
+/* ---------- rendering ---------- */
 function render(groups, search=''){
-  const content = document.getElementById('content');
-  const keys = Object.keys(groups);
-  if(!keys.length){ content.innerHTML = `<div class="empty">No companies found</div>`; return; }
-  keys.sort((a,b)=> b.localeCompare(a));
-  const q = (search||'').toLowerCase().trim();
+  const content=document.getElementById('content');
+  const keys=Object.keys(groups);
+  if(!keys.length){
+    content.innerHTML=`<div class="empty">No companies found</div>`;
+    return;
+  }
+  keys.sort((a,b)=>b.localeCompare(a));
+  const q=(search||'').toLowerCase().trim();
 
   let html='';
   keys.forEach(k=>{
-    const items = groups[k].filter(r=>{
-      const name = normalizeName(pickField(r, ['Correct Name','CorrectName','Name','Company','company','Company Name']));
-      const tagline = pickField(r, ['Correct Tagline','CorrectTagline','Tagline','Correct Tagline','Description','Correct Tagline']);
-      const tags = pickField(r, ['Tags','tags']);
-      const hay = `${name} ${tagline} ${tags}`.toLowerCase();
-      if(!q) return true;
-      return hay.includes(q);
+    const items=groups[k].filter(r=>{
+      const name=normalizeName(pickField(r,['Correct Name','CorrectName','Name','Company','Company Name']));
+      const tagline=pickField(r,['Correct Tagline','CorrectTagline','Tagline','Description']);
+      const tags=pickField(r,['Tags','tags']);
+      return !q || `${name} ${tagline} ${tags}`.toLowerCase().includes(q);
     });
     if(!items.length) return;
-    html += `<section class="date-group"><div class="date-header">${escapeHtml(formatDateReadable(k))}</div>`;
-    items.forEach(r=>{
-      const rawName = pickField(r, ['Correct Name','CorrectName','Name','Company','Company Name']);
-      const name = normalizeName(rawName);
-      if(!name || name === '#VALUE!') return;
-      const tagline = pickField(r, ['Correct Tagline','CorrectTagline','Tagline','Description','Correct Tagline']);
-      const tags = (pickField(r, ['Tags','tags']) || '').split(',').map(t=>t.trim()).filter(Boolean);
-      const website = pickField(r, ['Correct Website','Website','Site','URL','Company Website']);
-      const yc = pickField(r, ['YC URL','YC Link','Y Combinator','YC','YC URL','YCombinator']);
-      const logo = favIconFor(r);
 
-      const actions = [];
+    html += `<section class="date-group"><div class="date-header">${escapeHtml(formatDateReadable(k))}</div>`;
+
+    items.forEach(r=>{
+      const rawName=pickField(r,['Correct Name','CorrectName','Name','Company','Company Name']);
+      const name=normalizeName(rawName);
+      if(!name || name==='#VALUE!') return;
+
+      const tagline=pickField(r,['Correct Tagline','CorrectTagline','Tagline','Description']);
+      const tags=(pickField(r,['Tags','tags'])||'').split(',').map(t=>t.trim()).filter(Boolean);
+      const website=pickField(r,['Correct Website','Website','Site','URL','Company Website']);
+      const yc=pickField(r,['YC URL','YC Link','Y Combinator','YC','YCombinator']);
+      const logo=favIconFor(r);
+
+      const actions=[];
       if(website){
-        const href = website.startsWith('http') ? website : 'https://'+website;
-        actions.push(`<a class="btn btn--site" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${siteSvg}</a>`);
+        const href=website.startsWith('http')?website:`https://${website}`;
+        actions.push(`<a class="btn btn--site" target="_blank" href="${escapeHtml(href)}">${siteSvg}</a>`);
       }
       if(yc){
-        const href = yc.startsWith('http') ? yc : 'https://'+yc;
-        actions.push(`<a class="btn btn--yc" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${ycSvg}</a>`);
+        const href=yc.startsWith('http')?yc:`https://${yc}`;
+        actions.push(`<a class="btn btn--yc" target="_blank" href="${escapeHtml(href)}">${ycSvg}</a>`);
       }
 
       html += `
-        <article class="card">
-          <div class="left">${logo?`<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)} logo" onerror="this.style.display='none'">`:`<div style="font-weight:700;color:#111">${escapeHtml((name[0]||'').toUpperCase())}</div>`}</div>
-          <div class="center">
-            <div class="title-row">
-              <div style="min-width:0">
-                <div class="name">${escapeHtml(name)}</div>
-                ${tagline?`<div class="tagline">${escapeHtml(tagline)}</div>`:''}
-                ${tags.length?`<div class="meta">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>`:''}
-              </div>
-              <div class="actions">
-                ${actions.join('')}
-              </div>
+      <article class="card">
+        <div class="left">
+          ${logo?`<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)} logo" onerror="this.style.display='none'">`
+                :`<div style="font-weight:700;color:#111">${escapeHtml(name[0]||'')}</div>`}
+        </div>
+
+        <div class="center">
+          <div class="title-row">
+            <div style="min-width:0">
+              <div class="name">${escapeHtml(name)}</div>
+              ${tagline?`<div class="tagline">${escapeHtml(tagline)}</div>`:''}
+              ${tags.length?`<div class="meta">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>`:''}
+            </div>
+
+            <div class="actions">
+              ${actions.join('')}
             </div>
           </div>
-        </article>
+        </div>
+      </article>
       `;
     });
+
     html += `</section>`;
   });
 
   content.innerHTML = html || `<div class="empty">No companies match your search</div>`;
 }
 
-/* ---------- load CSV and wire search ---------- */
+/* ---------- load CSV ---------- */
 async function loadAndRender(){
-  const content = document.getElementById('content');
-  content.innerHTML = `<div class="empty">Loading companies...</div>`;
-  try{
-    const resp = await fetch(CSV_URL);
-    if(!resp.ok) throw new Error('Sheet not accessible (status '+resp.status+'). Make sure the sheet is published or shared for public export.');
-    const txt = await resp.text();
-    const rows = csvToObjects(txt);
+  const content=document.getElementById('content');
+  content.innerHTML=`<div class="empty">Loading companies...</div>`;
 
-    const normalized = rows.map(r=>{
+  try{
+    const resp=await fetch(CSV_URL);
+    if(!resp.ok) throw new Error('Sheet not accessible (status '+resp.status+')');
+    const txt=await resp.text();
+    const rows=csvToObjects(txt);
+
+    const normalized=rows.map(r=>{
       const o={};
-      Object.keys(r).forEach(k=> o[k.trim()] = r[k].trim());
+      Object.keys(r).forEach(k=>o[k.trim()]=r[k].trim());
       return o;
     }).filter(r=>{
-      const name = pickField(r, ['Correct Name','CorrectName','Name','Company','Company Name']);
-      return name && name.trim() && name.trim() !== '#VALUE!';
+      const name=pickField(r,['Correct Name','CorrectName','Name','Company','Company Name']);
+      return name && name.trim() && name.trim()!=='#VALUE!';
     });
 
     if(!normalized.length){
-      content.innerHTML = `<div class="empty">No valid rows found. Make sure the sheet is published as CSV and contains the expected columns.</div>`;
+      content.innerHTML=`<div class="empty">No valid rows found.</div>`;
       return;
     }
 
-    const groups = groupByDate(normalized);
-    window.__DISCOVERY_GROUPS = groups;
-    render(groups, document.getElementById('search').value);
+    const groups=groupByDate(normalized);
+    window.__DISCOVERY_GROUPS=groups;
+    render(groups,document.getElementById('search').value);
+
   }catch(err){
-    content.innerHTML = `<div class="empty">Error loading sheet: ${escapeHtml(err.message)}</div>`;
-    console.error(err);
+    content.innerHTML=`<div class="empty">Error loading sheet: ${escapeHtml(err.message)}</div>`;
   }
 }
 
 document.getElementById('search').addEventListener('input', ()=>{
-  render(window.__DISCOVERY_GROUPS || {}, document.getElementById('search').value);
+  render(window.__DISCOVERY_GROUPS||{},document.getElementById('search').value);
 });
 
 loadAndRender();
