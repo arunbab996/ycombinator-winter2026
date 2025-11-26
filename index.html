@@ -40,13 +40,16 @@ h1{font-size:20px;margin:0}
 /* actions */
 .actions{display:flex;gap:8px;align-items:center}
 .btn{
-  display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;
+  display:inline-flex;align-items:center;justify-content:center;padding:6px 8px;border-radius:10px;
   font-weight:600;text-decoration:none;font-size:13px;border:1px solid var(--border);background:#fff;color:#111;
   box-shadow:0 1px 0 rgba(0,0,0,0.03)
 }
-.btn svg{width:16px;height:16px;display:block}
+.btn svg{width:18px;height:18px;display:block}
 .btn--site{border-color:#dbeafe}   /* subtle blue */
 .btn--yc{border-color:#ffd8cc;background:#fff}
+
+/* place actions to the right (keeps layout consistent) */
+.title-row > .actions{min-width:86px;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 
 /* empty */
 .empty{color:var(--muted);padding:28px;background:var(--card);border:1px dashed var(--border);border-radius:8px;text-align:center;margin-top:16px}
@@ -57,7 +60,7 @@ footer{margin-top:26px;color:var(--muted);font-size:13px}
   .controls{flex-direction:column;align-items:stretch}
   .search{width:100%;margin-left:0}
   .title-row{flex-direction:column;align-items:flex-start}
-  .actions{margin-top:8px}
+  .title-row > .actions{flex-direction:row;align-items:center;margin-top:8px}
 }
 </style>
 </head>
@@ -72,14 +75,13 @@ footer{margin-top:26px;color:var(--muted);font-size:13px}
     </div>
 
     <div class="controls">
-      <!-- (no top hint text per request) -->
       <input id="search" class="search" type="text" placeholder="Search company, tagline or tag" />
     </div>
 
     <div id="content"></div>
 
     <footer id="footer-note">
-      <!-- footer note removed as requested (kept empty for now) -->
+      <!-- kept intentionally empty as requested -->
     </footer>
   </div>
 
@@ -151,7 +153,6 @@ function parseDate(row){
   // prefer Extracted Date or ExtractedDate, then Date
   let d = pickField(row, ['Extracted Date','ExtractedDate','Date','Extracted_Date']);
   if(!d) return '';
-  // try to coerce numeric dates, etc.
   const parsed = new Date(d);
   if(!isNaN(parsed)) return parsed.toISOString().slice(0,10);
   return d.trim();
@@ -175,9 +176,20 @@ function groupByDate(rows){
 
 function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-/* nicer button SVGs */
-const siteSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h20M12 2c2.5 2.8 4 6.5 4 10s-1.5 7.2-4 10M12 2C9.5 4.8 8 8.5 8 12s1.5 7.2 4 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-const ycSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#ff8a00"/><path d="M8 12h8" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+/* official icons (globe + YC orange badge) */
+const siteSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">
+  <path d="M12 2a10 10 0 100 20 10 10 0 000-20z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M2 12h20M12 2c2.5 2.8 4 6.5 4 10s-1.5 7.2-4 10M12 2C9.5 4.8 8 8.5 8 12s1.5 7.2 4 10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+`;
+
+const ycSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+  <rect width="24" height="24" rx="6" fill="#FF8A00"/>
+  <path d="M8 12h8" stroke="#fff" stroke-width="2" stroke-linecap="round"/>
+</svg>
+`;
 
 /* render function */
 function render(groups, search=''){
@@ -191,7 +203,6 @@ function render(groups, search=''){
   let html='';
   keys.forEach(k=>{
     const items = groups[k].filter(r=>{
-      // build searchable haystack
       const name = normalizeName(pickField(r, ['Correct Name','CorrectName','Name','Company','company','Company Name']));
       const tagline = pickField(r, ['Correct Tagline','CorrectTagline','Tagline','Correct Tagline','Description','Correct Tagline']);
       const tags = pickField(r, ['Tags','tags']);
@@ -211,15 +222,15 @@ function render(groups, search=''){
       const yc = pickField(r, ['YC URL','YC Link','Y Combinator','YC','YC URL','YCombinator']);
       const logo = favIconFor(r);
 
-      // create action buttons (only when present)
+      // create action buttons (icon-only)
       const actions = [];
       if(website){
         const href = website.startsWith('http') ? website : 'https://'+website;
-        actions.push(`<a class="btn btn--site" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${siteSvg}<span>Website</span></a>`);
+        actions.push(`<a class="btn btn--site" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${siteSvg}</a>`);
       }
       if(yc){
         const href = yc.startsWith('http') ? yc : 'https://'+yc;
-        actions.push(`<a class="btn btn--yc" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${ycSvg}<span>YC</span></a>`);
+        actions.push(`<a class="btn btn--yc" target="_blank" rel="noopener noreferrer" href="${escapeHtml(href)}">${ycSvg}</a>`);
       }
 
       html += `
