@@ -2,272 +2,205 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>discoveryOS</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DiscoveryOS — YC Daily Feed</title>
   <style>
     :root{
-      --bg:#f6f7f9;
-      --card:#ffffff;
-      --muted:#6b7280;
-      --text:#111;
-      --accent:#ff6b6b;
-      --muted-2:#9aa0a6;
-      --shadow: 0 6px 18px rgba(12, 15, 20, 0.06);
-      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      color-scheme: light dark;
+      --bg:#f5f6f7; --card:#fff; --muted:#6b7280; --accent:#eab308; --tag-bg:#eef2f7; --border:#e6e7e8;
+      --glass: rgba(0,0,0,0.03);
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#f7f8fa, #f3f4f6);}
+    .app{max-width:900px;margin:36px auto;padding:20px;}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    .logo{width:48px;height:48px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-weight:700;color:#111;border:1px solid var(--border)}
+    h1{font-size:20px;margin:0}
+    p.subtitle{margin:0;color:var(--muted);font-size:13px}
 
-    /* Dark mode variables */
-    .dark{
-      --bg:#0b0f13;
-      --card:#0f1519;
-      --muted:#9aa0a6;
-      --text:#e6eef3;
-      --accent:#ff8b6b;
-      --muted-2:#6b7280;
-      --shadow: 0 6px 30px rgba(0,0,0,0.6);
-    }
+    .controls{display:flex;gap:10px;align-items:center;margin:18px 0}
+    .controls input[type=text], .controls input[type=url]{padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);min-width:240px}
+    .controls button{padding:10px 12px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer}
 
-    html,body{height:100%;margin:0;background:var(--bg);color:var(--text);}    
-    .wrap{max-width:980px;margin:100px auto;padding:20px;}
-    header{display:flex;gap:16px;align-items:center;margin-bottom:40px;justify-content:flex-start;padding-left:0;}
-    h1{margin:0;font-size:18px}
+    .date-group{margin-top:28px}
+    .date-header{background:transparent;padding:8px 0;color:#111;font-weight:600}
 
-    /* compact list and cards */
-    .list{display:flex;flex-direction:column;gap:8px}
-    .card{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;background:var(--card);box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
+    .card{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:8px;background:var(--card);box-shadow:0 1px 0 rgba(0,0,0,0.03);border:1px solid var(--border);}
+    .card + .card{margin-top:12px}
+    .card-left{width:56px;height:56px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .card-left img{width:46px;height:46px;object-fit:contain;border-radius:10px}
+    .card-body{flex:1}
+    .card-title{display:flex;align-items:center;gap:8px}
+    .name{font-weight:700;font-size:16px}
+    .location{color:var(--muted);font-size:12px}
+    .desc{color:#111;margin:6px 0 10px;font-size:14px}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{padding:6px 8px;border-radius:6px;background:var(--tag-bg);font-size:12px;color:#2b2b2b;border:1px solid rgba(0,0,0,0.03)}
 
-    /* compact rank */
-    .rank{font-size:14px;font-weight:600;color:var(--muted-2);background:none;width:auto;height:auto;padding:0;margin-right:8px;box-shadow:none;border:none;flex-shrink:0}
+    .empty{color:var(--muted);padding:24px;background:var(--card);border:1px dashed var(--border);border-radius:8px;text-align:center}
 
-    .logo{width:40px;height:40px;border-radius:8px;flex-shrink:0;background:#f3f4f6;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid rgba(0,0,0,0.06)}
-    .dark .logo{background:#0b1216;border-color:rgba(255,255,255,0.04)}
-    img.logo-img{width:100%;height:100%;object-fit:cover}
+    footer{margin-top:40px;color:var(--muted);font-size:13px}
 
-    .meta{flex:1}
-    .meta .title-row{display:flex;gap:8px;align-items:center;justify-content:space-between}
-    .title{font-weight:700;font-size:15px;margin-right:8px;color:var(--text)}
-    .tagline{color:var(--muted);margin-top:4px;font-size:13px;max-width:72ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-
-    /* icon links on right */
-    .actions{display:flex;gap:8px;align-items:center}
-    .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:transparent;border:1px solid rgba(0,0,0,0.04);text-decoration:none}
-    .dark .icon-btn{border-color:rgba(255,255,255,0.04)}
-    .icon-svg{width:16px;height:16px;display:block}
-
-    .tooltip{position:relative}
-    .tooltip:hover::after{
-      content: attr(data-tip);
-      position:absolute;left:0; top:calc(100% + 8px);
-      background:var(--text);color:var(--card);padding:8px 10px;border-radius:8px;font-size:13px;white-space:normal;max-width:480px;z-index:40;
-      box-shadow:0 8px 30px rgba(2,6,23,0.2);
-    }
-
-    .empty{padding:12px;text-align:center;color:var(--muted);background:transparent}
-
-    /* header controls */
-    .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-    .theme-toggle{border:0;background:transparent;padding:6px;border-radius:8px;cursor:pointer}
-
-    @media (max-width:720px){
-      .wrap{padding:12px}
-      .card{padding:8px}
-      .logo{width:36px;height:36px}
-      .title{font-size:14px}
-    }
+    @media (max-width:600px){.app{padding:12px}.controls{flex-direction:column;align-items:stretch}.controls input{width:100%}}
   </style>
-  
-  <link rel="icon" type="image/png" href="assets/stealth.png" />
 </head>
 <body>
-  <div class="wrap">
+  <div class="app">
     <header>
-      <div style="display:flex;gap:10px;align-items:center">
-        <img src="assets/stealth.avif" alt="discoveryOS logo" style="width:40px;height:40px;border-radius:8px;object-fit:contain;">
-        <div>
-          <h1>discoveryOS</h1>
-        </div>
-      </div>
-
-      <div class="header-right">
-        
-        <button id="themeBtn" class="theme-toggle" title="Toggle dark mode" aria-label="Toggle dark mode">
-          <svg id="themeIcon" class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="#111" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <div class="logo">DO</div>
+      <div>
+        <h1>DiscoveryOS — YC feed</h1>
+        <p class="subtitle">Companies grouped by the date you added them (from your Google Sheet).</p>
       </div>
     </header>
 
-    <div id="listContainer" style="margin-top:30px;">
-      <div class="empty">Loading companies…</div>
+    <div class="controls">
+      <!-- Insert your published Google Sheet CSV URL here. See instructions below in comments. -->
+      <input id="sheetUrl" type="url" placeholder="Public Google Sheet CSV URL (required)" />
+      <button id="loadBtn">Load</button>
+      <input id="search" type="text" placeholder="Search company or tag" style="margin-left:auto" />
     </div>
+
+    <div id="content"></div>
+
+    <footer>
+      Tip: In Google Sheets: File → Share → Publish to web → choose CSV for the sheet → copy the CSV link and paste into the box above. Required columns in the sheet: <code>Date</code>, <code>Name</code>, <code>Location</code>, <code>Description</code>, <code>Tags</code> (comma separated), <code>IconURL</code> (optional). Date format should be ISO (YYYY-MM-DD) or a locale date that JS can parse.
+    </footer>
   </div>
 
-<script>
-  // Google Sheet CSV export (auto-loaded).
-  const autoCSV = 'https://docs.google.com/spreadsheets/d/1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U/export?format=csv&gid=1286166919';
-  const listContainer = document.getElementById('listContainer');
-  const themeBtn = document.getElementById('themeBtn');
-  const themeIcon = document.getElementById('themeIcon');
-
-  // Theme handling: respect saved preference -> system -> default light
-  function isDarkPreferred(){
-    const saved = localStorage.getItem('discoveryos_theme');
-    if (saved) return saved === 'dark';
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  }
-  function applyTheme(dark){
-    document.documentElement.classList.toggle('dark', !!dark);
-    localStorage.setItem('discoveryos_theme', dark ? 'dark' : 'light');
-    // swap icon
-    if (dark) {
-      themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" fill="currentColor"/>';
-    } else {
-      themeIcon.innerHTML = '<path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>';
+  <script>
+    // helper: parse CSV into array of objects (simple parser, assumes header row)
+    function csvToObjects(csv) {
+      const lines = csv.split(/\r?\n/).filter(Boolean);
+      if(!lines.length) return [];
+      const headers = lines[0].split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(h=>h.trim().replace(/^\"|\"$/g,''));
+      const rows = lines.slice(1);
+      return rows.map(row => {
+        const cols = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(c=>c.trim().replace(/^\"|\"$/g,''));
+        const obj = {};
+        headers.forEach((h,i)=>obj[h]=cols[i]||'');
+        return obj;
+      });
     }
-  }
-  themeBtn.addEventListener('click', ()=> applyTheme(!document.documentElement.classList.contains('dark')));
-  applyTheme(isDarkPreferred());
 
-  function normalizeSite(site){
-    if(!site) return null;
-    let s = site.toString().trim(); if (!s) return null;
-    if (!s.startsWith('http://') && !s.startsWith('https://')) s = 'https://' + s;
-    try { return new URL(s).hostname.replace(/^www\./,''); }
-    catch(e){ return null; }
-  }
+    function formatDateReadable(dateStr){
+      const d = new Date(dateStr);
+      if(isNaN(d)) return dateStr;
+      return d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+    }
 
-  function logoCandidatesFor(site){
-    const domain = normalizeSite(site);
-    if (!domain) return [];
-    return [
-      `https://logo.clearbit.com/${domain}`,
-      `https://www.google.com/s2/favicons?domain=${domain}&sz=128`,
-      `https://${domain}/favicon.ico`
-    ];
-  }
+    function groupByDate(items, dateKey='Date'){
+      const groups = {};
+      items.forEach(it=>{
+        const raw = it[dateKey] || '';
+        const d = new Date(raw);
+        // if invalid date, keep raw string as key
+        const key = isNaN(d) ? raw.trim() : d.toISOString().slice(0,10);
+        if(!groups[key]) groups[key]=[];
+        groups[key].push(it);
+      });
+      return groups;
+    }
 
-  function makeCard(item, index){
-    const card = document.createElement('div'); card.className = 'card';
+    function renderEmpty(msg){
+      const c = document.getElementById('content');
+      c.innerHTML = `<div class="empty">${msg}</div>`;
+    }
 
-    const rank = document.createElement('div'); rank.className = 'rank'; rank.textContent = index;
+    function render(groups, opts={search:''}){
+      const c = document.getElementById('content');
+      const keys = Object.keys(groups);
+      if(!keys.length){ renderEmpty('No companies found'); return; }
 
-    const logoBox = document.createElement('div'); logoBox.className = 'logo';
-    const img = document.createElement('img'); img.className = 'logo-img';
-    const explicitLogo = (item.Logo || item.logo || '')+'';
+      // sort keys descending (ISO date keys will sort lexicographically)
+      keys.sort((a,b)=> b.localeCompare(a));
 
-    function showInitials(){ logoBox.innerHTML = ((item['Correct Name']||item.Name||'')+'').slice(0,2).toUpperCase(); }
+      const search = (opts.search||'').toLowerCase().trim();
 
-    if (explicitLogo && explicitLogo.trim()){
-      img.src = explicitLogo.trim();
-      img.onerror = showInitials;
-      logoBox.appendChild(img);
-    } else {
-      const candidates = logoCandidatesFor(item.Website || item.website || '');
-      let idx = 0;
-      function tryNext(){
-        if (idx >= candidates.length){ showInitials(); return; }
-        img.src = candidates[idx++];
+      let html = '';
+      keys.forEach(k=>{
+        const items = groups[k].filter(it => {
+          if(!search) return true;
+          const hay = (it.Name||'')+ ' ' + (it.Tags||'') + ' ' + (it.Description||'');
+          return hay.toLowerCase().includes(search);
+        });
+        if(!items.length) return; // don't render empty date groups
+
+        const displayDate = (k.match(/^\d{4}-\d{2}-\d{2}$/)) ? formatDateReadable(k) : k;
+        html += `<section class="date-group">
+          <div class="date-header">${displayDate}</div>
+          <div class="date-items">`;
+
+        items.forEach(it=>{
+          const name = it.Name || it.name || '—';
+          const loc = it.Location || it.location || '';
+          const desc = it.Description || it.description || '';
+          const tags = (it.Tags||it.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+          const icon = it.IconURL || it.icon || '';
+
+          html += `<article class="card">
+            <div class="card-left">${icon?`<img src="${icon}" alt="${name} logo" onerror="this.style.display='none'">`:`<div style="font-weight:700;color:#111">${(name[0]||'').toUpperCase()}</div>`}</div>
+            <div class="card-body">
+              <div class="card-title"><div class="name">${escapeHtml(name)}</div><div class="location">${escapeHtml(loc)}</div></div>
+              <div class="desc">${escapeHtml(desc)}</div>
+              <div class="tags">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
+            </div>
+          </article>`;
+        });
+
+        html += `</div></section>`;
+      });
+
+      c.innerHTML = html || `<div class="empty">No companies match your search</div>`;
+    }
+
+    function escapeHtml(text){
+      return String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    async function loadFromCsvUrl(url){
+      try{
+        const res = await fetch(url);
+        if(!res.ok) throw new Error('Failed to fetch sheet — status '+res.status);
+        const txt = await res.text();
+        const data = csvToObjects(txt);
+        return data;
+      }catch(e){
+        throw e;
       }
-      img.onerror = tryNext;
-      img.onload = function(){};
-      logoBox.appendChild(img);
-      tryNext();
     }
 
-    const meta = document.createElement('div'); meta.className = 'meta';
-    const titleRow = document.createElement('div'); titleRow.className = 'title-row';
-
-    const left = document.createElement('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='10px';
-    left.style.flex = '1';
-    left.appendChild(logoBox);
-
-    const textual = document.createElement('div');
-    const title = document.createElement('div'); title.className = 'title'; title.textContent = (item['Correct Name']||item.Name||'Untitled');
-    const taglineText = (item['Correct Tagline'] || item.Tagline || item.tagline || '')+'';
-    const tagline = document.createElement('div'); tagline.className = 'tagline tooltip'; tagline.setAttribute('data-tip', taglineText); tagline.textContent = taglineText;
-    textual.appendChild(title); textual.appendChild(tagline);
-
-    left.appendChild(textual);
-
-    // actions (icons) on the right
-    const actions = document.createElement('div'); actions.className = 'actions';
-
-    const website = (item.Website || item.website || '')+'';
-    if (website && website.trim()){
-      const a = document.createElement('a'); a.className = 'icon-btn'; a.href = website.trim(); a.target = '_blank'; a.rel='noopener noreferrer';
-      a.title = 'Website';
-      a.innerHTML = '<svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h20M12 2c2.5 2.5 3.5 6 3.5 10s-1 7.5-3.5 10M12 2c-2.5 2.5-3.5 6-3.5 10S9.5 19.5 12 22" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-      actions.appendChild(a);
-    }
-
-    const ycLink = (item['YC URL'] || item['YC'] || item['YC Link'] || '')+'';
-    if (ycLink && ycLink.trim()){
-      const a2 = document.createElement('a'); a2.className='icon-btn'; a2.href = ycLink.trim(); a2.target='_blank'; a2.rel='noopener noreferrer'; a2.title='Y Combinator page';
-      a2.innerHTML = '<svg class="icon-svg" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect rx="8" width="64" height="64" fill="#f63"/><text x="50%" y="54%" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="28" fill="#fff" font-weight="700">YC</text></svg>';
-      actions.appendChild(a2);
-    }
-
-    titleRow.appendChild(left);
-    titleRow.appendChild(actions);
-
-    meta.appendChild(titleRow);
-
-    card.appendChild(rank);
-    card.appendChild(meta);
-
-    return card;
-  }
-
-  function renderRows(rows){
-    // Filter and clean
-    const cleaned = (rows || []).filter(r => {
-      const name = ((r['Correct Name'] || r.Name || '')+"").toString().trim();
-      if (!name) return false;
-      const up = name.toUpperCase();
-      if (up.includes('#VALUE!') || up === '#VALUE!' || up.startsWith('#')) return false;
-      return true;
+    // wire up UI
+    document.getElementById('loadBtn').addEventListener('click', async ()=>{
+      const url = document.getElementById('sheetUrl').value.trim();
+      if(!url){ renderEmpty('Please paste the CSV URL for your published Google Sheet.'); return; }
+      renderEmpty('Loading...');
+      try{
+        const rows = await loadFromCsvUrl(url);
+        if(!rows.length){ renderEmpty('No rows found in sheet. Make sure you published the correct sheet as CSV.'); return; }
+        // normalize header names (trim)
+        const cleaned = rows.map(r => {
+          const o = {};
+          Object.keys(r).forEach(k=>{
+            o[k.trim()] = r[k];
+          });
+          return o;
+        });
+        const groups = groupByDate(cleaned, 'Date');
+        window.__DISCOVERY_DATA_GROUPS = groups;
+        render(groups, {search: document.getElementById('search').value});
+      }catch(err){
+        renderEmpty('Error loading sheet: '+err.message);
+      }
     });
 
-    listContainer.innerHTML = '';
-    if (!cleaned.length){ listContainer.innerHTML = '<div class="empty">No valid companies found in the sheet (after filtering).</div>'; return; }
+    document.getElementById('search').addEventListener('input', ()=>{
+      const groups = window.__DISCOVERY_DATA_GROUPS || {};
+      render(groups, {search: document.getElementById('search').value});
+    });
 
-    // show a date header (today's date) above the list
-    const today = new Date();
-    const dateLabel = today.toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' });
-    const header = document.createElement('div');
-    header.style.fontSize = '18px';
-    header.style.fontWeight = '700';
-    header.style.margin = '0 0 12px 4px';
-    header.textContent = dateLabel;
-    listContainer.appendChild(header);
+    // optional: allow pressing enter when URL box focused
+    document.getElementById('sheetUrl').addEventListener('keydown', (e)=>{ if(e.key==='Enter') document.getElementById('loadBtn').click(); });
 
-    const list = document.createElement('div'); list.className = 'list';
-    cleaned.forEach((r,i)=>{ list.appendChild(makeCard(r, i+1)); });
-    listContainer.appendChild(list);
-  }
-
-  function csvToObjects(csvText){
-    const parsed = Papa.parse(csvText, {header:true, skipEmptyLines:true});
-    return parsed.data;
-  }
-
-  async function fetchAndRender(url){
-    listContainer.innerHTML = '<div class="empty">Loading CSV…</div>';
-    try{
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Network error: ' + res.status + ' — check sheet sharing settings (must be viewable by anyone with link)');
-      const text = await res.text();
-      const data = csvToObjects(text);
-      renderRows(data);
-    } catch(err){
-      listContainer.innerHTML = '<div class="empty">Error loading CSV: ' + err.message + '</div>';
-      console.error(err);
-    }
-  }
-
-  // Auto-load the sheet on open
-  window.addEventListener('load', ()=> fetchAndRender(autoCSV));
-</script>
+  </script>
 </body>
 </html>
