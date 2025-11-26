@@ -12,8 +12,28 @@
 }
 html,body{height:100%;margin:0;background:linear-gradient(180deg,#fbfcfe,#f3f5f7)}
 .app{max-width:980px;margin:36px auto;padding:22px}
-.header{display:flex;gap:14px;align-items:center;margin-bottom:8px}
-.logo{width:52px;height:52px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-weight:700;color:#111;border:1px solid var(--border)}
+
+/* header: logo (GIF) + title aligned vertically */
+.header{
+  display:flex;
+  gap:14px;
+  align-items:center; /* centers GIF and title vertically */
+  margin-bottom:8px;
+}
+.logo{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:var(--card);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--border);
+  overflow:hidden;
+  flex-shrink:0;
+}
+.logo img{width:40px;height:40px;object-fit:contain;display:block}
+.title-wrapper{display:flex;flex-direction:column;justify-content:center}
 h1{font-size:20px;margin:0}
 .subtitle{margin:6px 0 18px;color:var(--muted);font-size:13px}
 
@@ -45,7 +65,7 @@ h1{font-size:20px;margin:0}
   box-shadow:0 1px 0 rgba(0,0,0,0.03)
 }
 .btn svg{width:18px;height:18px;display:block}
-.btn--site{border-color:#dbeafe}   /* subtle blue */
+.btn--site{border-color:#dbeafe}
 .btn--yc{border-color:#ffd8cc;background:#fff}
 
 /* place actions to the right (keeps layout consistent) */
@@ -67,8 +87,11 @@ footer{margin-top:26px;color:var(--muted);font-size:13px}
 <body>
   <div class="app">
     <div class="header">
-      <div class="logo">DO</div>
-      <div>
+      <div class="logo">
+        <!-- make sure this path matches where you store the GIF -->
+        <img src="icons8-ghost.gif" alt="DiscoveryOS logo">
+      </div>
+      <div class="title-wrapper">
         <h1>DiscoveryOS — YC feed</h1>
         <div class="subtitle">Your radar for breakout startups 🚀</div>
       </div>
@@ -132,10 +155,7 @@ function pickField(row, keys){
 
 function normalizeName(raw){
   if(!raw) return '';
-  // remove common trailing " | Y Combinator" or "Y Combinator" bits
-  return raw.replace(/\s*\|\s*Y\s*Combinator\s*$/i, '')
-            .replace(/\s*Y\s*Combinator\s*$/i, '')
-            .trim();
+  return raw.replace(/\s*\|\s*Y\s*Combinator\s*$/i, '').replace(/\s*Y\s*Combinator\s*$/i, '').trim();
 }
 
 function getDomain(url){
@@ -150,7 +170,6 @@ function favIconFor(row){
   return null;
 }
 function parseDate(row){
-  // prefer Extracted Date or ExtractedDate, then Date
   let d = pickField(row, ['Extracted Date','ExtractedDate','Date','Extracted_Date']);
   if(!d) return '';
   const parsed = new Date(d);
@@ -196,7 +215,6 @@ function render(groups, search=''){
   const content = document.getElementById('content');
   const keys = Object.keys(groups);
   if(!keys.length){ content.innerHTML = `<div class="empty">No companies found</div>`; return; }
-  // sort descending
   keys.sort((a,b)=> b.localeCompare(a));
   const q = (search||'').toLowerCase().trim();
 
@@ -222,7 +240,6 @@ function render(groups, search=''){
       const yc = pickField(r, ['YC URL','YC Link','Y Combinator','YC','YC URL','YCombinator']);
       const logo = favIconFor(r);
 
-      // create action buttons (icon-only)
       const actions = [];
       if(website){
         const href = website.startsWith('http') ? website : 'https://'+website;
@@ -267,14 +284,11 @@ async function loadAndRender(){
     const txt = await resp.text();
     const rows = csvToObjects(txt);
 
-    // Build normalized rows and filter
     const normalized = rows.map(r=>{
       const o={};
-      // copy trimmed keys
       Object.keys(r).forEach(k=> o[k.trim()] = r[k].trim());
       return o;
     }).filter(r=>{
-      // choose canonical name - prefer Correct Name over Name; skip #VALUE!
       const name = pickField(r, ['Correct Name','CorrectName','Name','Company','Company Name']);
       return name && name.trim() && name.trim() !== '#VALUE!';
     });
@@ -284,7 +298,6 @@ async function loadAndRender(){
       return;
     }
 
-    // group by extracted date (or Date)
     const groups = groupByDate(normalized);
     window.__DISCOVERY_GROUPS = groups;
     render(groups, document.getElementById('search').value);
