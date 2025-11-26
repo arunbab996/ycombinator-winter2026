@@ -5,26 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DiscoveryOS — YC Daily Feed</title>
   <style>
-    :root{
-      --bg:#f5f6f7; --card:#fff; --muted:#6b7280; --accent:#eab308; --tag-bg:#eef2f7; --border:#e6e7e8;
-      --glass: rgba(0,0,0,0.03);
-      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    }
-    html,body{height:100%;margin:0;background:linear-gradient(180deg,#f7f8fa, #f3f4f6);}
-    .app{max-width:900px;margin:36px auto;padding:20px;}
+    :root{--bg:#f5f6f7;--card:#fff;--muted:#6b7280;--accent:#eab308;--tag-bg:#eef2f7;--border:#e6e7e8;--glass:rgba(0,0,0,0.03);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#f7f8fa,#f3f4f6)}
+    .app{max-width:980px;margin:36px auto;padding:20px}
     header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
     .logo{width:48px;height:48px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-weight:700;color:#111;border:1px solid var(--border)}
     h1{font-size:20px;margin:0}
     p.subtitle{margin:0;color:var(--muted);font-size:13px}
-
     .controls{display:flex;gap:10px;align-items:center;margin:18px 0}
-    .controls input[type=text], .controls input[type=url]{padding:10px;border-radius:8px;border:1px solid var(--border);background:var(--card);min-width:240px}
-    .controls button{padding:10px 12px;border-radius:8px;border:0;background:#111;color:#fff;cursor:pointer}
+    .controls .hint{color:var(--muted);font-size:13px}
 
-    .date-group{margin-top:28px}
-    .date-header{background:transparent;padding:8px 0;color:#111;font-weight:600}
+    .date-group{margin-top:18px}
+    .date-header{background:transparent;padding:10px 0;color:#111;font-weight:600;font-size:15px}
 
-    .card{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:8px;background:var(--card);box-shadow:0 1px 0 rgba(0,0,0,0.03);border:1px solid var(--border);}
+    .card{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:8px;background:var(--card);box-shadow:0 1px 0 rgba(0,0,0,0.03);border:1px solid var(--border)}
     .card + .card{margin-top:12px}
     .card-left{width:56px;height:56px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;flex-shrink:0}
     .card-left img{width:46px;height:46px;object-fit:contain;border-radius:10px}
@@ -37,10 +31,9 @@
     .tag{padding:6px 8px;border-radius:6px;background:var(--tag-bg);font-size:12px;color:#2b2b2b;border:1px solid rgba(0,0,0,0.03)}
 
     .empty{color:var(--muted);padding:24px;background:var(--card);border:1px dashed var(--border);border-radius:8px;text-align:center}
+    footer{margin-top:30px;color:var(--muted);font-size:13px}
 
-    footer{margin-top:40px;color:var(--muted);font-size:13px}
-
-    @media (max-width:600px){.app{padding:12px}.controls{flex-direction:column;align-items:stretch}.controls input{width:100%}}
+    @media (max-width:720px){.app{padding:12px}.controls{flex-direction:column;align-items:stretch}.controls input{width:100%}}
   </style>
 </head>
 <body>
@@ -49,37 +42,76 @@
       <div class="logo">DO</div>
       <div>
         <h1>DiscoveryOS — YC feed</h1>
-        <p class="subtitle">Companies grouped by the date you added them (from your Google Sheet).</p>
+        <p class="subtitle">Companies grouped by the date you added them (pulled directly from your Google Sheet).</p>
       </div>
     </header>
 
     <div class="controls">
-      <!-- Insert your published Google Sheet CSV URL here. See instructions below in comments. -->
-      <input id="sheetUrl" type="url" placeholder="Public Google Sheet CSV URL (required)" />
-      <button id="loadBtn">Load</button>
-      <input id="search" type="text" placeholder="Search company or tag" style="margin-left:auto" />
+      <div class="hint">Automatically loading from your sheet — no manual paste required.</div>
+      <input id="search" type="text" placeholder="Search company or tag" style="margin-left:auto;padding:10px;border-radius:8px;border:1px solid var(--border);min-width:220px" />
     </div>
 
     <div id="content"></div>
 
     <footer>
-      Tip: In Google Sheets: File → Share → Publish to web → choose CSV for the sheet → copy the CSV link and paste into the box above. Required columns in the sheet: <code>Date</code>, <code>Name</code>, <code>Location</code>, <code>Description</code>, <code>Tags</code> (comma separated), <code>IconURL</code> (optional). Date format should be ISO (YYYY-MM-DD) or a locale date that JS can parse.
+      Note: The sheet must be published or accessible via the public export endpoint. If you see an error, please publish the sheet: File → Share → Publish to web → CSV (sheet) and retry. Rows where <code>Name</code> is <code>#VALUE!</code> will be skipped.
     </footer>
   </div>
 
   <script>
-    // helper: parse CSV into array of objects (simple parser, assumes header row)
+    // CONFIG: hardcoded Google Sheet ID and GID (from the link you provided)
+    const SHEET_ID = '1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
+    const GID = '1286166919';
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+
+    // robust CSV parser (handles quoted fields, commas inside quotes)
     function csvToObjects(csv) {
-      const lines = csv.split(/\r?\n/).filter(Boolean);
-      if(!lines.length) return [];
-      const headers = lines[0].split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(h=>h.trim().replace(/^\"|\"$/g,''));
-      const rows = lines.slice(1);
-      return rows.map(row => {
-        const cols = row.split(/,(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)/).map(c=>c.trim().replace(/^\"|\"$/g,''));
+      if(!csv) return [];
+      const rows = [];
+      let cur = '';
+      const lines = [];
+      let inQuotes = false;
+      for (let i = 0; i < csv.length; i++) {
+        const ch = csv[i];
+        cur += ch;
+        if (ch === '"') inQuotes = !inQuotes;
+        if ((ch === '\n' || ch === '\r') && !inQuotes) {
+          lines.push(cur.trim());
+          cur = '';
+          // skip following \n on Windows \r\n
+          if (csv[i+1] === '\n') i++;
+        }
+      }
+      if (cur.trim()) lines.push(cur.trim());
+      if (!lines.length) return [];
+      // split header
+      const header = splitCsvLine(lines[0]);
+      for (let r = 1; r < lines.length; r++){
+        if(!lines[r]) continue;
+        const cols = splitCsvLine(lines[r]);
         const obj = {};
-        headers.forEach((h,i)=>obj[h]=cols[i]||'');
-        return obj;
-      });
+        header.forEach((h, idx) => obj[h.trim()] = cols[idx] ? cols[idx].trim() : '');
+        rows.push(obj);
+      }
+      return rows;
+    }
+
+    function splitCsvLine(line){
+      const res = [];
+      let cur = '';
+      let inQuotes = false;
+      for(let i=0;i<line.length;i++){
+        const ch = line[i];
+        if(ch === '"'){
+          // look ahead for escaped quotes
+          if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; }
+          inQuotes = !inQuotes; continue;
+        }
+        if(ch === ',' && !inQuotes){ res.push(cur); cur = ''; continue; }
+        cur += ch;
+      }
+      res.push(cur);
+      return res.map(s=>s.replace(/^\s+|\s+$/g,'').replace(/^"|"$/g,''));
     }
 
     function formatDateReadable(dateStr){
@@ -91,116 +123,80 @@
     function groupByDate(items, dateKey='Date'){
       const groups = {};
       items.forEach(it=>{
-        const raw = it[dateKey] || '';
+        const raw = (it[dateKey] || '').trim();
+        if(!raw) return; // skip rows without date
         const d = new Date(raw);
-        // if invalid date, keep raw string as key
-        const key = isNaN(d) ? raw.trim() : d.toISOString().slice(0,10);
+        const key = isNaN(d) ? raw : d.toISOString().slice(0,10);
         if(!groups[key]) groups[key]=[];
         groups[key].push(it);
       });
       return groups;
     }
 
-    function renderEmpty(msg){
-      const c = document.getElementById('content');
-      c.innerHTML = `<div class="empty">${msg}</div>`;
-    }
+    function escapeHtml(text){ return String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     function render(groups, opts={search:''}){
       const c = document.getElementById('content');
       const keys = Object.keys(groups);
-      if(!keys.length){ renderEmpty('No companies found'); return; }
-
-      // sort keys descending (ISO date keys will sort lexicographically)
+      if(!keys.length){ c.innerHTML = '<div class="empty">No companies found</div>'; return; }
       keys.sort((a,b)=> b.localeCompare(a));
-
       const search = (opts.search||'').toLowerCase().trim();
-
       let html = '';
       keys.forEach(k=>{
-        const items = groups[k].filter(it => {
+        const items = groups[k].filter(it=>{
           if(!search) return true;
           const hay = (it.Name||'')+ ' ' + (it.Tags||'') + ' ' + (it.Description||'');
           return hay.toLowerCase().includes(search);
         });
-        if(!items.length) return; // don't render empty date groups
-
+        if(!items.length) return;
         const displayDate = (k.match(/^\d{4}-\d{2}-\d{2}$/)) ? formatDateReadable(k) : k;
-        html += `<section class="date-group">
-          <div class="date-header">${displayDate}</div>
-          <div class="date-items">`;
-
+        html += `<section class="date-group"><div class="date-header">${escapeHtml(displayDate)}</div>`;
         items.forEach(it=>{
-          const name = it.Name || it.name || '—';
+          const name = it.Name || it.name || '';
+          if(name === '#VALUE!') return; // skip rows as requested
           const loc = it.Location || it.location || '';
           const desc = it.Description || it.description || '';
           const tags = (it.Tags||it.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
           const icon = it.IconURL || it.icon || '';
-
-          html += `<article class="card">
-            <div class="card-left">${icon?`<img src="${icon}" alt="${name} logo" onerror="this.style.display='none'">`:`<div style="font-weight:700;color:#111">${(name[0]||'').toUpperCase()}</div>`}</div>
-            <div class="card-body">
-              <div class="card-title"><div class="name">${escapeHtml(name)}</div><div class="location">${escapeHtml(loc)}</div></div>
-              <div class="desc">${escapeHtml(desc)}</div>
-              <div class="tags">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>
-            </div>
-          </article>`;
+          const iconHtml = icon ? `<img src="${escapeHtml(icon)}" alt="${escapeHtml(name)} logo" onerror="this.style.display='none'">` : `<div style="font-weight:700;color:#111">${escapeHtml((name[0]||'').toUpperCase())}</div>`;
+          html += `<article class="card"><div class="card-left">${iconHtml}</div><div class="card-body"><div class="card-title"><div class="name">${escapeHtml(name)}</div><div class="location">${escapeHtml(loc)}</div></div><div class="desc">${escapeHtml(desc)}</div><div class="tags">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div></div></article>`;
         });
-
-        html += `</div></section>`;
+        html += `</section>`;
       });
-
-      c.innerHTML = html || `<div class="empty">No companies match your search</div>`;
+      c.innerHTML = html || '<div class="empty">No companies match your search</div>';
     }
 
-    function escapeHtml(text){
-      return String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    }
-
-    async function loadFromCsvUrl(url){
+    async function loadAndRender(){
+      const c = document.getElementById('content');
+      c.innerHTML = '<div class="empty">Loading companies from sheet...</div>';
       try{
-        const res = await fetch(url);
-        if(!res.ok) throw new Error('Failed to fetch sheet — status '+res.status);
-        const txt = await res.text();
-        const data = csvToObjects(txt);
-        return data;
-      }catch(e){
-        throw e;
-      }
-    }
-
-    // wire up UI
-    document.getElementById('loadBtn').addEventListener('click', async ()=>{
-      const url = document.getElementById('sheetUrl').value.trim();
-      if(!url){ renderEmpty('Please paste the CSV URL for your published Google Sheet.'); return; }
-      renderEmpty('Loading...');
-      try{
-        const rows = await loadFromCsvUrl(url);
-        if(!rows.length){ renderEmpty('No rows found in sheet. Make sure you published the correct sheet as CSV.'); return; }
-        // normalize header names (trim)
-        const cleaned = rows.map(r => {
+        const resp = await fetch(CSV_URL);
+        if(!resp.ok) throw new Error('Status '+resp.status+' — sheet might not be published or accessible');
+        const txt = await resp.text();
+        const rows = csvToObjects(txt);
+        // remove header-empty rows and skip invalid names
+        const cleaned = rows.map(r=>{
           const o = {};
-          Object.keys(r).forEach(k=>{
-            o[k.trim()] = r[k];
-          });
+          Object.keys(r).forEach(k=> o[k.trim()] = r[k]);
           return o;
-        });
+        }).filter(r => (r.Name || r.name || '').trim() && (r.Name || r.name || '').trim() !== '#VALUE!');
+        if(!cleaned.length){ c.innerHTML = '<div class="empty">No valid rows found. Are you sure the sheet is published as CSV and has columns: Date, Name, Location, Description, Tags, IconURL?</div>'; return; }
         const groups = groupByDate(cleaned, 'Date');
         window.__DISCOVERY_DATA_GROUPS = groups;
         render(groups, {search: document.getElementById('search').value});
       }catch(err){
-        renderEmpty('Error loading sheet: '+err.message);
+        c.innerHTML = `<div class="empty">Error loading sheet: ${escapeHtml(err.message)}<br/><br/>If the sheet is private, publish via File → Share → Publish to web → select CSV for the specific sheet.</div>`;
+        console.error(err);
       }
-    });
+    }
 
     document.getElementById('search').addEventListener('input', ()=>{
       const groups = window.__DISCOVERY_DATA_GROUPS || {};
       render(groups, {search: document.getElementById('search').value});
     });
 
-    // optional: allow pressing enter when URL box focused
-    document.getElementById('sheetUrl').addEventListener('keydown', (e)=>{ if(e.key==='Enter') document.getElementById('loadBtn').click(); });
-
+    // auto-load on page open
+    loadAndRender();
   </script>
 </body>
 </html>
