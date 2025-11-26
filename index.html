@@ -5,35 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DiscoveryOS — YC Daily Feed</title>
   <style>
-    :root{--bg:#f5f6f7;--card:#fff;--muted:#6b7280;--accent:#eab308;--tag-bg:#eef2f7;--border:#e6e7e8;--glass:rgba(0,0,0,0.03);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
+    :root{--bg:#f5f6f7;--card:#fff;--muted:#6b7280;--accent:#eab308;--tag-bg:#eef2f7;--border:#e6e7e8;--glass:rgba(0,0,0,0.03);--btn:#111;--btn-border:rgba(0,0,0,0.06);font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial}
     html,body{height:100%;margin:0;background:linear-gradient(180deg,#f7f8fa,#f3f4f6)}
     .app{max-width:980px;margin:36px auto;padding:20px}
-    header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+    header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
     .logo{width:48px;height:48px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-weight:700;color:#111;border:1px solid var(--border)}
     h1{font-size:20px;margin:0}
-    p.subtitle{margin:0;color:var(--muted);font-size:13px}
-    .controls{display:flex;gap:10px;align-items:center;margin:18px 0}
+    p.subtitle{margin:6px 0 18px;color:var(--muted);font-size:13px}
+
+    .controls{display:flex;gap:10px;align-items:center;margin:6px 0 18px}
     .controls .hint{color:var(--muted);font-size:13px}
+    .search{margin-left:auto;padding:10px;border-radius:8px;border:1px solid var(--border);min-width:220px}
 
     .date-group{margin-top:18px}
-    .date-header{background:transparent;padding:10px 0;color:#111;font-weight:600;font-size:15px}
+    .date-header{background:transparent;padding:10px 0;color:#111;font-weight:700;font-size:15px}
 
-    .card{display:flex;gap:14px;align-items:flex-start;padding:18px;border-radius:8px;background:var(--card);box-shadow:0 1px 0 rgba(0,0,0,0.03);border:1px solid var(--border)}
+    .card{display:flex;gap:14px;align-items:flex-start;padding:16px;border-radius:10px;background:var(--card);box-shadow:0 1px 0 rgba(0,0,0,0.03);border:1px solid var(--border);}
     .card + .card{margin-top:12px}
     .card-left{width:56px;height:56px;border-radius:12px;background:var(--glass);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    .card-left img{width:46px;height:46px;object-fit:contain;border-radius:10px}
-    .card-body{flex:1}
-    .card-title{display:flex;align-items:center;gap:8px}
-    .name{font-weight:700;font-size:16px}
-    .location{color:var(--muted);font-size:12px}
-    .desc{color:#111;margin:6px 0 10px;font-size:14px}
+    .card-left img{width:48px;height:48px;object-fit:contain;border-radius:8px}
+    .card-body{flex:1;min-width:0}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .title-wrap{min-width:0}
+    .card-title{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .location{color:var(--muted);font-size:12px;margin-top:6px}
+    .desc{color:#111;margin:8px 0 10px;font-size:14px;line-height:1.3}
     .tags{display:flex;gap:8px;flex-wrap:wrap}
     .tag{padding:6px 8px;border-radius:6px;background:var(--tag-bg);font-size:12px;color:#2b2b2b;border:1px solid rgba(0,0,0,0.03)}
 
-    .empty{color:var(--muted);padding:24px;background:var(--card);border:1px dashed var(--border);border-radius:8px;text-align:center}
-    footer{margin-top:30px;color:var(--muted);font-size:13px}
+    .card-actions{display:flex;gap:8px;align-items:center}
+    .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;border:1px solid var(--btn-border);background:transparent;color:var(--btn);font-weight:600;text-decoration:none;font-size:13px}
+    .btn.yc{background:#fff;border:1px solid #ffdede;color:#111}
+    .btn.site{background:#fff;border:1px solid #e8f0ff;color:#111}
 
-    @media (max-width:720px){.app{padding:12px}.controls{flex-direction:column;align-items:stretch}.controls input{width:100%}}
+    .empty{color:var(--muted);padding:24px;background:var(--card);border:1px dashed var(--border);border-radius:8px;text-align:center}
+    footer{margin-top:26px;color:var(--muted);font-size:13px}
+
+    @media (max-width:720px){.app{padding:12px}.controls{flex-direction:column;align-items:stretch}.search{width:100%}.card-top{flex-direction:column;align-items:flex-start}.card-actions{margin-top:8px}}
   </style>
 </head>
 <body>
@@ -42,68 +50,35 @@
       <div class="logo">DO</div>
       <div>
         <h1>DiscoveryOS — YC feed</h1>
-        <p class="subtitle">Companies grouped by the date you added them (pulled directly from your Google Sheet).</p>
+        <p class="subtitle">Companies grouped by the date you added them (pulled from your Google Sheet).</p>
       </div>
     </header>
 
     <div class="controls">
       <div class="hint">Automatically loading from your sheet — no manual paste required.</div>
-      <input id="search" type="text" placeholder="Search company or tag" style="margin-left:auto;padding:10px;border-radius:8px;border:1px solid var(--border);min-width:220px" />
+      <input id="search" class="search" type="text" placeholder="Search company or tag" />
     </div>
 
     <div id="content"></div>
 
     <footer>
-      Note: The sheet must be published or accessible via the public export endpoint. If you see an error, please publish the sheet: File → Share → Publish to web → CSV (sheet) and retry. Rows where <code>Name</code> is <code>#VALUE!</code> will be skipped.
+      Note: If the sheet is private, publish via File → Share → Publish to web → select CSV for the specific sheet. Rows where <code>Name</code> is <code>#VALUE!</code> are skipped.
     </footer>
   </div>
 
   <script>
-    // CONFIG: hardcoded Google Sheet ID and GID (from the link you provided)
+    // Hardcoded sheet from your link
     const SHEET_ID = '1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
     const GID = '1286166919';
     const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
-    // robust CSV parser (handles quoted fields, commas inside quotes)
-    function csvToObjects(csv) {
-      if(!csv) return [];
-      const rows = [];
-      let cur = '';
-      const lines = [];
-      let inQuotes = false;
-      for (let i = 0; i < csv.length; i++) {
-        const ch = csv[i];
-        cur += ch;
-        if (ch === '"') inQuotes = !inQuotes;
-        if ((ch === '\n' || ch === '\r') && !inQuotes) {
-          lines.push(cur.trim());
-          cur = '';
-          // skip following \n on Windows \r\n
-          if (csv[i+1] === '\n') i++;
-        }
-      }
-      if (cur.trim()) lines.push(cur.trim());
-      if (!lines.length) return [];
-      // split header
-      const header = splitCsvLine(lines[0]);
-      for (let r = 1; r < lines.length; r++){
-        if(!lines[r]) continue;
-        const cols = splitCsvLine(lines[r]);
-        const obj = {};
-        header.forEach((h, idx) => obj[h.trim()] = cols[idx] ? cols[idx].trim() : '');
-        rows.push(obj);
-      }
-      return rows;
-    }
-
+    // CSV parsing helpers
     function splitCsvLine(line){
       const res = [];
-      let cur = '';
-      let inQuotes = false;
+      let cur = '', inQuotes = false;
       for(let i=0;i<line.length;i++){
         const ch = line[i];
         if(ch === '"'){
-          // look ahead for escaped quotes
           if(inQuotes && line[i+1] === '"'){ cur += '"'; i++; continue; }
           inQuotes = !inQuotes; continue;
         }
@@ -113,18 +88,45 @@
       res.push(cur);
       return res.map(s=>s.replace(/^\s+|\s+$/g,'').replace(/^"|"$/g,''));
     }
+    function csvToObjects(csv){
+      if(!csv) return [];
+      const lines = csv.split(/\r?\n/);
+      if(!lines.length) return [];
+      const header = splitCsvLine(lines[0]);
+      const rows = [];
+      for(let r=1;r<lines.length;r++){
+        if(!lines[r] || lines[r].trim()==='') continue;
+        const cols = splitCsvLine(lines[r]);
+        const obj = {};
+        header.forEach((h,i)=> obj[h.trim()] = (cols[i]||'').trim());
+        rows.push(obj);
+      }
+      return rows;
+    }
 
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
     function formatDateReadable(dateStr){
       const d = new Date(dateStr);
       if(isNaN(d)) return dateStr;
       return d.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
     }
+    function getDomainFromUrl(url){
+      try{ const u = new URL(url); return u.hostname; }catch(e){ return null; }
+    }
+    function getFavIconForRow(row){
+      const icon = (row.IconURL || row.icon || row.Logo || '').trim();
+      if(icon) return icon;
+      const website = (row.Website || row.URL || row.Site || row['Company Website'] || '').trim();
+      const domain = getDomainFromUrl(website) || (website && website.replace(/^https?:\/\//,'').split('/')[0]);
+      if(domain) return `https://www.google.com/s2/favicons?sz=128&domain=${domain}`;
+      return null;
+    }
 
     function groupByDate(items, dateKey='Date'){
       const groups = {};
       items.forEach(it=>{
-        const raw = (it[dateKey] || '').trim();
-        if(!raw) return; // skip rows without date
+        const raw = (it[dateKey] || it.date || '').trim();
+        if(!raw) return;
         const d = new Date(raw);
         const key = isNaN(d) ? raw : d.toISOString().slice(0,10);
         if(!groups[key]) groups[key]=[];
@@ -132,8 +134,6 @@
       });
       return groups;
     }
-
-    function escapeHtml(text){ return String(text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
     function render(groups, opts={search:''}){
       const c = document.getElementById('content');
@@ -145,21 +145,41 @@
       keys.forEach(k=>{
         const items = groups[k].filter(it=>{
           if(!search) return true;
-          const hay = (it.Name||'')+ ' ' + (it.Tags||'') + ' ' + (it.Description||'');
+          const hay = (it.Name||'') + ' ' + (it.Tags||'') + ' ' + (it.Description||'');
           return hay.toLowerCase().includes(search);
         });
         if(!items.length) return;
         const displayDate = (k.match(/^\d{4}-\d{2}-\d{2}$/)) ? formatDateReadable(k) : k;
         html += `<section class="date-group"><div class="date-header">${escapeHtml(displayDate)}</div>`;
         items.forEach(it=>{
-          const name = it.Name || it.name || '';
-          if(name === '#VALUE!') return; // skip rows as requested
-          const loc = it.Location || it.location || '';
-          const desc = it.Description || it.description || '';
-          const tags = (it.Tags||it.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-          const icon = it.IconURL || it.icon || '';
-          const iconHtml = icon ? `<img src="${escapeHtml(icon)}" alt="${escapeHtml(name)} logo" onerror="this.style.display='none'">` : `<div style="font-weight:700;color:#111">${escapeHtml((name[0]||'').toUpperCase())}</div>`;
-          html += `<article class="card"><div class="card-left">${iconHtml}</div><div class="card-body"><div class="card-title"><div class="name">${escapeHtml(name)}</div><div class="location">${escapeHtml(loc)}</div></div><div class="desc">${escapeHtml(desc)}</div><div class="tags">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div></div></article>`;
+          const name = (it.Name||it.name||'').trim();
+          if(!name || name === '#VALUE!') return;
+          const loc = (it.Location||it.location||'').trim();
+          const desc = (it.Description||it.description||'').trim();
+          const tags = (it.Tags||it.tags||'').split(',').map(t=>t.trim()).filter(Boolean).filter(t=>!/y\s*combinator/i.test(t));
+          const website = (it.Website || it.URL || it.Site || it['Company Website'] || '').trim();
+          const yc = (it['YC Link'] || it.YC || it['Y Combinator'] || it['YC URL'] || '').trim();
+          const logo = getFavIconForRow(it);
+
+          const actions = [];
+          if(website){ const url = website.startsWith('http') ? website : 'https://'+website; actions.push(`<a class="btn site" target="_blank" rel="noopener noreferrer" href="${escapeHtml(url)}">🔗 Website</a>`); }
+          if(yc){ const yurl = yc.startsWith('http') ? yc : 'https://'+yc; actions.push(`<a class="btn yc" target="_blank" rel="noopener noreferrer" href="${escapeHtml(yurl)}">🧡 YC</a>`); }
+
+          html += `<article class="card">
+            <div class="card-left">${logo ? `<img src="${escapeHtml(logo)}" alt="${escapeHtml(name)} logo" onerror="this.style.display='none'">` : `<div style="font-weight:700;color:#111">${escapeHtml((name[0]||'').toUpperCase())}</div>`}</div>
+            <div class="card-body">
+              <div class="card-top">
+                <div class="title-wrap">
+                  <div class="card-title">${escapeHtml(name)}</div>
+                  ${loc?`<div class="location">${escapeHtml(loc)}</div>`:''}
+                </div>
+                <div class="card-actions">${actions.join('')}
+                </div>
+              </div>
+              ${desc?`<div class="desc">${escapeHtml(desc)}</div>`:''}
+              ${tags.length?`<div class="tags">${tags.map(t=>`<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>`:''}
+            </div>
+          </article>`;
         });
         html += `</section>`;
       });
@@ -174,13 +194,9 @@
         if(!resp.ok) throw new Error('Status '+resp.status+' — sheet might not be published or accessible');
         const txt = await resp.text();
         const rows = csvToObjects(txt);
-        // remove header-empty rows and skip invalid names
-        const cleaned = rows.map(r=>{
-          const o = {};
-          Object.keys(r).forEach(k=> o[k.trim()] = r[k]);
-          return o;
-        }).filter(r => (r.Name || r.name || '').trim() && (r.Name || r.name || '').trim() !== '#VALUE!');
-        if(!cleaned.length){ c.innerHTML = '<div class="empty">No valid rows found. Are you sure the sheet is published as CSV and has columns: Date, Name, Location, Description, Tags, IconURL?</div>'; return; }
+        const cleaned = rows.map(r=>{ const o={}; Object.keys(r).forEach(k=> o[k.trim()] = r[k]); return o; })
+          .filter(r => (r.Name||r.name||'').trim() && (r.Name||r.name||'').trim() !== '#VALUE!');
+        if(!cleaned.length){ c.innerHTML = '<div class="empty">No valid rows found. Ensure sheet is published as CSV and has columns Date, Name, Location, Description, Tags, Website/IconURL.</div>'; return; }
         const groups = groupByDate(cleaned, 'Date');
         window.__DISCOVERY_DATA_GROUPS = groups;
         render(groups, {search: document.getElementById('search').value});
@@ -195,7 +211,7 @@
       render(groups, {search: document.getElementById('search').value});
     });
 
-    // auto-load on page open
+    // auto load
     loadAndRender();
   </script>
 </body>
