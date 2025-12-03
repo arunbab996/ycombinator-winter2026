@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DiscoveryOS – Find the Next Big thing, Today! </title>
+<title>DiscoveryOS – New Company Timeline</title>
 
 <style>
 :root{
@@ -17,11 +17,11 @@
   --text-softer:#6b7280;
   --accent:#f97316;
   --accent-soft:#fed7aa;
-  --accent-ph:#fb7185;
   --accent-link:#38bdf8;
   --yc-pill-bg:rgba(249,115,22,0.12);
   --yc-pill-border:rgba(249,115,22,0.7);
-  font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text",
+               "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
 
 *{box-sizing:border-box;}
@@ -29,13 +29,20 @@
 html,body{
   margin:0;
   padding:0;
+  min-height:100vh;
   background:var(--bg);
   color:var(--text);
   -webkit-font-smoothing:antialiased;
 }
 
+body{
+  display:flex;
+  flex-direction:column;
+}
+
 /* layout */
 .app{
+  flex:1;
   max-width:1120px;
   margin:32px auto 40px;
   padding:0 16px;
@@ -44,7 +51,7 @@ html,body{
   gap:16px;
 }
 
-/* header – super minimal */
+/* header */
 .app-header{
   display:flex;
   justify-content:space-between;
@@ -119,7 +126,7 @@ html,body{
   background:var(--bg-elevated);
   border-radius:12px;
   border:1px solid var(--border-soft);
-  padding:10px 10px 10px 12px;
+  padding:10px 10px 12px 12px;
   display:flex;
   align-items:center;
   gap:10px;
@@ -139,17 +146,18 @@ html,body{
   color:var(--text-soft);
 }
 
-.toolbar-sub{
-  font-size:11px;
-  color:var(--text-softer);
+/* search */
+.search-label{
+  margin-top:4px;
+  font-size:12px;
+  font-weight:600;
 }
 
-/* search */
 .search-wrap{
   display:flex;
   align-items:center;
   gap:8px;
-  margin-top:4px;
+  margin-top:2px;
 }
 
 .search-box{
@@ -201,6 +209,29 @@ html,body{
   color:var(--text-soft);
 }
 
+/* view toggle */
+.view-toggle{
+  display:flex;
+  align-items:center;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:#020617;
+  overflow:hidden;
+}
+
+.view-btn{
+  padding:4px 10px;
+  font-size:11px;
+  border:none;
+  background:transparent;
+  color:var(--text-softer);
+  cursor:pointer;
+}
+.view-btn--active{
+  background:#0b1120;
+  color:var(--text);
+}
+
 /* feed container */
 .feed{
   margin-top:4px;
@@ -208,8 +239,6 @@ html,body{
   border-radius:14px;
   border:1px solid var(--border-soft);
   padding:10px;
-  max-height:520px;
-  overflow:auto;
 }
 
 /* summary bar */
@@ -219,17 +248,22 @@ html,body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:0 2px 6px;
+  padding:0 2px 4px;
+  border-bottom:1px solid var(--border-soft);
+}
+
+/* "today" label */
+.today-label{
+  font-size:12px;
+  font-weight:600;
+  margin:10px 2px 4px;
+  color:var(--text-soft);
 }
 
 /* date groups */
 .date-group{
-  margin-top:14px;
+  margin-top:10px;
 }
-.date-group:first-child{
-  margin-top:0;
-}
-
 .date-header{
   font-size:11px;
   text-transform:uppercase;
@@ -277,7 +311,7 @@ html,body{
   color:var(--text-soft);
 }
 
-/* center info */
+/* card center */
 .card-center{
   flex:1;
   min-width:0;
@@ -309,7 +343,7 @@ html,body{
   line-height:1.35;
 }
 
-/* right side actions */
+/* actions */
 .card-right{
   display:flex;
   flex-direction:column;
@@ -318,7 +352,6 @@ html,body{
   flex-shrink:0;
 }
 
-/* YC pill */
 .yc-pill{
   padding:4px 8px;
   border-radius:999px;
@@ -329,7 +362,6 @@ html,body{
   color:var(--accent-soft);
 }
 
-/* link buttons */
 .btn-link{
   display:inline-flex;
   align-items:center;
@@ -351,7 +383,42 @@ html,body{
   gap:4px;
 }
 
-/* empty state */
+/* table view */
+.table-view{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:12px;
+}
+
+.table-view thead{
+  background:#020617;
+}
+
+.table-view th,
+.table-view td{
+  padding:8px 8px;
+  border-bottom:1px solid var(--border-soft);
+}
+
+.table-view th{
+  text-align:left;
+  font-weight:500;
+  color:var(--text-soft);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+}
+
+.table-company{
+  font-weight:500;
+}
+
+.table-tagline{
+  color:var(--text-soft);
+}
+
+/* empty */
 .empty{
   padding:24px 10px;
   font-size:13px;
@@ -395,6 +462,9 @@ html,body{
     flex-direction:column;
     align-items:flex-start;
   }
+  .search-wrap{
+    flex-wrap:wrap;
+  }
   .card-top-row{
     flex-direction:column;
     align-items:flex-start;
@@ -402,6 +472,9 @@ html,body{
   .card-right{
     flex-direction:row;
     align-items:center;
+  }
+  .view-toggle{
+    margin-top:4px;
   }
 }
 </style>
@@ -422,26 +495,26 @@ html,body{
         <span class="app-meta-dot"></span>
         <span id="last-updated">Syncing from sheet…</span>
       </div>
-      <div>Sheet → CSV → UI. Nothing else.</div>
     </div>
   </header>
 
   <section class="toolbar">
     <div class="toolbar-main">
       <div class="toolbar-title">Today’s feed</div>
-      <div class="toolbar-sub">
-        Grouped by <strong>Extracted Date</strong>. Search runs across name & tagline.
-      </div>
+      <div class="search-label">Search</div>
       <div class="search-wrap">
         <div class="search-box">
           <span class="search-icon">⌕</span>
-          <!-- search input -->
           <input id="search" type="text" placeholder="Search by company or tagline" />
         </div>
         <div class="chips">
           <button class="chip chip--on" data-filter="all">All</button>
           <button class="chip" data-filter="yc">YC W26</button>
           <button class="chip" data-filter="ph">Product Hunt</button>
+        </div>
+        <div class="view-toggle">
+          <button class="view-btn view-btn--active" data-view="cards">Cards</button>
+          <button class="view-btn" data-view="table">Table</button>
         </div>
       </div>
     </div>
@@ -452,6 +525,7 @@ html,body{
       <span id="summary-text">Showing 0 companies</span>
       <span id="summary-breakdown"></span>
     </div>
+    <div id="today-label" class="today-label"></div>
     <div id="content" class="content"></div>
   </section>
 
@@ -464,19 +538,19 @@ html,body{
 </div>
 
 <script>
-/* --- CONFIG (same sheet + gid) --- */
+/* CONFIG */
 const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
 const GID='1778821196';
 const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
-/* Global render state */
 let DISCOVERY_STATE = {
-  groups: {},
-  search: "",
-  sourceFilter: "all"
+  groups:{},
+  search:"",
+  sourceFilter:"all",
+  viewMode:"cards"
 };
 
-/******** CSV PARSER ********/
+/* CSV helpers */
 function splitCsvLine(line){
   const out=[]; let cur='', q=false;
   for(let i=0;i<line.length;i++){
@@ -503,7 +577,7 @@ function csvToObjects(csv){
   });
 }
 
-/******** UTIL ********/
+/* utils */
 function pick(row, keys){
   for(const k of keys){
     if(k in row && row[k] && row[k].trim()) return row[k].trim();
@@ -516,9 +590,7 @@ function getDomain(url){
     if(!url) return null;
     const u = url.startsWith('http') ? url : `https://${url}`;
     return new URL(u).hostname;
-  }catch(e){
-    return null;
-  }
+  }catch(e){return null;}
 }
 
 function favicon(url){
@@ -528,12 +600,10 @@ function favicon(url){
     : null;
 }
 
-/* If PH, use logo column; else favicon of website */
 function companyLogo(row){
   const src  = pick(row,['source','Source']).toLowerCase();
   const logo = pick(row,['Logo URL','LogoURL','Logo_Url']);
   const site = pick(row,['Website']);
-
   if(src==='ph' && logo) return logo;
   return favicon(site);
 }
@@ -547,9 +617,7 @@ function parseDate(row){
 function formatDate(d){
   const dt=new Date(d);
   if(isNaN(dt)) return d || 'Unknown date';
-  return dt.toLocaleDateString(undefined,{
-    year:'numeric',month:'short',day:'2-digit'
-  });
+  return dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
 }
 
 function groupByDate(rows){
@@ -569,7 +637,7 @@ function esc(s){
     .replace(/>/g,'&gt;');
 }
 
-/******** ICONS ********/
+/* icons */
 const siteIcon = `
 <svg width="16" height="16" viewBox="0 0 24 24">
   <circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.4" fill="none" />
@@ -594,38 +662,45 @@ function pageIconFor(src){
   return src==='ph' ? phPageIcon : ycPageIcon;
 }
 
-/******** RENDER ********/
+/* render */
 function render(){
   const groups = DISCOVERY_STATE.groups || {};
-  const searchText = (DISCOVERY_STATE.search || "").toLowerCase().trim();
+  const searchText = (DISCOVERY_STATE.search||"").toLowerCase().trim();
   const filter = DISCOVERY_STATE.sourceFilter || "all";
+  const viewMode = DISCOVERY_STATE.viewMode || "cards";
 
   const container=document.getElementById('content');
-  const summaryTextEl = document.getElementById('summary-text');
-  const summaryBreakdownEl = document.getElementById('summary-breakdown');
+  const summaryTextEl=document.getElementById('summary-text');
+  const summaryBreakdownEl=document.getElementById('summary-breakdown');
+  const todayLabelEl=document.getElementById('today-label');
 
   const dates=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
-  let html='';
+  let cardsHtml='';
+  const tableRows=[];
   let total=0, ycCount=0, phCount=0;
+  let latestDate=null;
 
   dates.forEach(date=>{
-    const rows = groups[date];
-    const filtered = rows.filter(row=>{
-      const name = pick(row,['Correct Name','CorrectName','Name']);
-      const tagline = pick(row,['Correct Tagline','CorrectTagline','Tagline']);
-      const src     = pick(row,['source','Source']).toLowerCase();
+    const rows=groups[date];
+    const filtered=rows.filter(row=>{
+      const name=pick(row,['Correct Name','CorrectName','Name']);
+      const tagline=pick(row,['Correct Tagline','CorrectTagline','Tagline']);
+      const src=pick(row,['source','Source']).toLowerCase();
 
       if(filter==='yc' && src!=='yc') return false;
       if(filter==='ph' && src!=='ph') return false;
-
       if(!searchText) return true;
       return (name+' '+tagline).toLowerCase().includes(searchText);
     });
 
     if(!filtered.length) return;
 
-    html += `<section class="date-group">
-      <div class="date-header">${esc(formatDate(date))}</div>`;
+    if(!latestDate) latestDate=date;
+
+    if(viewMode==='cards'){
+      cardsHtml += `<section class="date-group">
+        <div class="date-header">${esc(formatDate(date))}</div>`;
+    }
 
     filtered.forEach(row=>{
       const name = pick(row,['Correct Name','CorrectName','Name']);
@@ -645,105 +720,165 @@ function render(){
         ? `<div class="yc-pill">YC W26</div>`
         : '';
 
-      const siteHref = site
-        ? (site.startsWith('http') ? site : `https://${site}`)
-        : null;
-      const pageHref = pageUrl
-        ? (pageUrl.startsWith('http') ? pageUrl : `https://${pageUrl}`)
-        : null;
+      const siteHref = site ? (site.startsWith('http')?site:`https://${site}`) : null;
+      const pageHref = pageUrl ? (pageUrl.startsWith('http')?pageUrl:`https://${pageUrl}`) : null;
 
-      html += `
-      <article class="card">
-        <div class="card-left">
-          ${logoUrl
-            ? `<img src="${esc(logoUrl)}" alt="${esc(name)} logo"
-                    onerror="this.style.display='none'">`
-            : `<div class="card-left-fallback">${esc(name[0]||'•')}</div>`
-          }
-        </div>
-        <div class="card-center">
-          <div class="card-top-row">
-            <div class="card-main">
-              <div class="card-name">${esc(name)}</div>
-              ${tagline ? `<div class="card-tagline">${esc(tagline)}</div>` : ''}
-            </div>
-            <div class="card-right">
-              ${ycTag}
-              <div class="card-link-row">
-                ${siteHref
-                  ? `<a class="btn-link" target="_blank" href="${esc(siteHref)}"
-                       title="Open website">${siteIcon}</a>`
-                  : ''}
-                ${pageHref
-                  ? `<a class="btn-link" target="_blank" href="${esc(pageHref)}"
-                       title="Open listing">${pageIconFor(src)}</a>`
-                  : ''}
+      if(viewMode==='cards'){
+        cardsHtml += `
+        <article class="card">
+          <div class="card-left">
+            ${logoUrl
+              ? `<img src="${esc(logoUrl)}" alt="${esc(name)} logo"
+                      onerror="this.style.display='none'">`
+              : `<div class="card-left-fallback">${esc(name[0]||'•')}</div>`
+            }
+          </div>
+          <div class="card-center">
+            <div class="card-top-row">
+              <div class="card-main">
+                <div class="card-name">${esc(name)}</div>
+                ${tagline ? `<div class="card-tagline">${esc(tagline)}</div>` : ''}
+              </div>
+              <div class="card-right">
+                ${ycTag}
+                <div class="card-link-row">
+                  ${siteHref
+                    ? `<a class="btn-link" target="_blank" href="${esc(siteHref)}"
+                         title="Open website">${siteIcon}</a>`
+                    : ''}
+                  ${pageHref
+                    ? `<a class="btn-link" target="_blank" href="${esc(pageHref)}"
+                         title="Open listing">${pageIconFor(src)}</a>`
+                    : ''}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </article>`;
+        </article>`;
+      }
+
+      tableRows.push({
+        date,
+        name,
+        tagline,
+        src,
+        siteHref,
+        pageHref
+      });
     });
 
-    html += `</section>`;
+    if(viewMode==='cards'){
+      cardsHtml += `</section>`;
+    }
   });
 
-  container.innerHTML = html || `<div class="empty">No companies match this search/filter.</div>`;
+  if(viewMode==='cards'){
+    container.innerHTML = cardsHtml || `<div class="empty">No companies match this search/filter.</div>`;
+  }else{
+    if(!tableRows.length){
+      container.innerHTML = `<div class="empty">No companies match this search/filter.</div>`;
+    }else{
+      let t = `<table class="table-view">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Company</th>
+            <th>Tagline</th>
+            <th>Source</th>
+            <th style="width:80px;">Links</th>
+          </tr>
+        </thead>
+        <tbody>`;
+      tableRows.forEach(item=>{
+        t += `<tr>
+          <td>${esc(formatDate(item.date))}</td>
+          <td class="table-company">${esc(item.name)}</td>
+          <td class="table-tagline">${esc(item.tagline)}</td>
+          <td>${item.src ? item.src.toUpperCase() : ''}</td>
+          <td>
+            <div class="card-link-row">
+              ${item.siteHref
+                ? `<a class="btn-link" target="_blank" href="${esc(item.siteHref)}"
+                     title="Open website">${siteIcon}</a>`
+                : ''}
+              ${item.pageHref
+                ? `<a class="btn-link" target="_blank" href="${esc(item.pageHref)}"
+                     title="Open listing">${pageIconFor(item.src)}</a>`
+                : ''}
+            </div>
+          </td>
+        </tr>`;
+      });
+      t += `</tbody></table>`;
+      container.innerHTML = t;
+    }
+  }
 
-  // Summary
-  summaryTextEl.textContent = `Showing ${total} compan${total === 1 ? 'y' : 'ies'}`;
+  // summary
+  summaryTextEl.textContent = `Showing ${total} compan${total===1?'y':'ies'}`;
   summaryBreakdownEl.textContent = `YC: ${ycCount} · PH: ${phCount}`;
+
+  // today's feed label
+  todayLabelEl.textContent = latestDate
+    ? `Today's feed · ${formatDate(latestDate)}`
+    : '';
 }
 
-/******** LOAD ********/
+/* load data */
 async function load(){
   const content=document.getElementById('content');
   const lastUpdatedEl=document.getElementById('last-updated');
   content.innerHTML=`<div class="empty">Loading from Google Sheets…</div>`;
 
   try{
-    const resp = await fetch(CSV_URL);
-    const text = await resp.text();
-    const rows = csvToObjects(text);
+    const resp=await fetch(CSV_URL);
+    const text=await resp.text();
+    const rows=csvToObjects(text);
 
-    const valid = rows.filter(r=>{
-      const name = pick(r,['Correct Name','CorrectName','Name']);
-      return name && name !== '#VALUE!';
+    const valid=rows.filter(r=>{
+      const name=pick(r,['Correct Name','CorrectName','Name']);
+      return name && name!=='#VALUE!';
     });
 
-    const groups = groupByDate(valid);
-    DISCOVERY_STATE.groups = groups;
-
+    DISCOVERY_STATE.groups=groupByDate(valid);
     render();
 
-    const now = new Date();
+    const now=new Date();
     lastUpdatedEl.textContent =
       'Last sync: ' +
       now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) +
       ' · ' +
       now.toLocaleDateString([], {day:'2-digit',month:'short'});
   }catch(e){
-    content.innerHTML = `<div class="empty">${esc(e.message)}</div>`;
+    content.innerHTML=`<div class="empty">${esc(e.message)}</div>`;
     lastUpdatedEl.textContent='Error fetching sheet';
   }
 }
 
-/******** EVENTS ********/
-document.getElementById('search').addEventListener('input', (e)=>{
-  DISCOVERY_STATE.search = e.target.value || "";
+/* events */
+document.getElementById('search').addEventListener('input',e=>{
+  DISCOVERY_STATE.search=e.target.value||"";
   render();
 });
 
 document.querySelectorAll('.chip').forEach(chip=>{
-  chip.addEventListener('click', ()=>{
-    const filter = chip.getAttribute('data-filter') || 'all';
-    DISCOVERY_STATE.sourceFilter = filter;
-
-    // toggle visual state
+  chip.addEventListener('click',()=>{
+    const filter=chip.getAttribute('data-filter')||'all';
+    DISCOVERY_STATE.sourceFilter=filter;
     document.querySelectorAll('.chip').forEach(c=>{
-      c.classList.toggle('chip--on', c === chip);
+      c.classList.toggle('chip--on',c===chip);
     });
+    render();
+  });
+});
 
+document.querySelectorAll('.view-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const view=btn.getAttribute('data-view')||'cards';
+    DISCOVERY_STATE.viewMode=view;
+    document.querySelectorAll('.view-btn').forEach(b=>{
+      b.classList.toggle('view-btn--active',b===btn);
+    });
     render();
   });
 });
