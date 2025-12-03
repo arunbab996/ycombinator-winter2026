@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Outer tile -->
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="#050505" stroke="#262626" stroke-width="2"></rect>
+
+  <!-- Vertical grid line -->
+  <rect x="30" y="16" width="2" height="32" fill="#141414"></rect>
+
+  <!-- Horizontal grid line -->
+  <rect x="16" y="30" width="32" height="2" fill="#141414"></rect>
+
+  <!-- Accent corner -->
+  <rect x="38" y="16" width="8" height="8" fill="#F97316"></rect>
+</svg>
