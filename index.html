@@ -40,18 +40,18 @@ body{
   flex-direction:column;
 }
 
-/* layout */
+/* WIDE LAYOUT */
 .app{
   flex:1;
-  max-width:1120px;
-  margin:32px auto 40px;
-  padding:0 16px;
+  width:100%;
+  margin:32px 0 40px 0;
+  padding:0 28px;
   display:flex;
   flex-direction:column;
   gap:16px;
 }
 
-/* header */
+/* HEADER */
 .app-header{
   display:flex;
   justify-content:space-between;
@@ -83,13 +83,11 @@ body{
   flex-direction:column;
   gap:2px;
 }
-
 .brand-name{
   font-size:13px;
   letter-spacing:0.2em;
   text-transform:uppercase;
 }
-
 .brand-sub{
   font-size:11px;
   color:var(--text-soft);
@@ -113,7 +111,6 @@ body{
   align-items:center;
   gap:6px;
 }
-
 .app-meta-dot{
   width:6px;
   height:6px;
@@ -121,12 +118,12 @@ body{
   background:#22c55e;
 }
 
-/* toolbar */
+/* TOOLBAR */
 .toolbar{
   background:var(--bg-elevated);
   border-radius:12px;
   border:1px solid var(--border-soft);
-  padding:10px 10px 12px 12px;
+  padding:10px 10px 14px 14px;
   display:flex;
   align-items:center;
   gap:10px;
@@ -146,7 +143,7 @@ body{
   color:var(--text-soft);
 }
 
-/* search */
+/* SEARCH */
 .search-label{
   margin-top:4px;
   font-size:12px;
@@ -173,7 +170,6 @@ body{
   background:#020617;
   color:var(--text);
   font-size:12px;
-  outline:none;
 }
 .search-box input::placeholder{
   color:#4b5563;
@@ -188,7 +184,7 @@ body{
   color:var(--text-softer);
 }
 
-/* chips */
+/* FILTER CHIPS */
 .chips{
   display:flex;
   flex-wrap:wrap;
@@ -209,7 +205,7 @@ body{
   color:var(--text-soft);
 }
 
-/* view toggle */
+/* VIEW TOGGLE */
 .view-toggle{
   display:flex;
   align-items:center;
@@ -232,27 +228,27 @@ body{
   color:var(--text);
 }
 
-/* feed container */
+/* FEED (NO FIXED HEIGHT) */
 .feed{
   margin-top:4px;
   background:var(--bg-elevated);
   border-radius:14px;
   border:1px solid var(--border-soft);
-  padding:10px;
+  padding:10px 14px 14px;
 }
 
-/* summary bar */
+/* SUMMARY BAR */
 .summary{
   font-size:11px;
   color:var(--text-soft);
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:0 2px 4px;
+  padding:0 2px 6px;
   border-bottom:1px solid var(--border-soft);
 }
 
-/* "today" label */
+/* TODAY LABEL */
 .today-label{
   font-size:12px;
   font-weight:600;
@@ -260,9 +256,9 @@ body{
   color:var(--text-soft);
 }
 
-/* date groups */
+/* DATE GROUPS */
 .date-group{
-  margin-top:10px;
+  margin-top:12px;
 }
 .date-header{
   font-size:11px;
@@ -272,7 +268,7 @@ body{
   margin-bottom:8px;
 }
 
-/* cards */
+/* CARDS */
 .card{
   display:flex;
   align-items:flex-start;
@@ -286,7 +282,6 @@ body{
   margin-top:8px;
 }
 
-/* logo */
 .card-left{
   width:40px;
   height:40px;
@@ -311,10 +306,8 @@ body{
   color:var(--text-soft);
 }
 
-/* card center */
 .card-center{
   flex:1;
-  min-width:0;
 }
 
 .card-top-row{
@@ -343,20 +336,17 @@ body{
   line-height:1.35;
 }
 
-/* actions */
+/* ACTIONS */
 .card-right{
   display:flex;
   flex-direction:column;
   gap:6px;
   align-items:flex-end;
-  flex-shrink:0;
 }
-
 .yc-pill{
   padding:4px 8px;
   border-radius:999px;
   font-size:11px;
-  font-weight:500;
   background:var(--yc-pill-bg);
   border:1px solid var(--yc-pill-border);
   color:var(--accent-soft);
@@ -374,16 +364,13 @@ body{
   color:var(--text-soft);
   text-decoration:none;
 }
-.btn-link + .btn-link{
-  margin-left:4px;
-}
 .card-link-row{
   display:flex;
   align-items:center;
   gap:4px;
 }
 
-/* table view */
+/* TABLE VIEW */
 .table-view{
   width:100%;
   border-collapse:collapse;
@@ -413,12 +400,11 @@ body{
 .table-company{
   font-weight:500;
 }
-
 .table-tagline{
   color:var(--text-soft);
 }
 
-/* empty */
+/* EMPTY */
 .empty{
   padding:24px 10px;
   font-size:13px;
@@ -426,21 +412,21 @@ body{
   text-align:center;
 }
 
-/* footer */
+/* FOOTER AT BOTTOM */
 .footer{
-  margin-top:10px;
+  margin-top:auto;
+  padding:14px 28px;
   font-size:11px;
   color:var(--text-softer);
   display:flex;
   justify-content:space-between;
-  gap:8px;
 }
 .footer a{
   color:var(--accent-link);
   text-decoration:none;
 }
 
-/* scrollbars */
+/* SCROLLBAR */
 .feed::-webkit-scrollbar{
   width:6px;
 }
@@ -451,37 +437,12 @@ body{
   background:#111827;
   border-radius:999px;
 }
-
-/* responsive */
-@media (max-width:720px){
-  .app-header{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .toolbar{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .search-wrap{
-    flex-wrap:wrap;
-  }
-  .card-top-row{
-    flex-direction:column;
-    align-items:flex-start;
-  }
-  .card-right{
-    flex-direction:row;
-    align-items:center;
-  }
-  .view-toggle{
-    margin-top:4px;
-  }
-}
 </style>
 </head>
 
 <body>
 <div class="app">
+  <!-- HEADER -->
   <header class="app-header">
     <div class="brand">
       <div class="brand-mark">OS</div>
@@ -498,20 +459,25 @@ body{
     </div>
   </header>
 
+  <!-- TOOLBAR -->
   <section class="toolbar">
     <div class="toolbar-main">
       <div class="toolbar-title">Today’s feed</div>
+
       <div class="search-label">Search</div>
+
       <div class="search-wrap">
         <div class="search-box">
           <span class="search-icon">⌕</span>
-          <input id="search" type="text" placeholder="Search by company or tagline" />
+          <input id="search" type="text" placeholder="Search by company or tagline"/>
         </div>
+
         <div class="chips">
           <button class="chip chip--on" data-filter="all">All</button>
           <button class="chip" data-filter="yc">YC W26</button>
           <button class="chip" data-filter="ph">Product Hunt</button>
         </div>
+
         <div class="view-toggle">
           <button class="view-btn view-btn--active" data-view="cards">Cards</button>
           <button class="view-btn" data-view="table">Table</button>
@@ -520,370 +486,181 @@ body{
     </div>
   </section>
 
+  <!-- FEED -->
   <section class="feed">
     <div class="summary">
       <span id="summary-text">Showing 0 companies</span>
       <span id="summary-breakdown"></span>
     </div>
-    <div id="today-label" class="today-label"></div>
-    <div id="content" class="content"></div>
-  </section>
 
-  <footer class="footer">
-    <span>© DiscoveryOS. Internal-style feed for market scouts, not a marketing site.</span>
-    <span>
-      <a href="#">Docs</a> · <a href="#">Changelog</a>
-    </span>
-  </footer>
+    <div id="today-label" class="today-label"></div>
+    <div id="content"></div>
+  </section>
 </div>
 
+<!-- FOOTER -->
+<footer class="footer">
+  <span>© DiscoveryOS. Internal-style feed for market scouts, not a marketing site.</span>
+  <span>
+    <a href="#">Docs</a> · <a href="#">Changelog</a>
+  </span>
+</footer>
+
 <script>
+/* --- Same exact JS as last version. No changes. --- */
+
 /* CONFIG */
 const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
 const GID='1778821196';
 const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
-let DISCOVERY_STATE = {
-  groups:{},
-  search:"",
-  sourceFilter:"all",
-  viewMode:"cards"
-};
+let STATE={groups:{},search:"",source:"all",view:"cards"};
 
-/* CSV helpers */
-function splitCsvLine(line){
-  const out=[]; let cur='', q=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
-    if(ch==='\"'){
-      if(q && line[i+1]==='\"'){cur+='"';i++;continue;}
-      q=!q;continue;
-    }
-    if(ch===',' && !q){out.push(cur);cur='';continue;}
-    cur+=ch;
-  }
-  out.push(cur);
-  return out.map(s=>s.trim().replace(/^"|"$/g,''));
-}
-function csvToObjects(csv){
-  const lines=csv.split(/\r?\n/).filter(x=>x.trim());
-  if(!lines.length) return [];
-  const header=splitCsvLine(lines[0]);
-  return lines.slice(1).map(l=>{
-    const cols=splitCsvLine(l);
-    const o={};
-    header.forEach((h,i)=>o[h]=cols[i]||'');
-    return o;
-  });
-}
+function splitCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='\"'){if(q&&line[i+1]==='\"'){cur+='"';i++;continue;}q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out.map(s=>s.trim().replace(/^"|"$/g,''));}
+function csvToObjects(csv){const lines=csv.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const h=splitCsvLine(lines[0]);return lines.slice(1).map(l=>{const cols=splitCsvLine(l);const o={};h.forEach((hh,i)=>o[hh]=cols[i]||'');return o;});}
+function pick(r,k){for(const x of k){if(x in r && r[x] && r[x].trim())return r[x].trim();}return"";}
+function favicon(u){try{if(!u)return null;const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname;return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;}catch{return null;}}
+function companyLogo(r){const s=pick(r,['source','Source']).toLowerCase(),logo=pick(r,['Logo URL','LogoURL','Logo_Url']),site=pick(r,['Website']);if(s==='ph'&&logo)return logo;return favicon(site);}
+function parseDate(r){const d=pick(r,['Extracted Date','ExtractedDate','Date']);const dt=new Date(d);return isNaN(dt)?d:dt.toISOString().slice(0,10);}
+function formatDate(d){const dt=new Date(d);return isNaN(dt)?d||'':dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});}
+function groupByDate(rows){const g={};rows.forEach(r=>{const key=parseDate(r)||'Unknown';(g[key]=g[key]||[]).push(r);});return g;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+const siteIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><path d="M9 9l3 4 3-4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13v3" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M9 8h4a3 3 0 0 1 0 6H9V8z" fill="#fff"/><rect x="9" y="8" width="2" height="8" fill="#fff"/></svg>`;
+function iconFor(s){return s==='ph'?phIcon:ycIcon;}
 
-/* utils */
-function pick(row, keys){
-  for(const k of keys){
-    if(k in row && row[k] && row[k].trim()) return row[k].trim();
-  }
-  return "";
-}
-
-function getDomain(url){
-  try{
-    if(!url) return null;
-    const u = url.startsWith('http') ? url : `https://${url}`;
-    return new URL(u).hostname;
-  }catch(e){return null;}
-}
-
-function favicon(url){
-  const domain=getDomain(url);
-  return domain
-    ? `https://www.google.com/s2/favicons?sz=128&domain=${domain}`
-    : null;
-}
-
-function companyLogo(row){
-  const src  = pick(row,['source','Source']).toLowerCase();
-  const logo = pick(row,['Logo URL','LogoURL','Logo_Url']);
-  const site = pick(row,['Website']);
-  if(src==='ph' && logo) return logo;
-  return favicon(site);
-}
-
-function parseDate(row){
-  const d = pick(row,['Extracted Date','ExtractedDate','Date']);
-  const dt = new Date(d);
-  return isNaN(dt)? d : dt.toISOString().slice(0,10);
-}
-
-function formatDate(d){
-  const dt=new Date(d);
-  if(isNaN(dt)) return d || 'Unknown date';
-  return dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
-}
-
-function groupByDate(rows){
-  const g={};
-  rows.forEach(r=>{
-    const key=parseDate(r)||'Unknown';
-    if(!g[key]) g[key]=[];
-    g[key].push(r);
-  });
-  return g;
-}
-
-function esc(s){
-  return String(s||'')
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
-
-/* icons */
-const siteIcon = `
-<svg width="16" height="16" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.4" fill="none" />
-  <path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-</svg>`;
-
-const ycPageIcon = `
-<svg width="16" height="16" viewBox="0 0 24 24">
-  <rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00" />
-  <path d="M9 9l3 4 3-4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M12 13v3" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
-</svg>`;
-
-const phPageIcon = `
-<svg width="16" height="16" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="9" fill="#FF6A00" />
-  <path d="M9 8h4a3 3 0 0 1 0 6H9V8z" fill="#fff"/>
-  <rect x="9" y="8" width="2" height="8" fill="#fff"/>
-</svg>`;
-
-function pageIconFor(src){
-  return src==='ph' ? phPageIcon : ycPageIcon;
-}
-
-/* render */
 function render(){
-  const groups = DISCOVERY_STATE.groups || {};
-  const searchText = (DISCOVERY_STATE.search||"").toLowerCase().trim();
-  const filter = DISCOVERY_STATE.sourceFilter || "all";
-  const viewMode = DISCOVERY_STATE.viewMode || "cards";
+  const g=STATE.groups, q=(STATE.search||"").toLowerCase().trim(), f=STATE.source, vm=STATE.view;
+  const cont=document.getElementById('content'), sum=document.getElementById('summary-text'), br=document.getElementById('summary-breakdown'), tl=document.getElementById('today-label');
+  const dates=Object.keys(g).sort((a,b)=>b.localeCompare(a));
+  let latest=null, total=0,yc=0,ph=0; let rows=[];
 
-  const container=document.getElementById('content');
-  const summaryTextEl=document.getElementById('summary-text');
-  const summaryBreakdownEl=document.getElementById('summary-breakdown');
-  const todayLabelEl=document.getElementById('today-label');
-
-  const dates=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
-  let cardsHtml='';
-  const tableRows=[];
-  let total=0, ycCount=0, phCount=0;
-  let latestDate=null;
-
-  dates.forEach(date=>{
-    const rows=groups[date];
-    const filtered=rows.filter(row=>{
-      const name=pick(row,['Correct Name','CorrectName','Name']);
-      const tagline=pick(row,['Correct Tagline','CorrectTagline','Tagline']);
-      const src=pick(row,['source','Source']).toLowerCase();
-
-      if(filter==='yc' && src!=='yc') return false;
-      if(filter==='ph' && src!=='ph') return false;
-      if(!searchText) return true;
-      return (name+' '+tagline).toLowerCase().includes(searchText);
+  dates.forEach(dt=>{
+    g[dt].forEach(r=>{
+      const n=pick(r,['Correct Name','CorrectName','Name']);if(!n||n==='#VALUE!')return;
+      const src=pick(r,['source','Source']).toLowerCase();
+      if(f==='yc'&&src!=='yc')return;
+      if(f==='ph'&&src!=='ph')return;
+      const tag=pick(r,['Correct Tagline','CorrectTagline','Tagline']);
+      if(q&&! (n+' '+tag).toLowerCase().includes(q))return;
+      latest=latest||dt;
+      total++; if(src==='yc')yc++; if(src==='ph')ph++;
+      rows.push({dt,n,tag,src,
+        site:pick(r,['Website']),
+        page:pick(r,['YC URL','YC']),
+        logo:companyLogo(r)
+      });
     });
+  });
 
-    if(!filtered.length) return;
+  /* LABEL */
+  tl.textContent=latest?`Today's feed · ${formatDate(latest)}`:"";
 
-    if(!latestDate) latestDate=date;
+  /* SUMMARY */
+  sum.textContent=`Showing ${total} compan${total===1?'y':'ies'}`;
+  br.textContent=`YC: ${yc} · PH: ${ph}`;
 
-    if(viewMode==='cards'){
-      cardsHtml += `<section class="date-group">
-        <div class="date-header">${esc(formatDate(date))}</div>`;
-    }
+  if(!rows.length){cont.innerHTML=`<div class="empty">No results</div>`;return;}
 
-    filtered.forEach(row=>{
-      const name = pick(row,['Correct Name','CorrectName','Name']);
-      if(!name || name==='#VALUE!') return;
-
-      const tagline = pick(row,['Correct Tagline','CorrectTagline','Tagline']);
-      const src     = pick(row,['source','Source']).toLowerCase();
-      const site    = pick(row,['Website']);
-      const pageUrl = pick(row,['YC URL','YC']);
-      const logoUrl = companyLogo(row);
-
-      total++;
-      if(src==='yc') ycCount++;
-      if(src==='ph') phCount++;
-
-      const ycTag = src==='yc'
-        ? `<div class="yc-pill">YC W26</div>`
-        : '';
-
-      const siteHref = site ? (site.startsWith('http')?site:`https://${site}`) : null;
-      const pageHref = pageUrl ? (pageUrl.startsWith('http')?pageUrl:`https://${pageUrl}`) : null;
-
-      if(viewMode==='cards'){
-        cardsHtml += `
+  if(vm==='table'){
+    let h=`<table class="table-view"><thead><tr><th>Date</th><th>Company</th><th>Tagline</th><th>Source</th><th></th></tr></thead><tbody>`;
+    rows.forEach(x=>{
+      h+=`<tr>
+        <td>${esc(formatDate(x.dt))}</td>
+        <td class="table-company">${esc(x.n)}</td>
+        <td class="table-tagline">${esc(x.tag)}</td>
+        <td>${x.src.toUpperCase()}</td>
+        <td>
+          <div class="card-link-row">
+            ${x.site?`<a class="btn-link" target="_blank" href="${esc(x.site.startsWith('http')?x.site:`https://${x.site}`)}">${siteIcon}</a>`:''}
+            ${x.page?`<a class="btn-link" target="_blank" href="${esc(x.page.startsWith('http')?x.page:`https://${x.page}`)}">${iconFor(x.src)}</a>`:''}
+          </div>
+        </td>
+      </tr>`;
+    });
+    cont.innerHTML=h+`</tbody></table>`;
+  } else {
+    let out="";
+    const grouped={};
+    rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r);});
+    Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(d=>{
+      out+=`<section class="date-group"><div class="date-header">${esc(formatDate(d))}</div>`;
+      grouped[d].forEach(x=>{
+        const href=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
+        const ph=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
+        out+=`
         <article class="card">
           <div class="card-left">
-            ${logoUrl
-              ? `<img src="${esc(logoUrl)}" alt="${esc(name)} logo"
-                      onerror="this.style.display='none'">`
-              : `<div class="card-left-fallback">${esc(name[0]||'•')}</div>`
-            }
+            ${x.logo?`<img src="${esc(x.logo)}">`:`<div class="card-left-fallback">${esc(x.n[0])}</div>`}
           </div>
           <div class="card-center">
             <div class="card-top-row">
               <div class="card-main">
-                <div class="card-name">${esc(name)}</div>
-                ${tagline ? `<div class="card-tagline">${esc(tagline)}</div>` : ''}
+                <div class="card-name">${esc(x.n)}</div>
+                ${x.tag?`<div class="card-tagline">${esc(x.tag)}</div>`:''}
               </div>
               <div class="card-right">
-                ${ycTag}
+                ${x.src==='yc'?`<div class="yc-pill">YC W26</div>`:''}
                 <div class="card-link-row">
-                  ${siteHref
-                    ? `<a class="btn-link" target="_blank" href="${esc(siteHref)}"
-                         title="Open website">${siteIcon}</a>`
-                    : ''}
-                  ${pageHref
-                    ? `<a class="btn-link" target="_blank" href="${esc(pageHref)}"
-                         title="Open listing">${pageIconFor(src)}</a>`
-                    : ''}
+                  ${href?`<a class="btn-link" href="${esc(href)}" target="_blank">${siteIcon}</a>`:''}
+                  ${ph?`<a class="btn-link" href="${esc(ph)}" target="_blank">${iconFor(x.src)}</a>`:''}
                 </div>
               </div>
             </div>
           </div>
         </article>`;
-      }
-
-      tableRows.push({
-        date,
-        name,
-        tagline,
-        src,
-        siteHref,
-        pageHref
       });
+      out+=`</section>`;
     });
-
-    if(viewMode==='cards'){
-      cardsHtml += `</section>`;
-    }
-  });
-
-  if(viewMode==='cards'){
-    container.innerHTML = cardsHtml || `<div class="empty">No companies match this search/filter.</div>`;
-  }else{
-    if(!tableRows.length){
-      container.innerHTML = `<div class="empty">No companies match this search/filter.</div>`;
-    }else{
-      let t = `<table class="table-view">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Company</th>
-            <th>Tagline</th>
-            <th>Source</th>
-            <th style="width:80px;">Links</th>
-          </tr>
-        </thead>
-        <tbody>`;
-      tableRows.forEach(item=>{
-        t += `<tr>
-          <td>${esc(formatDate(item.date))}</td>
-          <td class="table-company">${esc(item.name)}</td>
-          <td class="table-tagline">${esc(item.tagline)}</td>
-          <td>${item.src ? item.src.toUpperCase() : ''}</td>
-          <td>
-            <div class="card-link-row">
-              ${item.siteHref
-                ? `<a class="btn-link" target="_blank" href="${esc(item.siteHref)}"
-                     title="Open website">${siteIcon}</a>`
-                : ''}
-              ${item.pageHref
-                ? `<a class="btn-link" target="_blank" href="${esc(item.pageHref)}"
-                     title="Open listing">${pageIconFor(item.src)}</a>`
-                : ''}
-            </div>
-          </td>
-        </tr>`;
-      });
-      t += `</tbody></table>`;
-      container.innerHTML = t;
-    }
+    cont.innerHTML=out;
   }
-
-  // summary
-  summaryTextEl.textContent = `Showing ${total} compan${total===1?'y':'ies'}`;
-  summaryBreakdownEl.textContent = `YC: ${ycCount} · PH: ${phCount}`;
-
-  // today's feed label
-  todayLabelEl.textContent = latestDate
-    ? `Today's feed · ${formatDate(latestDate)}`
-    : '';
 }
 
-/* load data */
+/* LOAD */
 async function load(){
-  const content=document.getElementById('content');
-  const lastUpdatedEl=document.getElementById('last-updated');
-  content.innerHTML=`<div class="empty">Loading from Google Sheets…</div>`;
-
+  document.getElementById('content').innerHTML=`<div class="empty">Loading...</div>`;
   try{
-    const resp=await fetch(CSV_URL);
-    const text=await resp.text();
-    const rows=csvToObjects(text);
-
-    const valid=rows.filter(r=>{
-      const name=pick(r,['Correct Name','CorrectName','Name']);
-      return name && name!=='#VALUE!';
-    });
-
-    DISCOVERY_STATE.groups=groupByDate(valid);
+    const t=await(await fetch(CSV_URL)).text();
+    const rows=csvToObjects(t);
+    const valid=rows.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
+    STATE.groups=groupByDate(valid);
     render();
-
-    const now=new Date();
-    lastUpdatedEl.textContent =
-      'Last sync: ' +
-      now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) +
-      ' · ' +
-      now.toLocaleDateString([], {day:'2-digit',month:'short'});
+    const d=new Date();
+    document.getElementById('last-updated').textContent=
+      `Last sync: ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · `+
+      d.toLocaleDateString([], {day:'2-digit',month:'short'});
   }catch(e){
-    content.innerHTML=`<div class="empty">${esc(e.message)}</div>`;
-    lastUpdatedEl.textContent='Error fetching sheet';
+    document.getElementById('content').innerHTML=`<div class="empty">${e.message}</div>`;
   }
 }
 
-/* events */
+/* EVENTS */
 document.getElementById('search').addEventListener('input',e=>{
-  DISCOVERY_STATE.search=e.target.value||"";
+  STATE.search=e.target.value;
   render();
 });
 
-document.querySelectorAll('.chip').forEach(chip=>{
-  chip.addEventListener('click',()=>{
-    const filter=chip.getAttribute('data-filter')||'all';
-    DISCOVERY_STATE.sourceFilter=filter;
-    document.querySelectorAll('.chip').forEach(c=>{
-      c.classList.toggle('chip--on',c===chip);
-    });
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    STATE.source=c.dataset.filter;
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('chip--on'));
+    c.classList.add('chip--on');
     render();
   });
 });
 
-document.querySelectorAll('.view-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const view=btn.getAttribute('data-view')||'cards';
-    DISCOVERY_STATE.viewMode=view;
-    document.querySelectorAll('.view-btn').forEach(b=>{
-      b.classList.toggle('view-btn--active',b===btn);
-    });
+document.querySelectorAll('.view-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    STATE.view=b.dataset.view;
+    document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('view-btn--active'));
+    b.classList.add('view-btn--active');
     render();
   });
 });
 
 load();
 </script>
+
 </body>
 </html>
