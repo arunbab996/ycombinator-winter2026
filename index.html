@@ -44,11 +44,11 @@ body{
 .app{
   flex:1;
   width:100%;
-  margin:32px 0 40px 0;
+  margin:24px 0 32px 0;
   padding:0 28px;
   display:flex;
   flex-direction:column;
-  gap:16px;
+  gap:10px; /* tighter vertical rhythm */
 }
 
 /* HEADER */
@@ -66,16 +66,35 @@ body{
 }
 
 .brand-mark{
-  width:24px;
-  height:24px;
-  border-radius:8px;
-  background:#0b0f1a;
-  border:1px solid #1e293b;
+  width:30px;
+  height:30px;
+  border-radius:10px;
+  border:1px solid #27272f;
+  background:#050814;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:11px;
-  color:var(--accent-soft);
+  font-size:16px;
+  color:#e5e7eb;
+}
+
+/* subtle grid lines inside mark */
+.brand-mark::before,
+.brand-mark::after{
+  content:"";
+  position:absolute;
+}
+.brand-mark::before{
+  width:18px;
+  height:1px;
+  background:#111827;
+  box-shadow:0 4px 0 #111827;
+}
+.brand-mark::after{
+  width:1px;
+  height:18px;
+  background:#111827;
+  box-shadow:4px 0 0 #111827;
 }
 
 .brand-text{
@@ -83,14 +102,18 @@ body{
   flex-direction:column;
   gap:2px;
 }
+
 .brand-name{
-  font-size:13px;
-  letter-spacing:0.2em;
+  font-size:14px;
+  letter-spacing:0.24em;
   text-transform:uppercase;
+  font-weight:500;
+  color:#e5e7eb;
 }
+
 .brand-sub{
   font-size:11px;
-  color:var(--text-soft);
+  color:var(--text-softer);
 }
 
 .app-meta{
@@ -104,7 +127,7 @@ body{
 
 .app-meta-pill{
   border-radius:999px;
-  padding:4px 9px;
+  padding:4px 10px;
   border:1px solid var(--border);
   background:#020617;
   display:flex;
@@ -123,7 +146,7 @@ body{
   background:var(--bg-elevated);
   border-radius:12px;
   border:1px solid var(--border-soft);
-  padding:10px 10px 14px 14px;
+  padding:8px 10px 10px 14px;
   display:flex;
   align-items:center;
   gap:10px;
@@ -133,9 +156,10 @@ body{
   flex:1;
   display:flex;
   flex-direction:column;
-  gap:6px;
+  gap:4px;
 }
 
+/* remove old "TODAY'S FEED" label above search */
 .toolbar-title{
   font-size:11px;
   text-transform:uppercase;
@@ -145,7 +169,7 @@ body{
 
 /* SEARCH */
 .search-label{
-  margin-top:4px;
+  margin-top:2px;
   font-size:12px;
   font-weight:600;
 }
@@ -228,13 +252,13 @@ body{
   color:var(--text);
 }
 
-/* FEED (NO FIXED HEIGHT) */
+/* FEED */
 .feed{
-  margin-top:4px;
+  margin-top:2px;
   background:var(--bg-elevated);
-  border-radius:14px;
+  border-radius:12px;
   border:1px solid var(--border-soft);
-  padding:10px 14px 14px;
+  padding:8px 12px 10px;
 }
 
 /* SUMMARY BAR */
@@ -244,42 +268,42 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:0 2px 6px;
+  padding:0 2px 4px;
   border-bottom:1px solid var(--border-soft);
 }
 
-/* TODAY LABEL */
+/* TODAY LABEL – INSIDE FEED ABOVE FIRST DATE */
 .today-label{
   font-size:12px;
   font-weight:600;
-  margin:10px 2px 4px;
+  margin:6px 2px 2px;
   color:var(--text-soft);
 }
 
 /* DATE GROUPS */
 .date-group{
-  margin-top:12px;
+  margin-top:6px;
 }
 .date-header{
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:0.16em;
   color:var(--text-soft);
-  margin-bottom:8px;
+  margin-bottom:4px;
 }
 
-/* CARDS */
+/* CARDS – more compact */
 .card{
   display:flex;
   align-items:flex-start;
-  gap:12px;
-  padding:10px 11px;
+  gap:10px;
+  padding:8px 10px;
   border-radius:10px;
   background:var(--bg-card);
   border:1px solid var(--border-soft);
 }
 .card + .card{
-  margin-top:8px;
+  margin-top:4px;
 }
 
 .card-left{
@@ -313,7 +337,7 @@ body{
 .card-top-row{
   display:flex;
   align-items:flex-start;
-  gap:10px;
+  gap:8px;
 }
 
 .card-main{
@@ -330,7 +354,7 @@ body{
 }
 
 .card-tagline{
-  margin-top:5px;
+  margin-top:3px;
   font-size:12px;
   color:var(--text-soft);
   line-height:1.35;
@@ -374,7 +398,7 @@ body{
 .table-view{
   width:100%;
   border-collapse:collapse;
-  margin-top:10px;
+  margin-top:8px;
   font-size:12px;
 }
 
@@ -384,7 +408,7 @@ body{
 
 .table-view th,
 .table-view td{
-  padding:8px 8px;
+  padding:6px 8px;
   border-bottom:1px solid var(--border-soft);
 }
 
@@ -406,7 +430,7 @@ body{
 
 /* EMPTY */
 .empty{
-  padding:24px 10px;
+  padding:20px 10px;
   font-size:13px;
   color:var(--text-soft);
   text-align:center;
@@ -415,7 +439,7 @@ body{
 /* FOOTER AT BOTTOM */
 .footer{
   margin-top:auto;
-  padding:14px 28px;
+  padding:10px 28px 14px;
   font-size:11px;
   color:var(--text-softer);
   display:flex;
@@ -437,6 +461,32 @@ body{
   background:#111827;
   border-radius:999px;
 }
+
+/* RESPONSIVE */
+@media (max-width:720px){
+  .app{
+    padding:0 16px 16px;
+  }
+  .app-header{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .toolbar{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .search-wrap{
+    flex-wrap:wrap;
+  }
+  .card-top-row{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+  .card-right{
+    flex-direction:row;
+    align-items:center;
+  }
+}
 </style>
 </head>
 
@@ -445,10 +495,10 @@ body{
   <!-- HEADER -->
   <header class="app-header">
     <div class="brand">
-      <div class="brand-mark">OS</div>
+      <div class="brand-mark">▦</div>
       <div class="brand-text">
-        <div class="brand-name">DISCOVERYOS</div>
-        <div class="brand-sub">New company timeline for VCs & analysts</div>
+        <div class="brand-name">DISCOVERY OS</div>
+        <div class="brand-sub">Market intelligence on emerging companies</div>
       </div>
     </div>
     <div class="app-meta">
@@ -462,14 +512,14 @@ body{
   <!-- TOOLBAR -->
   <section class="toolbar">
     <div class="toolbar-main">
-      <div class="toolbar-title">Today’s feed</div>
+      <div class="toolbar-title">Discoveries</div>
 
       <div class="search-label">Search</div>
 
       <div class="search-wrap">
         <div class="search-box">
           <span class="search-icon">⌕</span>
-          <input id="search" type="text" placeholder="Search by company or tagline"/>
+          <input id="search" type="text" placeholder="Search by company or tagline" />
         </div>
 
         <div class="chips">
@@ -493,7 +543,9 @@ body{
       <span id="summary-breakdown"></span>
     </div>
 
+    <!-- now part of feed, not above search -->
     <div id="today-label" class="today-label"></div>
+
     <div id="content"></div>
   </section>
 </div>
@@ -507,8 +559,6 @@ body{
 </footer>
 
 <script>
-/* --- Same exact JS as last version. No changes. --- */
-
 /* CONFIG */
 const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
 const GID='1778821196';
@@ -516,37 +566,115 @@ const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=
 
 let STATE={groups:{},search:"",source:"all",view:"cards"};
 
-function splitCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='\"'){if(q&&line[i+1]==='\"'){cur+='"';i++;continue;}q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out.map(s=>s.trim().replace(/^"|"$/g,''));}
-function csvToObjects(csv){const lines=csv.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const h=splitCsvLine(lines[0]);return lines.slice(1).map(l=>{const cols=splitCsvLine(l);const o={};h.forEach((hh,i)=>o[hh]=cols[i]||'');return o;});}
-function pick(r,k){for(const x of k){if(x in r && r[x] && r[x].trim())return r[x].trim();}return"";}
-function favicon(u){try{if(!u)return null;const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname;return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;}catch{return null;}}
-function companyLogo(r){const s=pick(r,['source','Source']).toLowerCase(),logo=pick(r,['Logo URL','LogoURL','Logo_Url']),site=pick(r,['Website']);if(s==='ph'&&logo)return logo;return favicon(site);}
-function parseDate(r){const d=pick(r,['Extracted Date','ExtractedDate','Date']);const dt=new Date(d);return isNaN(dt)?d:dt.toISOString().slice(0,10);}
-function formatDate(d){const dt=new Date(d);return isNaN(dt)?d||'':dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});}
-function groupByDate(rows){const g={};rows.forEach(r=>{const key=parseDate(r)||'Unknown';(g[key]=g[key]||[]).push(r);});return g;}
-function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+/* CSV helpers */
+function splitCsvLine(line){
+  const out=[];let cur='',q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='\"'){
+      if(q && line[i+1]==='\"'){cur+='"';i++;continue;}
+      q=!q;continue;
+    }
+    if(ch===','&&!q){out.push(cur);cur='';continue;}
+    cur+=ch;
+  }
+  out.push(cur);
+  return out.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+function csvToObjects(csv){
+  const lines=csv.split(/\r?\n/).filter(x=>x.trim());
+  if(!lines.length)return[];
+  const h=splitCsvLine(lines[0]);
+  return lines.slice(1).map(l=>{
+    const cols=splitCsvLine(l);const o={};
+    h.forEach((hh,i)=>o[hh]=cols[i]||'');
+    return o;
+  });
+}
+
+function pick(r,k){
+  for(const x of k){
+    if(x in r && r[x] && r[x].trim())return r[x].trim();
+  }
+  return"";
+}
+function favicon(u){
+  try{
+    if(!u)return null;
+    const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname;
+    return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;
+  }catch{return null;}
+}
+function companyLogo(r){
+  const s=pick(r,['source','Source']).toLowerCase(),
+        logo=pick(r,['Logo URL','LogoURL','Logo_Url']),
+        site=pick(r,['Website']);
+  if(s==='ph'&&logo)return logo;
+  return favicon(site);
+}
+function parseDate(r){
+  const d=pick(r,['Extracted Date','ExtractedDate','Date']);
+  const dt=new Date(d);
+  return isNaN(dt)?d:dt.toISOString().slice(0,10);
+}
+function formatDate(d){
+  const dt=new Date(d);
+  return isNaN(dt)?d||'':
+    dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
+}
+function groupByDate(rows){
+  const g={};
+  rows.forEach(r=>{
+    const key=parseDate(r)||'Unknown';
+    (g[key]=g[key]||[]).push(r);
+  });
+  return g;
+}
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;')
+                      .replace(/</g,'&lt;')
+                      .replace(/>/g,'&gt;');
+}
 const siteIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
 const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><path d="M9 9l3 4 3-4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13v3" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>`;
 const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M9 8h4a3 3 0 0 1 0 6H9V8z" fill="#fff"/><rect x="9" y="8" width="2" height="8" fill="#fff"/></svg>`;
 function iconFor(s){return s==='ph'?phIcon:ycIcon;}
 
 function render(){
-  const g=STATE.groups, q=(STATE.search||"").toLowerCase().trim(), f=STATE.source, vm=STATE.view;
-  const cont=document.getElementById('content'), sum=document.getElementById('summary-text'), br=document.getElementById('summary-breakdown'), tl=document.getElementById('today-label');
+  const g=STATE.groups,
+        q=(STATE.search||"").toLowerCase().trim(),
+        f=STATE.source,
+        vm=STATE.view;
+
+  const cont=document.getElementById('content'),
+        sum=document.getElementById('summary-text'),
+        br=document.getElementById('summary-breakdown'),
+        tl=document.getElementById('today-label');
+
   const dates=Object.keys(g).sort((a,b)=>b.localeCompare(a));
-  let latest=null, total=0,yc=0,ph=0; let rows=[];
+  let latest=null,total=0,yc=0,ph=0;
+  const rows=[];
 
   dates.forEach(dt=>{
     g[dt].forEach(r=>{
-      const n=pick(r,['Correct Name','CorrectName','Name']);if(!n||n==='#VALUE!')return;
+      const n=pick(r,['Correct Name','CorrectName','Name']);
+      if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       const tag=pick(r,['Correct Tagline','CorrectTagline','Tagline']);
-      if(q&&! (n+' '+tag).toLowerCase().includes(q))return;
+      if(q && !(n+' '+tag).toLowerCase().includes(q))return;
+
       latest=latest||dt;
-      total++; if(src==='yc')yc++; if(src==='ph')ph++;
-      rows.push({dt,n,tag,src,
+      total++;
+      if(src==='yc')yc++;
+      if(src==='ph')ph++;
+
+      rows.push({
+        dt,
+        n,
+        tag,
+        src,
         site:pick(r,['Website']),
         page:pick(r,['YC URL','YC']),
         logo:companyLogo(r)
@@ -554,18 +682,31 @@ function render(){
     });
   });
 
-  /* LABEL */
-  tl.textContent=latest?`Today's feed · ${formatDate(latest)}`:"";
+  tl.textContent = latest ? `Today's feed · ${formatDate(latest)}` : '';
 
-  /* SUMMARY */
   sum.textContent=`Showing ${total} compan${total===1?'y':'ies'}`;
   br.textContent=`YC: ${yc} · PH: ${ph}`;
 
-  if(!rows.length){cont.innerHTML=`<div class="empty">No results</div>`;return;}
+  if(!rows.length){
+    cont.innerHTML=`<div class="empty">No companies match this search/filter.</div>`;
+    return;
+  }
 
   if(vm==='table'){
-    let h=`<table class="table-view"><thead><tr><th>Date</th><th>Company</th><th>Tagline</th><th>Source</th><th></th></tr></thead><tbody>`;
+    let h=`<table class="table-view">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Company</th>
+          <th>Tagline</th>
+          <th>Source</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>`;
     rows.forEach(x=>{
+      const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
+      const pageHref=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
       h+=`<tr>
         <td>${esc(formatDate(x.dt))}</td>
         <td class="table-company">${esc(x.n)}</td>
@@ -573,26 +714,27 @@ function render(){
         <td>${x.src.toUpperCase()}</td>
         <td>
           <div class="card-link-row">
-            ${x.site?`<a class="btn-link" target="_blank" href="${esc(x.site.startsWith('http')?x.site:`https://${x.site}`)}">${siteIcon}</a>`:''}
-            ${x.page?`<a class="btn-link" target="_blank" href="${esc(x.page.startsWith('http')?x.page:`https://${x.page}`)}">${iconFor(x.src)}</a>`:''}
+            ${siteHref?`<a class="btn-link" target="_blank" href="${esc(siteHref)}">${siteIcon}</a>`:''}
+            ${pageHref?`<a class="btn-link" target="_blank" href="${esc(pageHref)}">${iconFor(x.src)}</a>`:''}
           </div>
         </td>
       </tr>`;
     });
     cont.innerHTML=h+`</tbody></table>`;
-  } else {
-    let out="";
+  }else{
+    // cards grouped by date
     const grouped={};
     rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r);});
+    let out="";
     Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(d=>{
       out+=`<section class="date-group"><div class="date-header">${esc(formatDate(d))}</div>`;
       grouped[d].forEach(x=>{
-        const href=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
-        const ph=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
+        const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
+        const pageHref=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
         out+=`
         <article class="card">
           <div class="card-left">
-            ${x.logo?`<img src="${esc(x.logo)}">`:`<div class="card-left-fallback">${esc(x.n[0])}</div>`}
+            ${x.logo?`<img src="${esc(x.logo)}" alt="">`:`<div class="card-left-fallback">${esc(x.n[0]||'•')}</div>`}
           </div>
           <div class="card-center">
             <div class="card-top-row">
@@ -603,8 +745,8 @@ function render(){
               <div class="card-right">
                 ${x.src==='yc'?`<div class="yc-pill">YC W26</div>`:''}
                 <div class="card-link-row">
-                  ${href?`<a class="btn-link" href="${esc(href)}" target="_blank">${siteIcon}</a>`:''}
-                  ${ph?`<a class="btn-link" href="${esc(ph)}" target="_blank">${iconFor(x.src)}</a>`:''}
+                  ${siteHref?`<a class="btn-link" href="${esc(siteHref)}" target="_blank">${siteIcon}</a>`:''}
+                  ${pageHref?`<a class="btn-link" href="${esc(pageHref)}" target="_blank">${iconFor(x.src)}</a>`:''}
                 </div>
               </div>
             </div>
@@ -617,30 +759,31 @@ function render(){
   }
 }
 
-/* LOAD */
 async function load(){
-  document.getElementById('content').innerHTML=`<div class="empty">Loading...</div>`;
+  const content=document.getElementById('content');
+  const lastEl=document.getElementById('last-updated');
+  content.innerHTML=`<div class="empty">Loading from Google Sheets…</div>`;
   try{
-    const t=await(await fetch(CSV_URL)).text();
-    const rows=csvToObjects(t);
+    const txt=await (await fetch(CSV_URL)).text();
+    const rows=csvToObjects(txt);
     const valid=rows.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
     STATE.groups=groupByDate(valid);
     render();
     const d=new Date();
-    document.getElementById('last-updated').textContent=
+    lastEl.textContent=
       `Last sync: ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · `+
       d.toLocaleDateString([], {day:'2-digit',month:'short'});
   }catch(e){
-    document.getElementById('content').innerHTML=`<div class="empty">${e.message}</div>`;
+    content.innerHTML=`<div class="empty">${esc(e.message)}</div>`;
+    lastEl.textContent='Error fetching sheet';
   }
 }
 
-/* EVENTS */
+/* events */
 document.getElementById('search').addEventListener('input',e=>{
   STATE.search=e.target.value;
   render();
 });
-
 document.querySelectorAll('.chip').forEach(c=>{
   c.addEventListener('click',()=>{
     STATE.source=c.dataset.filter;
@@ -649,7 +792,6 @@ document.querySelectorAll('.chip').forEach(c=>{
     render();
   });
 });
-
 document.querySelectorAll('.view-btn').forEach(b=>{
   b.addEventListener('click',()=>{
     STATE.view=b.dataset.view;
@@ -661,6 +803,5 @@ document.querySelectorAll('.view-btn').forEach(b=>{
 
 load();
 </script>
-
 </body>
 </html>
