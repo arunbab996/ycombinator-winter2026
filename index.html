@@ -7,19 +7,24 @@
 
 <style>
 :root{
-  --bg:#020309;
-  --bg-elevated:#050712;
-  --bg-card:#070818;
-  --border:#1e1e28;
-  --border-soft:#151521;
-  --text:#f9fafb;
-  --text-soft:#9ca3af;
-  --text-softer:#6b7280;
-  --accent:#f97316;
-  --accent-soft:#fed7aa;
-  --accent-link:#38bdf8;
-  --yc-pill-bg:rgba(249,115,22,0.12);
-  --yc-pill-border:rgba(249,115,22,0.7);
+  /* Matte black palette */
+  --bg:#000000;
+  --bg-elevated:#070707;
+  --bg-card:#0A0A0A;
+  --border:#1A1A1A;
+  --border-soft:#121212;
+
+  --text:#F4F4F5;
+  --text-soft:#9A9A9A;
+  --text-softer:#6E6E6E;
+
+  --accent:#F97316;
+  --accent-soft:#F9B57A;
+  --accent-link:#E4E4E7;
+
+  --yc-pill-bg:rgba(249,115,22,0.14);
+  --yc-pill-border:rgba(249,115,22,0.6);
+
   font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text",
                "Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
@@ -48,7 +53,7 @@ body{
   padding:0 28px;
   display:flex;
   flex-direction:column;
-  gap:10px; /* tighter vertical rhythm */
+  gap:10px;
 }
 
 /* HEADER */
@@ -66,16 +71,18 @@ body{
 }
 
 .brand-mark{
+  position:relative;
   width:30px;
   height:30px;
   border-radius:10px;
-  border:1px solid #27272f;
-  background:#050814;
+  border:1px solid #262626;
+  background:#050505;
   display:flex;
   align-items:center;
   justify-content:center;
   font-size:16px;
-  color:#e5e7eb;
+  color:#E5E5E5;
+  overflow:hidden;
 }
 
 /* subtle grid lines inside mark */
@@ -87,14 +94,14 @@ body{
 .brand-mark::before{
   width:18px;
   height:1px;
-  background:#111827;
-  box-shadow:0 4px 0 #111827;
+  background:#141414;
+  box-shadow:0 4px 0 #141414;
 }
 .brand-mark::after{
   width:1px;
   height:18px;
-  background:#111827;
-  box-shadow:4px 0 0 #111827;
+  background:#141414;
+  box-shadow:4px 0 0 #141414;
 }
 
 .brand-text{
@@ -108,7 +115,7 @@ body{
   letter-spacing:0.24em;
   text-transform:uppercase;
   font-weight:500;
-  color:#e5e7eb;
+  color:#F4F4F5;
 }
 
 .brand-sub{
@@ -129,7 +136,7 @@ body{
   border-radius:999px;
   padding:4px 10px;
   border:1px solid var(--border);
-  background:#020617;
+  background:#050505;
   display:flex;
   align-items:center;
   gap:6px;
@@ -138,7 +145,7 @@ body{
   width:6px;
   height:6px;
   border-radius:999px;
-  background:#22c55e;
+  background:#22C55E;
 }
 
 /* TOOLBAR */
@@ -159,7 +166,6 @@ body{
   gap:4px;
 }
 
-/* remove old "TODAY'S FEED" label above search */
 .toolbar-title{
   font-size:11px;
   text-transform:uppercase;
@@ -191,12 +197,12 @@ body{
   padding:7px 10px 7px 24px;
   border-radius:999px;
   border:1px solid var(--border);
-  background:#020617;
+  background:#080808;
   color:var(--text);
   font-size:12px;
 }
 .search-box input::placeholder{
-  color:#4b5563;
+  color:#4A4A4A;
 }
 
 .search-icon{
@@ -220,12 +226,12 @@ body{
   padding:4px 8px;
   border-radius:999px;
   border:1px solid var(--border);
-  background:#020617;
+  background:#080808;
   color:var(--text-softer);
   cursor:pointer;
 }
 .chip--on{
-  border-color:#4b5563;
+  border-color:#3F3F3F;
   color:var(--text-soft);
 }
 
@@ -235,7 +241,7 @@ body{
   align-items:center;
   border-radius:999px;
   border:1px solid var(--border);
-  background:#020617;
+  background:#080808;
   overflow:hidden;
 }
 
@@ -248,7 +254,7 @@ body{
   cursor:pointer;
 }
 .view-btn--active{
-  background:#0b1120;
+  background:#101010;
   color:var(--text);
 }
 
@@ -272,7 +278,7 @@ body{
   border-bottom:1px solid var(--border-soft);
 }
 
-/* TODAY LABEL – INSIDE FEED ABOVE FIRST DATE */
+/* TODAY LABEL */
 .today-label{
   font-size:12px;
   font-weight:600;
@@ -292,7 +298,7 @@ body{
   margin-bottom:4px;
 }
 
-/* CARDS – more compact */
+/* CARDS */
 .card{
   display:flex;
   align-items:flex-start;
@@ -310,7 +316,7 @@ body{
   width:40px;
   height:40px;
   border-radius:10px;
-  background:#020617;
+  background:#080808;
   border:1px solid var(--border);
   display:flex;
   align-items:center;
@@ -384,7 +390,7 @@ body{
   height:26px;
   border-radius:999px;
   border:1px solid var(--border);
-  background:#020617;
+  background:#080808;
   color:var(--text-soft);
   text-decoration:none;
 }
@@ -403,7 +409,7 @@ body{
 }
 
 .table-view thead{
-  background:#020617;
+  background:#080808;
 }
 
 .table-view th,
@@ -436,7 +442,7 @@ body{
   text-align:center;
 }
 
-/* FOOTER AT BOTTOM */
+/* FOOTER */
 .footer{
   margin-top:auto;
   padding:10px 28px 14px;
@@ -458,7 +464,7 @@ body{
   background:transparent;
 }
 .feed::-webkit-scrollbar-thumb{
-  background:#111827;
+  background:#1A1A1A;
   border-radius:999px;
 }
 
@@ -543,7 +549,6 @@ body{
       <span id="summary-breakdown"></span>
     </div>
 
-    <!-- now part of feed, not above search -->
     <div id="today-label" class="today-label"></div>
 
     <div id="content"></div>
@@ -635,6 +640,7 @@ function esc(s){
                       .replace(/</g,'&lt;')
                       .replace(/>/g,'&gt;');
 }
+
 const siteIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2" stroke="currentColor" stroke-width="1.4" fill="none"/><path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
 const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><path d="M9 9l3 4 3-4" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 13v3" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>`;
 const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M9 8h4a3 3 0 0 1 0 6H9V8z" fill="#fff"/><rect x="9" y="8" width="2" height="8" fill="#fff"/></svg>`;
@@ -722,7 +728,6 @@ function render(){
     });
     cont.innerHTML=h+`</tbody></table>`;
   }else{
-    // cards grouped by date
     const grouped={};
     rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r);});
     let out="";
