@@ -45,7 +45,7 @@ html,body{
 
 body{
   display:flex; /* Side-by-side layout */
-  overflow: hidden; /* Prevent body scroll */
+  overflow: hidden; /* Prevent body scroll on desktop */
 }
 
 /* --- SIDEBAR --- */
@@ -323,16 +323,29 @@ body{
 .content-area::-webkit-scrollbar-thumb { background-color: #222; border-radius: 20px; border: 2px solid #000; }
 .content-area:hover::-webkit-scrollbar-thumb { background-color: #333; }
 
-/* MOBILE RESPONSIVE */
+/* MOBILE RESPONSIVE FIX (Enable Scrolling) */
 @media (max-width: 768px) {
-  body { flex-direction: column; }
-  .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
-  .sidebar-nav, .sidebar-footer, .nav-section-label { display: none; } /* Simplified Header for Mobile */
+  body { 
+    flex-direction: column; 
+    overflow: auto; /* Allow scrolling on body */
+    height: auto;
+  }
+  .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .sidebar-nav, .sidebar-footer, .nav-section-label { display: none; }
   .sidebar-header { padding: 12px 16px; justify-content: space-between; }
-  .main { height: auto; overflow: visible; }
+  
+  .main { 
+    height: auto; 
+    overflow: visible; 
+    flex: 1; 
+  }
   .command-bar { position: sticky; top: 0; padding: 0 16px; height: 56px; }
   .search-container { width: 200px; }
-  .content-area { padding: 0 16px 40px; }
+  .content-area { 
+    padding: 0 16px 40px; 
+    overflow: visible; /* Let body handle scroll */
+  }
+  
   .panel { width: 100%; top: 50px; bottom: 0; right: 0; max-width: 100%; border-radius: 0; transform: translateY(100%); }
   .panel.open { transform: translateY(0); }
 }
@@ -609,20 +622,20 @@ function openInfo(type){
         <li><strong>Esc</strong> : Close panels</li>
       </ul>
       <h3>Data Sources</h3>
-      <p>Data is synced live from our master Google Sheet every 5 minutes.</p>
-    `,
+      <p>Data is synced live from our Database every 5 minutes.</p> `,
     changelog: `
-      <h3>v1.2 (Current)</h3>
+      <h3>v1.3 (New)</h3>
+      <ul>
+        <li>Added invisible scrollbars for cleaner UI</li>
+        <li>Added Toast notifications for future integrations</li>
+        <li>Added Docs & Changelog modals</li>
+      </ul>
+      <h3>v1.2</h3>
       <ul>
         <li>Added sidebar navigation layout</li>
         <li>Added 'Today' view filter</li>
         <li>Integrated persistent bookmarks</li>
         <li>Added private notes for startups</li>
-      </ul>
-      <h3>v1.0</h3>
-      <ul>
-        <li>Initial release</li>
-        <li>Basic feed and filtering</li>
       </ul>
     `
   };
