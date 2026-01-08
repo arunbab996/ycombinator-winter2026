@@ -236,13 +236,22 @@ body{
   width: 100%;
 }
 .tweet-card {
-  break-inside: avoid; /* Don't chop tweets in half */
+  break-inside: avoid;
   margin-bottom: 24px;
   background: transparent;
   width: 100%;
-  display: inline-block; /* Helps with column breaking */
+  display: inline-block;
+  min-height: 150px; /* Reduces jumping */
+  position: relative;
 }
-.twitter-tweet { margin: 0 !important; width: 100% !important; }
+/* Tweet Loading Skeleton */
+.tweet-skeleton {
+  position: absolute; top:0; left:0; width:100%; height:200px;
+  background: #0A0A0A; border: 1px solid var(--border); border-radius: 12px;
+  display: flex; flex-direction: column; padding: 16px; gap: 12px;
+}
+.twitter-tweet { margin: 0 !important; width: 100% !important; position: relative; z-index: 2; }
+.twitter-tweet-rendered { animation: fadeIn 0.3s ease-out; }
 
 /* Responsive Columns */
 @media (max-width: 1100px) { .scanner-grid { column-count: 2; } }
@@ -404,6 +413,9 @@ body{
       <div class="nav-item" onclick="setFilter('ph', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg></span><span>Product Hunt</span>
       </div>
+      <div class="nav-item" onclick="showToast('Crunchbase Integration: Coming Soon')">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4V4zm2 2v12h12V6H6zm2 2h8v2H8V8zm0 4h8v2H8v-2z" /></svg></span><span>Crunchbase</span>
+      </div>
       <div class="nav-item" onclick="showToast('LinkedIn Integration: Coming Soon')">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg></span><span>LinkedIn</span>
       </div>
@@ -489,8 +501,6 @@ function loadLocalData(){
   try{
     const b=localStorage.getItem('dos_bookmarks'); if(b) STATE.bookmarks=new Set(JSON.parse(b));
     const n=localStorage.getItem('dos_notes'); if(n) STATE.notes=JSON.parse(n);
-    
-    // INSTANT LOAD FOR X SIGNALS FROM CACHE
     const cachedData = localStorage.getItem(CACHE_KEY);
     if(cachedData) {
       const {dataX} = JSON.parse(cachedData);
@@ -514,7 +524,6 @@ function startAutoScroll(){
     if(!isHovering && STATE.source === 'scanner'){
       el.scrollTop += 0.5; // Slow speed
       if(el.scrollTop + el.clientHeight >= el.scrollHeight - 2) {
-        // Reset to top for loop effect (simple version)
         el.scrollTop = 0; 
       }
     }
@@ -537,10 +546,14 @@ function checkTwitter(ids){
         id,
         document.getElementById(`tweet-${id}`),
         { theme: 'dark', conversation: 'none' }
-      );
+      ).then(() => {
+        // Remove skeleton once loaded
+        const el = document.getElementById(`skeleton-${id}`);
+        if(el) el.style.display = 'none';
+      });
     });
   } else {
-    setTimeout(() => checkTwitter(ids), 50); // Fast check
+    setTimeout(() => checkTwitter(ids), 50); 
   }
 }
 
@@ -565,10 +578,7 @@ function render(){
   if(f==='scanner'){
     let html='';
     const idsToRender = [];
-    
-    // Duplicate for scrolling feel if needed, but standard map for now
-    // To make scrolling loop feel longer, we can render the list twice
-    const displayList = [...STATE.xSignals, ...STATE.xSignals]; 
+    const displayList = [...STATE.xSignals, ...STATE.xSignals]; // Loop effect
 
     if(!STATE.xSignals.length){
       html=`<div class="empty">No tweets found.</div>`;
@@ -577,25 +587,23 @@ function render(){
       displayList.forEach((r, idx)=>{
         const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL', 'Source Link']);
         const tid = getTweetId(site);
-        const uniqueId = tid ? `${tid}-${idx}` : `err-${idx}`; // Unique DOM ID for dupes
+        const uniqueId = tid ? `${tid}-${idx}` : null;
         
-        if(tid) {
-          // Push just the TID to logic, but mapped to unique DOM ID
-          // We modify checkTwitter to handle this mapping if strictly needed, 
-          // or just standard createTweet.
-          // Simple fix: render just once for now to ensure ID uniqueness for widget
+        if(uniqueId) {
+          // Render Skeleton + Tweet Container
+          idsToRender.push(uniqueId); // We pass the unique DOM ID to checkTwitter, but need real Tweet ID for creation
+          // Wait, createTweet needs the real Tweet ID.
+          // We will store mapping.
+          html += `
+            <div class="tweet-card">
+              <div id="skeleton-${uniqueId}" class="tweet-skeleton">
+                <div class="skeleton-img" style="width:32px; height:32px; border-radius:50%"></div>
+                <div class="skeleton-text" style="width:60%"></div>
+                <div class="skeleton-text" style="width:90%; height:60px; margin-top:8px;"></div>
+              </div>
+              <div id="tweet-${uniqueId}"></div>
+            </div>`;
         }
-      });
-      
-      // Revert duplicate strategy for Widget safety (widgets struggle with duped IDs)
-      // Standard render
-      STATE.xSignals.forEach(r => {
-         const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL']);
-         const tid = getTweetId(site);
-         if(tid) {
-           idsToRender.push(tid);
-           html += `<div id="tweet-${tid}" class="tweet-card"></div>`;
-         }
       });
       html += `</div>`;
     }
@@ -603,8 +611,21 @@ function render(){
     sum.textContent=`${STATE.xSignals.length} signals`;
     
     if(idsToRender.length > 0) {
-      checkTwitter(idsToRender);
-      startAutoScroll();
+      // Custom render function for unique IDs
+      if(window.twttr && window.twttr.widgets){
+         idsToRender.forEach(uid => {
+            const realId = uid.split('-')[0];
+            twttr.widgets.createTweet(realId, document.getElementById(`tweet-${uid}`), { theme: 'dark', conversation: 'none' })
+              .then(()=>{
+                 const skel = document.getElementById(`skeleton-${uid}`);
+                 if(skel) skel.remove();
+              });
+         });
+         startAutoScroll();
+      } else {
+         // Simple retry if not ready
+         setTimeout(render, 100);
+      }
     }
     return;
   }
@@ -620,6 +641,7 @@ function render(){
       if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
       
+      // Filter Logic
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       if(f==='saved'&&!STATE.bookmarks.has(n))return;
@@ -683,7 +705,6 @@ function processXData(csvText){
 /* FETCHING */
 async function load(){
   loadLocalData(); 
-  // If we have cached X data, render it immediately if we are on scanner view
   if(STATE.source === 'scanner' && STATE.xSignals.length) render();
   else renderSkeleton();
 
@@ -696,14 +717,12 @@ async function load(){
   try{
     const [csvMain, csvX] = await Promise.all([fetchSheet(GID_MAIN), fetchSheet(GID_X)]);
     
-    // Update Cache
     localStorage.setItem(CACHE_KEY, JSON.stringify({
       ts: Date.now(),
       dataMain: csvMain,
       dataX: csvX
     }));
 
-    // Process
     const rowsMain = csvToObjects(csvMain);
     STATE.rawData = rowsMain;
     const validMain = rowsMain.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
@@ -716,7 +735,6 @@ async function load(){
     lastEl.textContent=`Synced ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
     dot.classList.remove('cached');
   }catch(e){
-    // If fail, we rely on cache loaded in loadLocalData
     console.error(e);
   }
 }
