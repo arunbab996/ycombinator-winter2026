@@ -44,7 +44,7 @@ html,body{
 
 body{
   display:flex; /* Side-by-side layout */
-  overflow: hidden; /* Prevent body scroll, use inner scrolls */
+  overflow: hidden; /* Prevent body scroll */
 }
 
 /* --- SIDEBAR --- */
@@ -275,6 +275,16 @@ body{
 }
 .panel-notes:focus { outline: none; border-color: #444; }
 
+/* TOAST NOTIFICATION */
+.toast {
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: #fff; color: #000; padding: 12px 24px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 300;
+  display: flex; align-items: center; gap: 8px;
+}
+.toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
+
 /* UTILS */
 .empty{padding:60px 20px; font-size:13px; color:var(--text-softer); text-align:center; font-family: var(--font-mono);}
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
@@ -283,11 +293,11 @@ body{
 .skeleton-img {width: 42px; height: 42px; border-radius: 8px; background: linear-gradient(90deg, #121212 25%, #1A1A1A 50%, #121212 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; flex-shrink: 0;}
 .skeleton-lines {flex: 1; display: flex; flex-direction: column; gap: 8px;}
 
-/* SCROLLBAR */
-::-webkit-scrollbar{width:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#222; border-radius:999px;}
-::-webkit-scrollbar-thumb:hover{background: #333;}
+/* CUSTOM SCROLLBAR (Minimal/Invisible) */
+.content-area::-webkit-scrollbar { width: 6px; }
+.content-area::-webkit-scrollbar-track { background: transparent; }
+.content-area::-webkit-scrollbar-thumb { background-color: #222; border-radius: 20px; border: 2px solid #000; }
+.content-area:hover::-webkit-scrollbar-thumb { background-color: #333; }
 
 /* MOBILE RESPONSIVE */
 @media (max-width: 768px) {
@@ -361,14 +371,14 @@ body{
         <span>Product Hunt</span>
       </div>
 
-      <div class="nav-item" onclick="alert('LinkedIn Integration: Coming Soon')">
+      <div class="nav-item" onclick="showToast('LinkedIn Integration: Coming Soon')">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg>
         </span>
         <span>LinkedIn</span>
       </div>
 
-      <div class="nav-item" onclick="alert('X / Twitter Integration: Coming Soon')">
+      <div class="nav-item" onclick="showToast('X / Twitter Integration: Coming Soon')">
         <span class="nav-icon">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
         </span>
@@ -410,6 +420,8 @@ body{
     <div id="content"></div>
   </div>
 </main>
+
+<div id="toast" class="toast"></div>
 
 <div id="overlay" class="overlay" onclick="closePanel()"></div>
 <aside id="panel" class="panel">
@@ -473,6 +485,14 @@ function formatDate(d){const dt=new Date(d); return isNaN(dt)?d||'': dt.toLocale
 function groupByDate(rows){const g={}; rows.forEach(r=>{ const key=parseDate(r)||'Unknown'; (g[key]=g[key]||[]).push(r); }); return g;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+/* TOAST */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerHTML = `<span>i</span> ${esc(msg)}`;
+  t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'), 3000);
+}
+
 /* APP LOGIC */
 function loadLocalData(){
   try{
@@ -533,7 +553,7 @@ function openPanel(name){
       <label class="panel-label">Actions</label>
       <div class="panel-actions">
         ${site ? `<a href="${esc(site.startsWith('http')?site:`https://${site}`)}" target="_blank" class="action-btn primary">Visit Website</a>` : ''}
-        <button class="action-btn" onclick="navigator.clipboard.writeText('${esc(site||"")}'); this.textContent='Copied!'; setTimeout(()=>this.textContent='Copy Link', 2000)">Copy Link</button>
+        <button class="action-btn" onclick="navigator.clipboard.writeText('${esc(site||"")}'); showToast('Link Copied to Clipboard');">Copy Link</button>
       </div>
     </div>
     <div class="panel-section">
