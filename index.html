@@ -229,12 +229,12 @@ body{
 .btn-link--active{color: var(--accent-saved); border-color: rgba(234, 179, 8, 0.4); background: rgba(234, 179, 8, 0.1);}
 .btn-link--active:hover{background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.6);}
 
-/* TWEET CONTAINER */
-.tweet-container {
+/* TWEET CARD */
+.tweet-card {
   display: flex; justify-content: center;
-  background: transparent; padding: 0; margin-top: 16px; margin-bottom: 24px;
-  min-height: 150px; /* Reserve space */
+  background: transparent; padding: 0; margin-top: 20px;
 }
+.twitter-tweet { margin: 0 !important; }
 
 /* TABLE VIEW */
 .table-view{width:100%; border-collapse:collapse; font-size:13px; animation: fadeIn 0.3s ease-out;}
@@ -246,7 +246,7 @@ body{
 .table-view td{padding: 12px 0; border-bottom:1px solid var(--border-soft); color: var(--text-soft);}
 .table-company{font-weight:500; color: var(--text);}
 
-/* SLIDE-OVER PANEL */
+/* SLIDE-OVER PANEL (Right) */
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6);
   backdrop-filter: blur(4px); z-index: 150;
@@ -298,8 +298,7 @@ body{
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
   width: 500px; max-width: 90vw; max-height: 80vh;
   background: var(--bg-modal); border: 1px solid var(--border); border-radius: 12px;
-  z-index: 250; opacity: 0; pointer-events: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  display: flex; flex-direction: column;
+  z-index: 250; opacity: 0; pointer-events: none; transition: all 0.2s; display: flex; flex-direction: column;
   box-shadow: 0 20px 50px rgba(0,0,0,0.8);
 }
 .modal.open { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
@@ -318,7 +317,7 @@ body{
   position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px);
   background: #fff; color: #000; padding: 12px 24px; border-radius: 999px;
   font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); z-index: 300;
+  opacity: 0; transition: all 0.4s; z-index: 300;
   display: flex; align-items: center; gap: 8px;
 }
 .toast.visible { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -362,69 +361,47 @@ body{
 
 <nav class="sidebar">
   <div class="sidebar-header">
-    <div class="brand-mark">
-      <svg viewBox="0 0 32 32" fill="none"><path d="M12 22L20 10" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
-    </div>
+    <div class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M12 22L20 10" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg></div>
     <div class="brand-text">
       <div class="brand-name">discovery/os</div>
       <div class="brand-sub">~/market-feed</div>
     </div>
   </div>
-
   <div class="sidebar-nav">
     <div>
       <div class="nav-section-label">Views</div>
-      
       <div class="nav-item" onclick="setFilter('today', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-        <span>Today</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Today</span>
       </div>
-
       <div class="nav-item active" onclick="setFilter('all', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
-        <span>All Data</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><span>All Data</span>
       </div>
-
       <div class="nav-item" onclick="setFilter('saved', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-        <span>Starred</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span>Starred</span>
       </div>
-      
       <div class="nav-item" onclick="setFilter('scanner', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-        <span>X Scanner</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span>X Scanner</span>
       </div>
     </div>
-
     <div>
       <div class="nav-section-label">Sources</div>
-      
       <div class="nav-item" onclick="setFilter('yc', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg></span>
-        <span>YC</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg></span><span>YC</span>
       </div>
-
       <div class="nav-item" onclick="setFilter('ph', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg></span>
-        <span>Product Hunt</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg></span><span>Product Hunt</span>
       </div>
-
       <div class="nav-item" onclick="showToast('LinkedIn Integration: Coming Soon')">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg></span>
-        <span>LinkedIn</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg></span><span>LinkedIn</span>
       </div>
-
       <div class="nav-item" onclick="showToast('X / Twitter Integration: Coming Soon')">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-        <span>Twitter</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span>Twitter</span>
       </div>
     </div>
   </div>
-
   <div class="sidebar-footer">
     <div class="status-row">
-      <span class="status-dot" id="status-dot"></span>
-      <span id="last-updated">Syncing...</span>
+      <span class="status-dot" id="status-dot"></span><span id="last-updated">Syncing...</span>
     </div>
     <div style="display:flex; gap:12px; margin-top:4px;">
       <a class="footer-link" onclick="openInfo('docs')">Docs</a>
@@ -435,42 +412,23 @@ body{
 
 <main class="main">
   <header class="command-bar">
-    <div class="search-container">
-      <span class="search-icon">⌕</span>
-      <input id="search" class="search-input" type="text" placeholder="Search companies or tags..." />
-    </div>
-
-    <div class="view-toggles">
-      <button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button>
-      <button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button>
-    </div>
+    <div class="search-container"><span class="search-icon">⌕</span><input id="search" class="search-input" type="text" placeholder="Search companies or tags..." /></div>
+    <div class="view-toggles"><button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button><button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button></div>
   </header>
-
   <div class="content-area">
-    <div class="feed-header">
-      <div class="feed-title" id="page-title">All Data</div>
-      <div class="feed-meta" id="summary-text">Loading...</div>
-    </div>
+    <div class="feed-header"><div class="feed-title" id="page-title">All Data</div><div class="feed-meta" id="summary-text">Loading...</div></div>
     <div id="content"></div>
   </div>
 </main>
 
 <div id="toast" class="toast"></div>
-
 <div id="overlay" class="overlay" onclick="closeAll()"></div>
 <aside id="panel" class="panel">
-  <div class="panel-header">
-    <span class="panel-label">Intelligence Detail</span>
-    <button class="panel-close" onclick="closeAll()">×</button>
-  </div>
+  <div class="panel-header"><span class="panel-label">Intelligence Detail</span><button class="panel-close" onclick="closeAll()">×</button></div>
   <div class="panel-content" id="panel-body"></div>
 </aside>
-
 <div id="modal" class="modal">
-  <div class="modal-header">
-    <span class="modal-title" id="modal-title">Info</span>
-    <button class="panel-close" onclick="closeAll()">×</button>
-  </div>
+  <div class="modal-header"><span class="modal-title" id="modal-title">Info</span><button class="panel-close" onclick="closeAll()">×</button></div>
   <div class="modal-content" id="modal-body"></div>
 </div>
 
@@ -496,7 +454,19 @@ const xIcon=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"
 function debounce(func,wait){let timeout;return function(...args){clearTimeout(timeout);timeout=setTimeout(()=>func.apply(this,args),wait);};}
 function splitCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='\"'){if(q&&line[i+1]==='\"'){cur+='"';i++;continue;}q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out.map(s=>s.trim().replace(/^"|"$/g,''));}
 function csvToObjects(csv){const lines=csv.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const h=splitCsvLine(lines[0]);return lines.slice(1).map(l=>{const cols=splitCsvLine(l);const o={};h.forEach((hh,i)=>o[hh]=cols[i]||'');return o;});}
-function pick(r,k){for(const x of k){if(x in r && r[x] && r[x].trim())return r[x].trim();} return"";}
+
+// CASE-INSENSITIVE PICKER
+function pick(row, keys) {
+  const norm = {};
+  Object.keys(row).forEach(k => norm[k.toLowerCase().trim()] = row[k]);
+  
+  for (const k of keys) {
+    const val = norm[k.toLowerCase().trim()];
+    if (val && val.trim()) return val.trim();
+  }
+  return "";
+}
+
 function favicon(u){try{if(!u)return null; const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname; return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;}catch{return null;}}
 function companyLogo(r){const s=pick(r,['source','Source']).toLowerCase(), logo=pick(r,['Logo URL','LogoURL','Logo_Url']), site=pick(r,['Website']); if(s==='ph'&&logo)return logo; return favicon(site);}
 function parseDate(r){const d=pick(r,['Extracted Date','ExtractedDate','Date']); const dt=new Date(d); return isNaN(dt)?d:dt.toISOString().slice(0,10);}
@@ -541,7 +511,6 @@ function getTweetId(url) {
   try {
     const u = new URL(url);
     const parts = u.pathname.split('/');
-    // Urls are typically /user/status/123456
     const statusIndex = parts.indexOf('status');
     if(statusIndex > -1 && parts[statusIndex+1]) return parts[statusIndex+1];
   } catch(e) {}
@@ -559,24 +528,28 @@ function render(){
     const idsToRender = [];
     
     if(!STATE.xSignals.length){
-      html=`<div class="empty">No tweets found in your X sheet. Add rows with Source='X' and a valid Website URL.</div>`;
+      html=`<div class="empty">No tweets found in your X sheet. Add rows with Source='X' and a valid Tweet Link.</div>`;
     } else {
       STATE.xSignals.forEach(r=>{
-        const site=pick(r,['Website']);
+        // Try multiple keys for URL
+        const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL', 'Source Link']);
         const tid = getTweetId(site);
+        
         if(tid) {
           idsToRender.push(tid);
-          html+=`<div id="tweet-${tid}" class="tweet-container"></div>`;
+          html+=`<div id="tweet-${tid}" class="tweet-card"></div>`;
         } else {
-          // Fallback if ID parse fails
-          html+=`<div class="tweet-container" style="color:#666;">Invalid Tweet URL: <a href="${site}" target="_blank" style="color:#888;">${site}</a></div>`;
+          // Explicit Error Message for debugging
+          html+=`<div class="tweet-card" style="display:block; color:#666; text-align:center; padding:20px; border:1px dashed #333; border-radius:8px;">
+            Invalid Tweet URL found.<br>
+            <span style="font-family:monospace; font-size:11px; color:#444;">Value: "${esc(site)}"</span>
+          </div>`;
         }
       });
     }
     cont.innerHTML=html; 
     sum.textContent=`${STATE.xSignals.length} signals`;
     
-    // Render tweets
     if(idsToRender.length > 0) checkTwitter(idsToRender);
     return;
   }
@@ -592,7 +565,6 @@ function render(){
       if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
       
-      // Filter Logic
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       if(f==='saved'&&!STATE.bookmarks.has(n))return;
