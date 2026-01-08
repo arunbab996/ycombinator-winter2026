@@ -177,7 +177,6 @@ body{display:flex; flex-direction:column;}
 }
 .table-view td{padding: 10px 12px; border-bottom:1px solid var(--border-soft); color: var(--text-soft);}
 .table-company{font-weight:500; color: var(--text);}
-/* REMOVED SOURCE COLUMN STYLING HERE */
 
 /* SLIDE-OVER PANEL */
 .overlay {
@@ -508,7 +507,6 @@ function render(){
   if(!rows.length){cont.innerHTML=`<div class="empty">No companies match this search/filter.</div>`; return;}
 
   if(vm==='table'){
-    // TABLE VIEW - REMOVED SOURCE COLUMN
     let h=`<table class="table-view"><thead><tr><th>Date</th><th>Company</th><th>Tagline</th><th>Actions</th></tr></thead><tbody>`;
     rows.forEach(x=>{
       const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
@@ -527,7 +525,6 @@ function render(){
     });
     cont.innerHTML=h+`</tbody></table>`;
   }else{
-    // CARD VIEW
     const grouped={}; rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r);});
     let out="";
     Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(d=>{
@@ -549,7 +546,7 @@ function render(){
                 ${x.tag?`<div class="card-tagline">${esc(x.tag)}</div>`:''}
               </div>
               <div class="card-right">
-                ${x.src==='yc'?`<div class="yc-pill">YC</div>`:''}
+                ${x.src==='yc'?`<div class="yc-pill">YC W26</div>`:''}
                 <div class="card-link-row">
                   <button class="btn-link ${isSaved?'btn-link--active':''}" onclick="toggleBookmark(event, '${esc(x.n)}')" title="Save">${starIcon(isSaved)}</button>
                   ${siteHref?`<a class="btn-link" href="${esc(siteHref)}" target="_blank" onclick="event.stopPropagation()">${globeIcon}</a>`:''}
