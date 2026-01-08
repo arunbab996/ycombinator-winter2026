@@ -18,6 +18,7 @@
   --bg-card:#0A0A0A;
   --border:#1A1A1A;
   --border-soft:#121212;
+  --border-visible:#333333; /* New visible border for buttons */
 
   --text:#F4F4F5;
   --text-soft:#A1A1AA;
@@ -26,7 +27,7 @@
   --accent:#F97316; /* Orange for YC */
   --accent-saved:#EAB308; /* Gold for Saved */
 
-  --yc-pill-border:rgba(249,115,22,0.3);
+  --yc-pill-border:rgba(249,115,22,0.5);
 
   /* FONTS */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -296,7 +297,7 @@ body{
 
 .card-center{flex:1; min-width: 0;}
 .card-top-row{display:flex; align-items:flex-start; justify-content: space-between; gap:12px;}
-.card-main{flex:1; min-width:0; display: flex; flex-direction: column; gap: 2px;}
+.card-main{flex:1; min-width:0; display: flex; flex-direction: column; gap: 4px;} /* Increased gap slightly */
 
 .card-name{font-size:14px; font-weight:600; color: #fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .card-tagline{font-size:13px; color:var(--text-soft); line-height:1.4; font-weight: 400;}
@@ -304,26 +305,28 @@ body{
 /* RIGHT ACTIONS */
 .card-right{display:flex; flex-direction:column; gap:8px; align-items:flex-end;}
 
+/* UPDATED: LARGER YC TAG */
 .yc-pill{
-  font-family: var(--font-mono); padding:3px 8px; border-radius:6px;
-  font-size:10px; font-weight: 500; letter-spacing: 0.05em;
+  font-family: var(--font-mono); padding:4px 10px; border-radius:6px;
+  font-size:11px; font-weight: 600; letter-spacing: 0.05em;
   background: transparent; border: 1px solid var(--yc-pill-border);
-  color: #FB923C; box-shadow: 0 0 8px rgba(249, 115, 22, 0.1);
+  color: #FB923C; box-shadow: 0 0 8px rgba(249, 115, 22, 0.15);
 }
 
-/* LINK BUTTONS */
-.card-link-row{display:flex; align-items:center; gap:4px;}
+/* UPDATED: LARGER, MORE VISIBLE BUTTONS */
+.card-link-row{display:flex; align-items:center; gap:6px;}
 
 .btn-link{
   display:inline-flex; align-items:center; justify-content:center;
-  width:28px; height:28px; border-radius:8px;
-  border:1px solid transparent; background:transparent;
-  color:var(--text-softer); text-decoration:none;
+  width:34px; height:34px; border-radius:8px; /* Increased Size */
+  border:1px solid var(--border-visible); /* Visible Border */
+  background:#0F0F0F; /* Slight background */
+  color:var(--text-soft); text-decoration:none;
   transition: all 0.2s; cursor: pointer;
 }
-.btn-link:hover{background: #1A1A1A; color: var(--text); border-color: #333;}
-.btn-link--active{color: var(--accent-saved); border-color: rgba(234, 179, 8, 0.2); background: rgba(234, 179, 8, 0.05);}
-.btn-link--active:hover{background: rgba(234, 179, 8, 0.1); border-color: rgba(234, 179, 8, 0.4);}
+.btn-link:hover{background: #222; color: var(--text); border-color: #555;}
+.btn-link--active{color: var(--accent-saved); border-color: rgba(234, 179, 8, 0.4); background: rgba(234, 179, 8, 0.1);}
+.btn-link--active:hover{background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.6);}
 
 
 /* TABLE VIEW */
@@ -395,8 +398,7 @@ body{
         <div class="chips">
           <button class="chip chip--on" data-filter="all">All</button>
           <button class="chip" data-filter="saved">Saved</button>
-          <button class="chip" data-filter="yc">YC W26</button>
-          <button class="chip" data-filter="ph">Product Hunt</button>
+          <button class="chip" data-filter="yc">YC</button> <button class="chip" data-filter="ph">Product Hunt</button>
         </div>
         <div class="view-toggle">
           <button class="view-btn view-btn--active" data-view="cards">Cards</button>
@@ -431,11 +433,11 @@ let STATE={groups:{},search:"",source:"all",view:"cards", bookmarks: new Set()};
 
 /* ICONS */
 // New Globe Icon for Website
-const globeIcon = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
-const ycIcon=`<svg width="14" height="14" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg>`;
-const phIcon=`<svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>`;
+const globeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg>`;
+const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>`;
 // Star Icon
-const starIcon = (fill) => `<svg width="14" height="14" viewBox="0 0 24 24" fill="${fill?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+const starIcon = (fill) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fill?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
 
 function iconFor(src){ return src==='ph' ? phIcon : ycIcon; }
 
