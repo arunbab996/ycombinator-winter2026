@@ -63,6 +63,7 @@ body{
   justify-content:space-between;
   align-items:center;
   gap:12px;
+  margin-bottom: 4px; /* Slight spacing before sticky toolbar */
 }
 
 .brand{
@@ -149,15 +150,21 @@ body{
   background:#22C55E;
 }
 
-/* TOOLBAR */
+/* TOOLBAR - UPDATED with Sticky/Glassmorphism */
 .toolbar{
-  background:var(--bg-elevated);
+  position: sticky;
+  top: 10px;
+  z-index: 100;
+  background: rgba(7, 7, 7, 0.85); /* Semi-transparent */
+  backdrop-filter: blur(12px);      /* Glass effect */
+  -webkit-backdrop-filter: blur(12px);
   border-radius:12px;
   border:1px solid var(--border-soft);
   padding:8px 10px 10px 14px;
   display:flex;
   align-items:center;
   gap:10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5); /* Lift off page */
 }
 
 .toolbar-main{
@@ -167,7 +174,6 @@ body{
   gap:4px;
 }
 
-/* SEARCH ONLY – removed "DISCOVERIES" label */
 .search-label{
   margin-top:2px;
   font-size:12px;
@@ -194,6 +200,11 @@ body{
   background:#080808;
   color:var(--text);
   font-size:12px;
+  transition: border-color 0.2s;
+}
+.search-box input:focus{
+  outline: none;
+  border-color: #333;
 }
 .search-box input::placeholder{
   color:#4A4A4A;
@@ -223,8 +234,13 @@ body{
   background:#080808;
   color:var(--text-softer);
   cursor:pointer;
+  transition: all 0.2s;
+}
+.chip:hover{
+  background: #111;
 }
 .chip--on{
+  background: #1A1A1A;
   border-color:#3F3F3F;
   color:var(--text-soft);
 }
@@ -246,6 +262,7 @@ body{
   background:transparent;
   color:var(--text-softer);
   cursor:pointer;
+  transition: color 0.2s;
 }
 .view-btn--active{
   background:#101010;
@@ -259,6 +276,7 @@ body{
   border-radius:12px;
   border:1px solid var(--border-soft);
   padding:8px 12px 10px;
+  min-height: 400px;
 }
 
 /* SUMMARY BAR */
@@ -272,9 +290,15 @@ body{
   border-bottom:1px solid var(--border-soft);
 }
 
-/* DATE GROUPS */
+/* DATE GROUPS & ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .date-group{
   margin-top:6px;
+  animation: fadeIn 0.4s ease-out forwards;
 }
 .date-header{
   font-size:11px;
@@ -293,6 +317,10 @@ body{
   border-radius:10px;
   background:var(--bg-card);
   border:1px solid var(--border-soft);
+  transition: background 0.2s;
+}
+.card:hover{
+  background: #0F0F0F;
 }
 .card + .card{
   margin-top:4px;
@@ -379,7 +407,13 @@ body{
   background:#080808;
   color:var(--text-soft);
   text-decoration:none;
+  transition: border-color 0.2s, color 0.2s;
 }
+.btn-link:hover{
+  border-color: #333;
+  color: var(--text);
+}
+
 .card-link-row{
   display:flex;
   align-items:center;
@@ -392,6 +426,7 @@ body{
   border-collapse:collapse;
   margin-top:8px;
   font-size:12px;
+  animation: fadeIn 0.3s ease-out;
 }
 
 .table-view thead{
@@ -420,12 +455,54 @@ body{
   color:var(--text-soft);
 }
 
-/* EMPTY */
+/* EMPTY & LOADING */
 .empty{
-  padding:20px 10px;
+  padding:40px 10px;
   font-size:13px;
   color:var(--text-soft);
   text-align:center;
+}
+
+/* SKELETON LOADING STYLES */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton-text {
+  height: 12px;
+  background: linear-gradient(90deg, #121212 25%, #1A1A1A 50%, #121212 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  margin-top: 4px;
+}
+
+.skeleton-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #121212 25%, #1A1A1A 50%, #121212 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 /* FOOTER */
@@ -484,7 +561,6 @@ body{
 
 <body>
 <div class="app">
-  <!-- HEADER -->
   <header class="app-header">
     <div class="brand">
       <div class="brand-mark">▦</div>
@@ -496,15 +572,13 @@ body{
     <div class="app-meta">
       <div class="app-meta-pill">
         <span class="app-meta-dot"></span>
-        <span id="last-updated">Syncing from sheet…</span>
+        <span id="last-updated">Syncing...</span>
       </div>
     </div>
   </header>
 
-  <!-- TOOLBAR -->
   <section class="toolbar">
     <div class="toolbar-main">
-      <!-- removed DISCOVERIES label -->
       <div class="search-label">Search</div>
 
       <div class="search-wrap">
@@ -527,10 +601,9 @@ body{
     </div>
   </section>
 
-  <!-- FEED -->
   <section class="feed">
     <div class="summary">
-      <span id="summary-text">Showing 0 companies</span>
+      <span id="summary-text">Loading...</span>
       <span id="summary-breakdown"></span>
     </div>
 
@@ -538,7 +611,6 @@ body{
   </section>
 </div>
 
-<!-- FOOTER -->
 <footer class="footer">
   <span>© DiscoveryOS. Internal-style feed for market scouts, not a marketing site.</span>
   <span>
@@ -554,7 +626,15 @@ const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=
 
 let STATE={groups:{},search:"",source:"all",view:"cards"};
 
-/* CSV helpers */
+/* UTILITIES */
+function debounce(func, wait) {
+  let timeout;
+  return function(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
 function splitCsvLine(line){
   const out=[];let cur='',q=false;
   for(let i=0;i<line.length;i++){
@@ -569,6 +649,7 @@ function splitCsvLine(line){
   out.push(cur);
   return out.map(s=>s.trim().replace(/^"|"$/g,''));
 }
+
 function csvToObjects(csv){
   const lines=csv.split(/\r?\n/).filter(x=>x.trim());
   if(!lines.length)return[];
@@ -586,6 +667,7 @@ function pick(r,k){
   }
   return"";
 }
+
 function favicon(u){
   try{
     if(!u)return null;
@@ -593,6 +675,7 @@ function favicon(u){
     return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;
   }catch{return null;}
 }
+
 function companyLogo(r){
   const s=pick(r,['source','Source']).toLowerCase(),
         logo=pick(r,['Logo URL','LogoURL','Logo_Url']),
@@ -600,16 +683,19 @@ function companyLogo(r){
   if(s==='ph'&&logo)return logo;
   return favicon(site);
 }
+
 function parseDate(r){
   const d=pick(r,['Extracted Date','ExtractedDate','Date']);
   const dt=new Date(d);
   return isNaN(dt)?d:dt.toISOString().slice(0,10);
 }
+
 function formatDate(d){
   const dt=new Date(d);
   return isNaN(dt)?d||'':
     dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
 }
+
 function groupByDate(rows){
   const g={};
   rows.forEach(r=>{
@@ -618,46 +704,37 @@ function groupByDate(rows){
   });
   return g;
 }
+
 function esc(s){
-  return String(s||'').replace(/&/g,'&amp;')
-                      .replace(/</g,'&lt;')
-                      .replace(/>/g,'&gt;');
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
-/* ICONS – updated to more standard shapes */
-
-/* Website: classic external-link icon */
-const siteIcon=`
-<svg width="16" height="16" viewBox="0 0 24 24">
-  <path d="M9 5h10v10" fill="none" stroke="currentColor" stroke-width="1.6"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M9 15L19 5" fill="none" stroke="currentColor" stroke-width="1.6"
-        stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M5 9v10h10" fill="none" stroke="currentColor" stroke-width="1.6"
-        stroke-linecap="round" stroke-linejoin="round"/>
-</svg>`;
-
-/* YC: orange square with centered Y */
-const ycIcon=`
-<svg width="16" height="16" viewBox="0 0 24 24">
-  <rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/>
-  <text x="12" y="15" text-anchor="middle"
-        font-size="10" fill="#FFFFFF"
-        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif">
-    Y
-  </text>
-</svg>`;
-
-/* PH: Product Hunt–style P in orange circle */
-const phIcon=`
-<svg width="16" height="16" viewBox="0 0 24 24">
-  <circle cx="12" cy="12" r="9" fill="#FF6A00"/>
-  <path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/>
-  <rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/>
-</svg>`;
+/* ICONS */
+const siteIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><path d="M9 5h10v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 15L19 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 9v10h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif">Y</text></svg>`;
+const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>`;
 
 function iconFor(src){ return src==='ph' ? phIcon : ycIcon; }
 
+/* SKELETON RENDERER */
+function renderSkeleton(){
+  const cont = document.getElementById('content');
+  let html = `<div class="date-group"><div class="skeleton-text" style="width:100px; margin-bottom:10px;"></div>`;
+  // Create 6 dummy cards
+  for(let i=0; i<6; i++){
+    html += `
+    <div class="skeleton-card">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-lines">
+        <div class="skeleton-text" style="width: 40%"></div>
+        <div class="skeleton-text" style="width: 70%"></div>
+      </div>
+    </div>`;
+  }
+  cont.innerHTML = html + `</div>`;
+}
+
+/* MAIN RENDER */
 function render(){
   const g=STATE.groups,
         q=(STATE.search||"").toLowerCase().trim(),
@@ -687,10 +764,7 @@ function render(){
       if(src==='ph')ph++;
 
       rows.push({
-        dt,
-        n,
-        tag,
-        src,
+        dt, n, tag, src,
         site:pick(r,['Website']),
         page:pick(r,['YC URL','YC']),
         logo:companyLogo(r)
@@ -708,15 +782,7 @@ function render(){
 
   if(vm==='table'){
     let h=`<table class="table-view">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Company</th>
-          <th>Tagline</th>
-          <th>Source</th>
-          <th></th>
-        </tr>
-      </thead>
+      <thead><tr><th>Date</th><th>Company</th><th>Tagline</th><th>Source</th><th></th></tr></thead>
       <tbody>`;
     rows.forEach(x=>{
       const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
@@ -744,10 +810,11 @@ function render(){
       grouped[d].forEach(x=>{
         const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
         const pageHref=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
+        /* Lazy loading and fallback error handler added */
         out+=`
         <article class="card">
           <div class="card-left">
-            ${x.logo?`<img src="${esc(x.logo)}" alt="">`:`<div class="card-left-fallback">${esc(x.n[0]||'•')}</div>`}
+            ${x.logo?`<img src="${esc(x.logo)}" loading="lazy" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\\'card-left-fallback\\'>${esc(x.n[0])}</div>'" alt="">`:`<div class="card-left-fallback">${esc(x.n[0]||'•')}</div>`}
           </div>
           <div class="card-center">
             <div class="card-top-row">
@@ -773,30 +840,38 @@ function render(){
 }
 
 async function load(){
-  const content=document.getElementById('content');
+  // 1. Show skeleton immediately
+  renderSkeleton();
+  
   const lastEl=document.getElementById('last-updated');
-  content.innerHTML=`<div class="empty">Loading from Google Sheets…</div>`;
+  
   try{
     const txt=await (await fetch(CSV_URL)).text();
     const rows=csvToObjects(txt);
     const valid=rows.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
     STATE.groups=groupByDate(valid);
+    
+    // 2. Render real data
     render();
+    
     const d=new Date();
     lastEl.textContent=
       `Last sync: ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · `+
       d.toLocaleDateString([], {day:'2-digit',month:'short'});
   }catch(e){
-    content.innerHTML=`<div class="empty">${esc(e.message)}</div>`;
-    lastEl.textContent='Error fetching sheet';
+    document.getElementById('content').innerHTML=`<div class="empty">Error: ${esc(e.message)}</div>`;
+    lastEl.textContent='Sync failed';
   }
 }
 
-/* events */
-document.getElementById('search').addEventListener('input',e=>{
-  STATE.search=e.target.value;
+/* EVENTS */
+
+// DEBOUNCED SEARCH (300ms)
+document.getElementById('search').addEventListener('input', debounce(e => {
+  STATE.search = e.target.value;
   render();
-});
+}, 300));
+
 document.querySelectorAll('.chip').forEach(c=>{
   c.addEventListener('click',()=>{
     STATE.source=c.dataset.filter;
