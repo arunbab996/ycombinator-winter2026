@@ -504,6 +504,7 @@ body{
   <!-- TOOLBAR -->
   <section class="toolbar">
     <div class="toolbar-main">
+      <!-- removed DISCOVERIES label -->
       <div class="search-label">Search</div>
 
       <div class="search-wrap">
@@ -551,8 +552,269 @@ const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
 const GID='1778821196';
 const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
-/* JS CONTINUES — unchanged */
-</script>
+let STATE={groups:{},search:"",source:"all",view:"cards"};
 
+/* CSV helpers */
+function splitCsvLine(line){
+  const out=[];let cur='',q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='\"'){
+      if(q && line[i+1]==='\"'){cur+='"';i++;continue;}
+      q=!q;continue;
+    }
+    if(ch===','&&!q){out.push(cur);cur='';continue;}
+    cur+=ch;
+  }
+  out.push(cur);
+  return out.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+function csvToObjects(csv){
+  const lines=csv.split(/\r?\n/).filter(x=>x.trim());
+  if(!lines.length)return[];
+  const h=splitCsvLine(lines[0]);
+  return lines.slice(1).map(l=>{
+    const cols=splitCsvLine(l);const o={};
+    h.forEach((hh,i)=>o[hh]=cols[i]||'');
+    return o;
+  });
+}
+
+function pick(r,k){
+  for(const x of k){
+    if(x in r && r[x] && r[x].trim())return r[x].trim();
+  }
+  return"";
+}
+function favicon(u){
+  try{
+    if(!u)return null;
+    const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname;
+    return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;
+  }catch{return null;}
+}
+function companyLogo(r){
+  const s=pick(r,['source','Source']).toLowerCase(),
+        logo=pick(r,['Logo URL','LogoURL','Logo_Url']),
+        site=pick(r,['Website']);
+  if(s==='ph'&&logo)return logo;
+  return favicon(site);
+}
+function parseDate(r){
+  const d=pick(r,['Extracted Date','ExtractedDate','Date']);
+  const dt=new Date(d);
+  return isNaN(dt)?d:dt.toISOString().slice(0,10);
+}
+function formatDate(d){
+  const dt=new Date(d);
+  return isNaN(dt)?d||'':
+    dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
+}
+function groupByDate(rows){
+  const g={};
+  rows.forEach(r=>{
+    const key=parseDate(r)||'Unknown';
+    (g[key]=g[key]||[]).push(r);
+  });
+  return g;
+}
+function esc(s){
+  return String(s||'').replace(/&/g,'&amp;')
+                      .replace(/</g,'&lt;')
+                      .replace(/>/g,'&gt;');
+}
+
+/* ICONS – updated to more standard shapes */
+
+/* Website: classic external-link icon */
+const siteIcon=`
+<svg width="16" height="16" viewBox="0 0 24 24">
+  <path d="M9 5h10v10" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M9 15L19 5" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M5 9v10h10" fill="none" stroke="currentColor" stroke-width="1.6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;
+
+/* YC: orange square with centered Y */
+const ycIcon=`
+<svg width="16" height="16" viewBox="0 0 24 24">
+  <rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/>
+  <text x="12" y="15" text-anchor="middle"
+        font-size="10" fill="#FFFFFF"
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif">
+    Y
+  </text>
+</svg>`;
+
+/* PH: Product Hunt–style P in orange circle */
+const phIcon=`
+<svg width="16" height="16" viewBox="0 0 24 24">
+  <circle cx="12" cy="12" r="9" fill="#FF6A00"/>
+  <path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/>
+  <rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/>
+</svg>`;
+
+function iconFor(src){ return src==='ph' ? phIcon : ycIcon; }
+
+function render(){
+  const g=STATE.groups,
+        q=(STATE.search||"").toLowerCase().trim(),
+        f=STATE.source,
+        vm=STATE.view;
+
+  const cont=document.getElementById('content'),
+        sum=document.getElementById('summary-text'),
+        br=document.getElementById('summary-breakdown');
+
+  const dates=Object.keys(g).sort((a,b)=>b.localeCompare(a));
+  let total=0,yc=0,ph=0;
+  const rows=[];
+
+  dates.forEach(dt=>{
+    g[dt].forEach(r=>{
+      const n=pick(r,['Correct Name','CorrectName','Name']);
+      if(!n||n==='#VALUE!')return;
+      const src=pick(r,['source','Source']).toLowerCase();
+      if(f==='yc'&&src!=='yc')return;
+      if(f==='ph'&&src!=='ph')return;
+      const tag=pick(r,['Correct Tagline','CorrectTagline','Tagline']);
+      if(q && !(n+' '+tag).toLowerCase().includes(q))return;
+
+      total++;
+      if(src==='yc')yc++;
+      if(src==='ph')ph++;
+
+      rows.push({
+        dt,
+        n,
+        tag,
+        src,
+        site:pick(r,['Website']),
+        page:pick(r,['YC URL','YC']),
+        logo:companyLogo(r)
+      });
+    });
+  });
+
+  sum.textContent=`Showing ${total} compan${total===1?'y':'ies'}`;
+  br.textContent=`YC: ${yc} · PH: ${ph}`;
+
+  if(!rows.length){
+    cont.innerHTML=`<div class="empty">No companies match this search/filter.</div>`;
+    return;
+  }
+
+  if(vm==='table'){
+    let h=`<table class="table-view">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Company</th>
+          <th>Tagline</th>
+          <th>Source</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>`;
+    rows.forEach(x=>{
+      const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
+      const pageHref=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
+      h+=`<tr>
+        <td>${esc(formatDate(x.dt))}</td>
+        <td class="table-company">${esc(x.n)}</td>
+        <td class="table-tagline">${esc(x.tag)}</td>
+        <td>${x.src.toUpperCase()}</td>
+        <td>
+          <div class="card-link-row">
+            ${siteHref?`<a class="btn-link" target="_blank" href="${esc(siteHref)}">${siteIcon}</a>`:''}
+            ${pageHref?`<a class="btn-link" target="_blank" href="${esc(pageHref)}">${iconFor(x.src)}</a>`:''}
+          </div>
+        </td>
+      </tr>`;
+    });
+    cont.innerHTML=h+`</tbody></table>`;
+  }else{
+    const grouped={};
+    rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r);});
+    let out="";
+    Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(d=>{
+      out+=`<section class="date-group"><div class="date-header">${esc(formatDate(d))}</div>`;
+      grouped[d].forEach(x=>{
+        const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
+        const pageHref=x.page? (x.page.startsWith('http')?x.page:`https://${x.page}`):null;
+        out+=`
+        <article class="card">
+          <div class="card-left">
+            ${x.logo?`<img src="${esc(x.logo)}" alt="">`:`<div class="card-left-fallback">${esc(x.n[0]||'•')}</div>`}
+          </div>
+          <div class="card-center">
+            <div class="card-top-row">
+              <div class="card-main">
+                <div class="card-name">${esc(x.n)}</div>
+                ${x.tag?`<div class="card-tagline">${esc(x.tag)}</div>`:''}
+              </div>
+              <div class="card-right">
+                ${x.src==='yc'?`<div class="yc-pill">YC W26</div>`:''}
+                <div class="card-link-row">
+                  ${siteHref?`<a class="btn-link" href="${esc(siteHref)}" target="_blank">${siteIcon}</a>`:''}
+                  ${pageHref?`<a class="btn-link" href="${esc(pageHref)}" target="_blank">${iconFor(x.src)}</a>`:''}
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>`;
+      });
+      out+=`</section>`;
+    });
+    cont.innerHTML=out;
+  }
+}
+
+async function load(){
+  const content=document.getElementById('content');
+  const lastEl=document.getElementById('last-updated');
+  content.innerHTML=`<div class="empty">Loading from Google Sheets…</div>`;
+  try{
+    const txt=await (await fetch(CSV_URL)).text();
+    const rows=csvToObjects(txt);
+    const valid=rows.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
+    STATE.groups=groupByDate(valid);
+    render();
+    const d=new Date();
+    lastEl.textContent=
+      `Last sync: ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})} · `+
+      d.toLocaleDateString([], {day:'2-digit',month:'short'});
+  }catch(e){
+    content.innerHTML=`<div class="empty">${esc(e.message)}</div>`;
+    lastEl.textContent='Error fetching sheet';
+  }
+}
+
+/* events */
+document.getElementById('search').addEventListener('input',e=>{
+  STATE.search=e.target.value;
+  render();
+});
+document.querySelectorAll('.chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    STATE.source=c.dataset.filter;
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('chip--on'));
+    c.classList.add('chip--on');
+    render();
+  });
+});
+document.querySelectorAll('.view-btn').forEach(b=>{
+  b.addEventListener('click',()=>{
+    STATE.view=b.dataset.view;
+    document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('view-btn--active'));
+    b.classList.add('view-btn--active');
+    render();
+  });
+});
+
+load();
+</script>
 </body>
 </html>
