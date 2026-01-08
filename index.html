@@ -42,7 +42,7 @@ body{
   flex-direction:column;
 }
 
-/* ---------- APP LAYOUT ---------- */
+/* ---------- APP ---------- */
 
 .app{
   flex:1;
@@ -92,11 +92,6 @@ body{
   color:var(--text-softer);
 }
 
-.app-meta{
-  font-size:11px;
-  color:var(--text-soft);
-}
-
 .app-meta-pill{
   display:flex;
   align-items:center;
@@ -105,6 +100,8 @@ body{
   border-radius:999px;
   background:#050505;
   border:1px solid var(--border);
+  font-size:11px;
+  color:var(--text-soft);
 }
 
 .app-meta-dot{
@@ -191,7 +188,7 @@ body{
   color:var(--text);
 }
 
-/* ---------- MAIN SPLIT ---------- */
+/* ---------- MAIN ---------- */
 
 .main{
   display:flex;
@@ -207,7 +204,6 @@ body{
   padding:10px 12px;
 }
 
-/* quiet right-side negative space */
 .side-panel{
   width:280px;
   display:none;
@@ -327,6 +323,42 @@ body{
 
 .card:hover .btn-link{opacity:1}
 
+/* ---------- TABLE ---------- */
+
+.table-view{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  margin-top:8px;
+}
+
+.table-view th,
+.table-view td{
+  padding:6px 8px;
+  border-bottom:1px solid var(--border-soft);
+}
+
+.table-view th{
+  font-size:11px;
+  color:var(--text-soft);
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  text-align:left;
+}
+
+.table-tagline{
+  color:var(--text-soft);
+}
+
+/* ---------- EMPTY ---------- */
+
+.empty{
+  padding:20px 10px;
+  font-size:13px;
+  color:var(--text-soft);
+  text-align:center;
+}
+
 /* ---------- FOOTER ---------- */
 
 .footer{
@@ -355,11 +387,9 @@ body{
       <div class="brand-sub">Market intelligence on emerging companies</div>
     </div>
   </div>
-  <div class="app-meta">
-    <div class="app-meta-pill">
-      <span class="app-meta-dot"></span>
-      <span id="last-updated">Syncing…</span>
-    </div>
+  <div class="app-meta-pill">
+    <span class="app-meta-dot"></span>
+    <span id="last-updated">Syncing…</span>
   </div>
 </header>
 
@@ -397,6 +427,178 @@ body{
   <span><a href="#">Docs</a> · <a href="#">Changelog</a></span>
 </footer>
 
-<!-- your existing JS can stay exactly the same -->
+<script>
+/* ---------- CONFIG ---------- */
+const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
+const GID='1778821196';
+const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+
+let STATE={groups:{},search:"",source:"all",view:"cards"};
+
+/* ---------- CSV HELPERS ---------- */
+function splitCsvLine(line){
+  const out=[];let cur='',q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='\"'){ q=!q; continue; }
+    if(ch===','&&!q){ out.push(cur); cur=''; continue; }
+    cur+=ch;
+  }
+  out.push(cur);
+  return out.map(s=>s.trim().replace(/^"|"$/g,''));
+}
+
+function csvToObjects(csv){
+  const lines=csv.split(/\r?\n/).filter(x=>x.trim());
+  const h=splitCsvLine(lines[0]);
+  return lines.slice(1).map(l=>{
+    const cols=splitCsvLine(l),o={};
+    h.forEach((hh,i)=>o[hh]=cols[i]||'');
+    return o;
+  });
+}
+
+function pick(r,k){
+  for(const x of k){
+    if(r[x] && r[x].trim()) return r[x].trim();
+  }
+  return "";
+}
+
+function favicon(u){
+  try{
+    const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname;
+    return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;
+  }catch{return null;}
+}
+
+function parseDate(r){
+  const d=pick(r,['Extracted Date','Date']);
+  const dt=new Date(d);
+  return isNaN(dt)?d:dt.toISOString().slice(0,10);
+}
+
+function formatDate(d){
+  const dt=new Date(d);
+  return isNaN(dt)?d:
+    dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});
+}
+
+/* ---------- ICONS ---------- */
+const siteIcon=`<svg width="16" height="16" viewBox="0 0 24 24">
+<path d="M9 5h10v10M9 15L19 5M5 9v10h10"
+fill="none" stroke="currentColor" stroke-width="1.6"
+stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24">
+<rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/>
+<text x="12" y="15" text-anchor="middle"
+font-size="10" fill="#FFF">Y</text></svg>`;
+
+const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24">
+<circle cx="12" cy="12" r="9" fill="#FF6A00"/>
+<path d="M10 8h3.2a2.8 2.8 0 010 5.6H10z" fill="#FFF"/>
+<rect x="10" y="8" width="2" height="8" fill="#FFF"/></svg>`;
+
+function iconFor(src){ return src==='ph'?phIcon:ycIcon; }
+
+/* ---------- RENDER ---------- */
+function render(){
+  const cont=document.getElementById('content');
+  const sum=document.getElementById('summary-text');
+  const br=document.getElementById('summary-breakdown');
+
+  let rows=[],total=0,yc=0,ph=0;
+
+  Object.values(STATE.groups).flat().forEach(r=>{
+    const n=pick(r,['Correct Name','Name']);
+    if(!n) return;
+
+    const src=(pick(r,['source','Source'])||'').toLowerCase();
+    if(STATE.source!=='all' && src!==STATE.source) return;
+
+    const tag=pick(r,['Correct Tagline','Tagline']);
+    const q=STATE.search.toLowerCase();
+    if(q && !(n+' '+tag).toLowerCase().includes(q)) return;
+
+    total++;
+    if(src==='yc') yc++;
+    if(src==='ph') ph++;
+
+    rows.push({r,n,tag,src});
+  });
+
+  sum.textContent=`Showing ${total} companies`;
+  br.textContent=`YC: ${yc} · PH: ${ph}`;
+
+  if(!rows.length){
+    cont.innerHTML='<div class="empty">No results</div>';
+    return;
+  }
+
+  if(STATE.view==='table'){
+    cont.innerHTML=`<table class="table-view"><tbody>`+
+      rows.map(x=>`
+        <tr>
+          <td>${x.n}</td>
+          <td class="table-tagline">${x.tag||''}</td>
+          <td>${x.src.toUpperCase()}</td>
+        </tr>`).join('')+
+      `</tbody></table>`;
+  }else{
+    cont.innerHTML=rows.map(x=>`
+      <article class="card">
+        <div class="card-left">${x.n[0]}</div>
+        <div class="card-center">
+          <div class="card-name">${x.n}</div>
+          <div class="card-tagline">${x.tag||''}</div>
+        </div>
+        <div class="card-right">
+          ${x.src==='yc'?'<div class="yc-pill">YC W26</div>':''}
+        </div>
+      </article>`).join('');
+  }
+}
+
+/* ---------- LOAD ---------- */
+async function load(){
+  try{
+    const txt=await (await fetch(CSV_URL)).text();
+    const rows=csvToObjects(txt);
+    STATE.groups={all:rows};
+    render();
+    const d=new Date();
+    document.getElementById('last-updated').textContent=
+      `Last sync ${d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+  }catch(e){
+    document.getElementById('content').innerHTML='<div class="empty">Error loading data</div>';
+  }
+}
+
+document.getElementById('search').addEventListener('input',e=>{
+  STATE.search=e.target.value;
+  render();
+});
+
+document.querySelectorAll('.chip').forEach(c=>{
+  c.onclick=()=>{
+    STATE.source=c.dataset.filter;
+    document.querySelectorAll('.chip').forEach(x=>x.classList.remove('chip--on'));
+    c.classList.add('chip--on');
+    render();
+  };
+});
+
+document.querySelectorAll('.view-btn').forEach(b=>{
+  b.onclick=()=>{
+    STATE.view=b.dataset.view;
+    document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('view-btn--active'));
+    b.classList.add('view-btn--active');
+    render();
+  };
+});
+
+load();
+</script>
 </body>
 </html>
