@@ -96,7 +96,12 @@ body{
 }
 .nav-item:hover { background: #111; color: var(--text); }
 .nav-item.active { background: #1A1A1A; color: #fff; }
-.nav-icon { width: 16px; text-align: center; color: var(--text-softer); }
+.nav-icon { 
+  width: 16px; height: 16px; 
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-softer);
+}
+.nav-icon svg { width: 100%; height: 100%; }
 .nav-item.active .nav-icon { color: #fff; }
 
 .sidebar-footer {
@@ -316,25 +321,58 @@ body{
   <div class="sidebar-nav">
     <div>
       <div class="nav-section-label">Views</div>
-      <div class="nav-item active" onclick="setFilter('all', this)">
-        <span class="nav-icon">Inbox</span>
-        <span>All</span>
+      
+      <div class="nav-item" onclick="setFilter('today', this)">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </span>
+        <span>Today</span>
       </div>
+
+      <div class="nav-item active" onclick="setFilter('all', this)">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        </span>
+        <span>All Data</span>
+      </div>
+
       <div class="nav-item" onclick="setFilter('saved', this)">
-        <span class="nav-icon">★</span>
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        </span>
         <span>Starred</span>
       </div>
     </div>
 
     <div>
       <div class="nav-section-label">Sources</div>
+      
       <div class="nav-item" onclick="setFilter('yc', this)">
-        <span class="nav-icon">Y</span>
+        <span class="nav-icon">
+           <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg>
+        </span>
         <span>YC W26</span>
       </div>
+
       <div class="nav-item" onclick="setFilter('ph', this)">
-        <span class="nav-icon">P</span>
+        <span class="nav-icon">
+           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>
+        </span>
         <span>Product Hunt</span>
+      </div>
+
+      <div class="nav-item" onclick="alert('LinkedIn Integration: Coming Soon')">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg>
+        </span>
+        <span>LinkedIn</span>
+      </div>
+
+      <div class="nav-item" onclick="alert('X / Twitter Integration: Coming Soon')">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </span>
+        <span>Twitter</span>
       </div>
     </div>
   </div>
@@ -366,7 +404,7 @@ body{
 
   <div class="content-area">
     <div class="feed-header">
-      <div class="feed-title" id="page-title">Inbox</div>
+      <div class="feed-title" id="page-title">All Data</div>
       <div class="feed-meta" id="summary-text">Loading...</div>
     </div>
     <div id="content"></div>
@@ -459,7 +497,7 @@ function setFilter(source, el){
   el.classList.add('active');
   
   // Update Title
-  const titles = {all:'Inbox', saved:'Starred', yc:'YC W26', ph:'Product Hunt'};
+  const titles = {all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC W26', ph:'Product Hunt'};
   document.getElementById('page-title').textContent = titles[source] || 'Inbox';
   render();
 }
@@ -526,14 +564,21 @@ function render(){
   const cont=document.getElementById('content'), sum=document.getElementById('summary-text');
   const dates=Object.keys(g).sort((a,b)=>b.localeCompare(a));
   
+  // TODAY Logic
+  const todayStr = new Date().toISOString().slice(0,10);
+
   let total=0;
   const rows=[];
 
   dates.forEach(dt=>{
+    // FILTER: Today
+    if(f==='today' && dt !== todayStr) return;
+
     g[dt].forEach(r=>{
       const n=pick(r,['Correct Name','CorrectName','Name']);
       if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
+      
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       if(f==='saved'&&!STATE.bookmarks.has(n))return;
@@ -548,7 +593,10 @@ function render(){
 
   sum.textContent=`${total} items`;
 
-  if(!rows.length){cont.innerHTML=`<div class="empty">No companies match this search/filter.</div>`; return;}
+  if(!rows.length){
+    cont.innerHTML=`<div class="empty">${f==='today'?'No companies found for today.':'No companies match this search/filter.'}</div>`; 
+    return;
+  }
 
   if(vm==='table'){
     let h=`<table class="table-view"><thead><tr><th>Company</th><th>Tagline</th><th>Date</th></tr></thead><tbody>`;
