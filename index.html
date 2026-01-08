@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
 <style>
 :root{
   /* MATTE BLACK PALETTE */
@@ -44,7 +46,7 @@ html,body{
 }
 
 body{
-  display:flex; /* Side-by-side layout */
+  display:flex;
   overflow: hidden; /* Prevent body scroll on desktop */
 }
 
@@ -222,6 +224,13 @@ body{
 .btn-link--active{color: var(--accent-saved); border-color: rgba(234, 179, 8, 0.4); background: rgba(234, 179, 8, 0.1);}
 .btn-link--active:hover{background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.6);}
 
+/* TWEET CARD */
+.tweet-card {
+  display: flex; justify-content: center;
+  background: transparent; padding: 0; margin-top: 12px;
+}
+.twitter-tweet { margin: 0 !important; }
+
 /* TABLE VIEW */
 .table-view{width:100%; border-collapse:collapse; font-size:13px; animation: fadeIn 0.3s ease-out;}
 .table-view th{
@@ -370,24 +379,23 @@ body{
       <div class="nav-section-label">Views</div>
       
       <div class="nav-item" onclick="setFilter('today', this)">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-        </span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
         <span>Today</span>
       </div>
 
       <div class="nav-item active" onclick="setFilter('all', this)">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-        </span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
         <span>All Data</span>
       </div>
 
       <div class="nav-item" onclick="setFilter('saved', this)">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
         <span>Starred</span>
+      </div>
+      
+      <div class="nav-item" onclick="setFilter('scanner', this)">
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
+        <span>X Scanner</span>
       </div>
     </div>
 
@@ -395,29 +403,22 @@ body{
       <div class="nav-section-label">Sources</div>
       
       <div class="nav-item" onclick="setFilter('yc', this)">
-        <span class="nav-icon">
-           <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg>
-        </span>
-        <span>YC</span> </div>
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg></span>
+        <span>YC</span>
+      </div>
 
       <div class="nav-item" onclick="setFilter('ph', this)">
-        <span class="nav-icon">
-           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>
-        </span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg></span>
         <span>Product Hunt</span>
       </div>
 
       <div class="nav-item" onclick="showToast('LinkedIn Integration: Coming Soon')">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg>
-        </span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg></span>
         <span>LinkedIn</span>
       </div>
 
       <div class="nav-item" onclick="showToast('X / Twitter Integration: Coming Soon')">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        </span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
         <span>Twitter</span>
       </div>
     </div>
@@ -477,265 +478,126 @@ body{
 </div>
 
 <script>
+// CONFIG
 const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
-const GID='1778821196';
-const CSV_URL=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
+const GID_MAIN='1778821196';
+const GID_X='1426087291'; // Updated GID for X Scanner
 const CACHE_KEY='dos_data';
-const CACHE_TIME= 5 * 60 * 1000;
+const CACHE_TIME=5*60*1000;
 
-let STATE={groups:{}, rawData: [], search:"", source:"all", view:"cards", bookmarks: new Set(), notes: {}};
+let STATE={groups:{}, rawData:[], xSignals:[], search:"", source:"all", view:"cards", bookmarks:new Set(), notes:{}};
 
 /* ICONS */
-const globeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+const globeIcon=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+const starIcon=(f)=>`<svg width="16" height="16" viewBox="0 0 24 24" fill="${f?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+const infoIcon=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
 const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg>`;
 const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>`;
-const starIcon = (fill) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fill?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
-const infoIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
-
-function iconFor(src){ return src==='ph' ? phIcon : ycIcon; }
+const xIcon=`<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`;
 
 /* UTILS */
-function debounce(func, wait) {
-  let timeout; return function(...args) {
-    clearTimeout(timeout); timeout = setTimeout(() => func.apply(this, args), wait);
-  };
-}
-function splitCsvLine(line){
-  const out=[];let cur='',q=false;
-  for(let i=0;i<line.length;i++){
-    const ch=line[i];
-    if(ch==='\"'){ if(q && line[i+1]==='\"'){cur+='"';i++;continue;} q=!q;continue; }
-    if(ch===','&&!q){out.push(cur);cur='';continue;} cur+=ch;
-  }
-  out.push(cur); return out.map(s=>s.trim().replace(/^"|"$/g,''));
-}
-function csvToObjects(csv){
-  const lines=csv.split(/\r?\n/).filter(x=>x.trim());
-  if(!lines.length)return[];
-  const h=splitCsvLine(lines[0]);
-  return lines.slice(1).map(l=>{
-    const cols=splitCsvLine(l);const o={};
-    h.forEach((hh,i)=>o[hh]=cols[i]||'');
-    return o;
-  });
-}
+function debounce(func,wait){let timeout;return function(...args){clearTimeout(timeout);timeout=setTimeout(()=>func.apply(this,args),wait);};}
+function splitCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='\"'){if(q&&line[i+1]==='\"'){cur+='"';i++;continue;}q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out.map(s=>s.trim().replace(/^"|"$/g,''));}
+function csvToObjects(csv){const lines=csv.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const h=splitCsvLine(lines[0]);return lines.slice(1).map(l=>{const cols=splitCsvLine(l);const o={};h.forEach((hh,i)=>o[hh]=cols[i]||'');return o;});}
 function pick(r,k){for(const x of k){if(x in r && r[x] && r[x].trim())return r[x].trim();} return"";}
 function favicon(u){try{if(!u)return null; const d=new URL(u.startsWith('http')?u:`https://${u}`).hostname; return `https://www.google.com/s2/favicons?sz=128&domain=${d}`;}catch{return null;}}
-function companyLogo(r){
-  const s=pick(r,['source','Source']).toLowerCase(), logo=pick(r,['Logo URL','LogoURL','Logo_Url']), site=pick(r,['Website']);
-  if(s==='ph'&&logo)return logo; return favicon(site);
-}
+function companyLogo(r){const s=pick(r,['source','Source']).toLowerCase(), logo=pick(r,['Logo URL','LogoURL','Logo_Url']), site=pick(r,['Website']); if(s==='ph'&&logo)return logo; return favicon(site);}
 function parseDate(r){const d=pick(r,['Extracted Date','ExtractedDate','Date']); const dt=new Date(d); return isNaN(dt)?d:dt.toISOString().slice(0,10);}
 function formatDate(d){const dt=new Date(d); return isNaN(dt)?d||'': dt.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'2-digit'});}
 function groupByDate(rows){const g={}; rows.forEach(r=>{ const key=parseDate(r)||'Unknown'; (g[key]=g[key]||[]).push(r); }); return g;}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function showToast(msg){const t=document.getElementById('toast');t.innerHTML=`${infoIcon} ${esc(msg)}`;t.classList.add('visible');setTimeout(()=>t.classList.remove('visible'),3000);}
 
-/* TOAST */
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.innerHTML = `${infoIcon} ${esc(msg)}`; // UPDATED: proper icon
-  t.classList.add('visible');
-  setTimeout(()=>t.classList.remove('visible'), 3000);
-}
-
-/* APP LOGIC */
+/* DATA & LOGIC */
 function loadLocalData(){
   try{
-    const b = localStorage.getItem('dos_bookmarks'); if(b) STATE.bookmarks = new Set(JSON.parse(b));
-    const n = localStorage.getItem('dos_notes'); if(n) STATE.notes = JSON.parse(n);
-  }catch(e){console.error(e);}
+    const b=localStorage.getItem('dos_bookmarks'); if(b) STATE.bookmarks=new Set(JSON.parse(b));
+    const n=localStorage.getItem('dos_notes'); if(n) STATE.notes=JSON.parse(n);
+  }catch(e){}
 }
-function toggleBookmark(e, name){
-  e.stopPropagation();
-  if(STATE.bookmarks.has(name)) STATE.bookmarks.delete(name); else STATE.bookmarks.add(name);
-  localStorage.setItem('dos_bookmarks', JSON.stringify([...STATE.bookmarks]));
-  render();
-}
-function saveNote(name, val){
-  STATE.notes[name] = val; localStorage.setItem('dos_notes', JSON.stringify(STATE.notes));
-}
+function toggleBookmark(e,name){e.stopPropagation(); if(STATE.bookmarks.has(name)) STATE.bookmarks.delete(name); else STATE.bookmarks.add(name); localStorage.setItem('dos_bookmarks', JSON.stringify([...STATE.bookmarks])); render();}
+function saveNote(name,val){STATE.notes[name]=val; localStorage.setItem('dos_notes', JSON.stringify(STATE.notes));}
 
-/* UI ACTIONS */
-function setFilter(source, el){
-  STATE.source = source;
-  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-  const titles = {all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC W26', ph:'Product Hunt'};
-  document.getElementById('page-title').textContent = titles[source] || 'Inbox';
-  render();
-}
-function setView(view, el){
-  STATE.view = view;
-  document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('active'));
-  el.classList.add('active');
-  render();
-}
-
-/* PANELS & MODALS */
-function openPanel(name){
-  const item = STATE.rawData.find(r => pick(r,['Correct Name','CorrectName','Name']) === name);
-  if(!item) return;
-
-  const n = pick(item,['Correct Name','CorrectName','Name']);
-  const tag = pick(item,['Correct Tagline','CorrectTagline','Tagline']);
-  const src = pick(item,['source','Source']).toLowerCase();
-  const site = pick(item,['Website']);
-  const logo = companyLogo(item);
-  const note = STATE.notes[n] || "";
-  const domain = site ? new URL(site.startsWith('http')?site:`https://${site}`).hostname : 'No Website';
-
-  const html = `
-    <div class="panel-hero">
-      <div class="panel-logo">
-        ${logo?`<img src="${esc(logo)}">`:`<span style="color:#666;font-size:20px">${esc(n[0])}</span>`}
-      </div>
-      <div class="panel-title"><h2>${esc(n)}</h2><div class="panel-domain">${esc(domain)}</div></div>
-    </div>
-    <div class="panel-tagline">${esc(tag)}</div>
-    <div class="panel-section">
-      <label class="panel-label">Actions</label>
-      <div class="panel-actions">
-        ${site ? `<a href="${esc(site.startsWith('http')?site:`https://${site}`)}" target="_blank" class="action-btn primary">Visit Website</a>` : ''}
-        <button class="action-btn" onclick="navigator.clipboard.writeText('${esc(site||"")}'); showToast('Link Copied');">Copy Link</button>
-      </div>
-    </div>
-    <div class="panel-section">
-      <label class="panel-label">Private Notes</label>
-      <textarea class="panel-notes" placeholder="Type your thoughts here..." oninput="saveNote('${esc(n)}', this.value)">${esc(note)}</textarea>
-    </div>
-  `;
-  document.getElementById('panel-body').innerHTML = html;
-  document.getElementById('panel').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-
-function openInfo(type){
-  const titleMap = {docs: 'Documentation', changelog: 'Changelog'};
-  const contentMap = {
-    docs: `
-      <h3>Getting Started</h3>
-      <p>discovery/os is a market intelligence feed that aggregates startups from YC, Product Hunt, and other sources into a single, high-density terminal.</p>
-      <h3>Shortcuts</h3>
-      <ul>
-        <li><strong>/</strong> : Focus search</li>
-        <li><strong>Esc</strong> : Close panels</li>
-      </ul>
-      <h3>Data Sources</h3>
-      <p>Data is synced live from our Database every 5 minutes.</p> `,
-    changelog: `
-      <h3>v1.4 (Latest)</h3>
-      <ul>
-        <li>Renamed 'YC W26' to 'YC' in sidebar</li>
-        <li>Mobile: Fixed scrolling issues on phone screens</li>
-        <li>Updated documentation phrasing</li>
-      </ul>
-      <h3>v1.3</h3>
-      <ul>
-        <li>Added invisible scrollbars for cleaner UI</li>
-        <li>Added Toast notifications for future integrations</li>
-        <li>Added Docs & Changelog modals</li>
-      </ul>
-      <h3>v1.2</h3>
-      <ul>
-        <li>Added sidebar navigation layout</li>
-        <li>Added 'Today' view filter</li>
-        <li>Integrated persistent bookmarks</li>
-        <li>Added private notes for startups</li>
-      </ul>
-    `
-  };
-  
-  document.getElementById('modal-title').textContent = titleMap[type];
-  document.getElementById('modal-body').innerHTML = contentMap[type];
-  document.getElementById('modal').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-
-function closeAll(){
-  document.getElementById('panel').classList.remove('open');
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-}
-document.addEventListener('keydown', (e) => { if(e.key === "Escape") closeAll(); });
+function setFilter(s,el){STATE.source=s; document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); 
+const t={all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC', ph:'Product Hunt', scanner:'X Scanner'}; document.getElementById('page-title').textContent=t[s]||'Inbox'; render();}
+function setView(v,el){STATE.view=v; document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('active')); el.classList.add('active'); render();}
 
 /* RENDER */
-function renderSkeleton(){
-  const cont = document.getElementById('content');
-  let html = `<div class="date-group"><div class="skeleton-text" style="width:100px; margin-bottom:12px;"></div>`;
-  for(let i=0; i<6; i++){html += `<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width: 40%"></div><div class="skeleton-text" style="width: 70%"></div></div></div>`;}
-  cont.innerHTML = html + `</div>`;
-}
+function renderSkeleton(){document.getElementById('content').innerHTML=`<div class="date-group"><div class="skeleton-text" style="width:100px;margin-bottom:12px"></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div></div>`;}
 
 function render(){
-  const g=STATE.groups, q=(STATE.search||"").toLowerCase().trim(), f=STATE.source, vm=STATE.view;
   const cont=document.getElementById('content'), sum=document.getElementById('summary-text');
-  const dates=Object.keys(g).sort((a,b)=>b.localeCompare(a));
-  
-  const todayStr = new Date().toISOString().slice(0,10);
-  let total=0;
-  const rows=[];
+  const f=STATE.source, vm=STATE.view, q=(STATE.search||"").toLowerCase().trim();
+  const todayStr=new Date().toISOString().slice(0,10);
+
+  // X SCANNER VIEW
+  if(f==='scanner'){
+    let html='';
+    if(!STATE.xSignals.length){
+      html=`<div class="empty">No tweets found in your X sheet. Add rows with Source='X'.</div>`;
+    } else {
+      STATE.xSignals.forEach(r=>{
+        const site=pick(r,['Website']);
+        if(site) html+=`<div class="tweet-card"><blockquote class="twitter-tweet" data-theme="dark"><a href="${site}"></a></blockquote></div>`;
+      });
+    }
+    cont.innerHTML=html; sum.textContent=`${STATE.xSignals.length} signals`;
+    if(window.twttr) window.twttr.widgets.load();
+    return;
+  }
+
+  // MAIN FEED
+  const dates=Object.keys(STATE.groups).sort((a,b)=>b.localeCompare(a));
+  let total=0; const rows=[];
 
   dates.forEach(dt=>{
-    if(f==='today' && dt !== todayStr) return;
-
-    g[dt].forEach(r=>{
+    if(f==='today'&&dt!==todayStr)return;
+    STATE.groups[dt].forEach(r=>{
       const n=pick(r,['Correct Name','CorrectName','Name']);
       if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
       
+      // Filter Logic
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       if(f==='saved'&&!STATE.bookmarks.has(n))return;
+      if(src.includes('x')||src.includes('twitter')) return; // hide tweets from main feed
 
       const tag=pick(r,['Correct Tagline','CorrectTagline','Tagline']);
       if(q && !(n+' '+tag).toLowerCase().includes(q))return;
 
       total++;
-      rows.push({ dt, n, tag, src, site:pick(r,['Website']), page:pick(r,['YC URL','YC']), logo:companyLogo(r) });
+      rows.push({dt, n, tag, src, site:pick(r,['Website']), page:pick(r,['YC URL','YC']), logo:companyLogo(r)});
     });
   });
 
   sum.textContent=`${total} items`;
-
-  if(!rows.length){
-    cont.innerHTML=`<div class="empty">${f==='today'?'No companies found for today.':'No companies match this search/filter.'}</div>`; 
-    return;
-  }
+  if(!rows.length){cont.innerHTML=`<div class="empty">No companies match this search/filter.</div>`; return;}
 
   if(vm==='table'){
     let h=`<table class="table-view"><thead><tr><th>Company</th><th>Tagline</th><th>Date</th></tr></thead><tbody>`;
     rows.forEach(x=>{
-      h+=`<tr onclick="openPanel('${esc(x.n)}')" style="cursor:pointer">
-        <td><span class="table-company">${esc(x.n)}</span></td>
-        <td>${esc(x.tag)}</td>
-        <td style="color:var(--text-softer)">${esc(formatDate(x.dt))}</td>
-      </tr>`;
+      h+=`<tr onclick="openPanel('${esc(x.n)}')" style="cursor:pointer"><td><span class="table-company">${esc(x.n)}</span></td><td>${esc(x.tag)}</td><td style="color:var(--text-softer)">${esc(formatDate(x.dt))}</td></tr>`;
     });
     cont.innerHTML=h+`</tbody></table>`;
-  }else{
-    const grouped={}; rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r);});
+  } else {
+    const grouped={}; rows.forEach(r=>{(grouped[r.dt]=grouped[r.dt]||[]).push(r)});
     let out="";
     Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(d=>{
       out+=`<section class="date-group"><div class="date-header">${esc(formatDate(d))}</div>`;
       grouped[d].forEach(x=>{
-        const siteHref=x.site? (x.site.startsWith('http')?x.site:`https://${x.site}`):null;
-        const isSaved = STATE.bookmarks.has(x.n);
+        const isSaved=STATE.bookmarks.has(x.n);
         out+=`
         <article class="card" onclick="openPanel('${esc(x.n)}')">
-          <div class="card-left">
-            ${x.logo?`<img src="${esc(x.logo)}" loading="lazy" onerror="this.onerror=null;this.parentNode.innerHTML='<div class=\\'card-left-fallback\\'>${esc(x.n[0])}</div>'" alt="">`:`<div class="card-left-fallback">${esc(x.n[0]||'•')}</div>`}
-          </div>
+          <div class="card-left">${x.logo?`<img src="${esc(x.logo)}">`:`<div class="card-left-fallback">${esc(x.n[0])}</div>`}</div>
           <div class="card-center">
             <div class="card-top-row">
-              <div class="card-main">
-                <div class="card-name">${esc(x.n)}</div>
-                ${x.tag?`<div class="card-tagline">${esc(x.tag)}</div>`:''}
-              </div>
+              <div class="card-main"><div class="card-name">${esc(x.n)}</div><div class="card-tagline">${esc(x.tag)}</div></div>
               <div class="card-right">
                 ${x.src==='yc'?`<div class="yc-pill">YC W26</div>`:''}
                 <div class="card-link-row">
-                  <button class="btn-link ${isSaved?'btn-link--active':''}" onclick="toggleBookmark(event, '${esc(x.n)}')" title="Save">${starIcon(isSaved)}</button>
-                  ${siteHref?`<a class="btn-link" href="${esc(siteHref)}" target="_blank" onclick="event.stopPropagation()">${globeIcon}</a>`:''}
+                  <button class="btn-link ${isSaved?'btn-link--active':''}" onclick="toggleBookmark(event,'${esc(x.n)}')" title="Save">${starIcon(isSaved)}</button>
+                  ${x.site?`<a class="btn-link" href="${esc(x.site)}" target="_blank" onclick="event.stopPropagation()">${globeIcon}</a>`:''}
                 </div>
               </div>
             </div>
@@ -748,42 +610,67 @@ function render(){
   }
 }
 
+/* FETCHING */
 async function load(){
-  loadLocalData();
-  renderSkeleton();
-  const lastEl=document.getElementById('last-updated');
-  const dot=document.getElementById('status-dot');
-  try {
-    const cached = localStorage.getItem(CACHE_KEY);
-    if(cached){
-      const {ts, data} = JSON.parse(cached);
-      if(Date.now() - ts < CACHE_TIME){
-        const rows = csvToObjects(data);
-        STATE.rawData = rows;
-        const valid = rows.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
-        STATE.groups = groupByDate(valid);
-        render();
-        lastEl.textContent = `Synced ${new Date(ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
-        dot.classList.add('cached');
-        return;
-      }
-    }
-  } catch(e) {}
+  loadLocalData(); renderSkeleton();
+  const lastEl=document.getElementById('last-updated'), dot=document.getElementById('status-dot');
+  
+  const fetchSheet = async (gid) => {
+    return (await fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`)).text();
+  };
+
   try{
-    const txt=await (await fetch(CSV_URL)).text();
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), data: txt}));
-    const rows=csvToObjects(txt); STATE.rawData = rows;
-    const valid=rows.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
-    STATE.groups=groupByDate(valid);
+    // Fetch Main + X Sheet in parallel
+    const [csvMain, csvX] = await Promise.all([fetchSheet(GID_MAIN), fetchSheet(GID_X)]);
+    
+    // Process Main
+    const rowsMain = csvToObjects(csvMain);
+    STATE.rawData = rowsMain;
+    const validMain = rowsMain.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
+    STATE.groups = groupByDate(validMain);
+
+    // Process X
+    const rowsX = csvToObjects(csvX);
+    STATE.xSignals = rowsX.filter(r=>{
+      const s = pick(r,['source','Source']).toLowerCase();
+      return (s.includes('x') || s.includes('twitter'));
+    });
+
     render();
-    lastEl.textContent=`Synced ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+    const d=new Date();
+    lastEl.textContent=`Synced ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
     dot.classList.remove('cached');
   }catch(e){
     document.getElementById('content').innerHTML=`<div class="empty">Error: ${esc(e.message)}</div>`;
   }
 }
 
-document.getElementById('search').addEventListener('input', debounce(e => {STATE.search = e.target.value; render();}, 300));
+/* PANEL/MODAL UTILS */
+function openPanel(name){
+  const item = STATE.rawData.find(r=>pick(r,['Correct Name','CorrectName','Name'])===name);
+  if(!item)return;
+  const n=pick(item,['Correct Name','CorrectName','Name']), tag=pick(item,['Correct Tagline','CorrectTagline','Tagline']), site=pick(item,['Website']), logo=companyLogo(item), note=STATE.notes[n]||"";
+  const domain=site?new URL(site.startsWith('http')?site:`https://${site}`).hostname:'No Website';
+  document.getElementById('panel-body').innerHTML=`
+    <div class="panel-hero"><div class="panel-logo">${logo?`<img src="${esc(logo)}">`:`<span>${esc(n[0])}</span>`}</div><div class="panel-title"><h2>${esc(n)}</h2><div class="panel-domain">${esc(domain)}</div></div></div>
+    <div class="panel-tagline">${esc(tag)}</div>
+    <div class="panel-section"><label class="panel-label">Actions</label><div class="panel-actions">${site?`<a href="${esc(site)}" target="_blank" class="action-btn primary">Visit Website</a>`:''}<button class="action-btn" onclick="navigator.clipboard.writeText('${esc(site)}'); showToast('Link Copied');">Copy Link</button></div></div>
+    <div class="panel-section"><label class="panel-label">Private Notes</label><textarea class="panel-notes" placeholder="Notes..." oninput="saveNote('${esc(n)}',this.value)">${esc(note)}</textarea></div>`;
+  document.getElementById('panel').classList.add('open'); document.getElementById('overlay').classList.add('open');
+}
+function openInfo(t){
+  const titles={docs:'Documentation',changelog:'Changelog'};
+  const content={
+    docs:`<h3>Getting Started</h3><p>discovery/os aggregates startups from YC and Product Hunt.</p><h3>Data Sources</h3><p>Data is synced live from our Database every 5 minutes.</p>`, // UPDATED
+    changelog:`<h3>v1.4</h3><ul><li>X Scanner Integration (Sheet-based)</li><li>Renamed 'YC W26' to 'YC'</li><li>Mobile scroll fix</li></ul>`
+  };
+  document.getElementById('modal-title').textContent=titles[t]; document.getElementById('modal-body').innerHTML=content[t];
+  document.getElementById('modal').classList.add('open'); document.getElementById('overlay').classList.add('open');
+}
+function closeAll(){document.getElementById('panel').classList.remove('open');document.getElementById('modal').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();});
+
+document.getElementById('search').addEventListener('input', debounce(e=>{STATE.search=e.target.value; render();},300));
 load();
 </script>
 </body>
