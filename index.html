@@ -16,6 +16,7 @@
   --bg:#000000;
   --bg-sidebar:#050505;
   --bg-card:#0A0A0A;
+  --bg-modal:#111111;
   --border:#1A1A1A;
   --border-soft:#121212;
   --border-visible:#333333;
@@ -113,6 +114,9 @@ body{
 .status-row { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 10px; }
 .status-dot { width: 6px; height: 6px; border-radius: 99px; background: #22C55E; box-shadow: 0 0 6px rgba(34,197,94,0.4); }
 .status-dot.cached { background: #3B82F6; box-shadow: 0 0 6px rgba(59,130,246,0.4); }
+
+.footer-link { color: inherit; text-decoration: none; cursor: pointer; transition: color 0.2s; }
+.footer-link:hover { color: var(--text); }
 
 /* --- MAIN CONTENT --- */
 .main {
@@ -228,7 +232,7 @@ body{
 .table-view td{padding: 12px 0; border-bottom:1px solid var(--border-soft); color: var(--text-soft);}
 .table-company{font-weight:500; color: var(--text);}
 
-/* SLIDE-OVER PANEL */
+/* SLIDE-OVER PANEL (Right) */
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6);
   backdrop-filter: blur(4px); z-index: 150;
@@ -274,6 +278,26 @@ body{
   font-size: 13px; resize: none; transition: border-color 0.2s;
 }
 .panel-notes:focus { outline: none; border-color: #444; }
+
+/* INFO MODAL (Center) */
+.modal {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
+  width: 500px; max-width: 90vw; max-height: 80vh;
+  background: var(--bg-modal); border: 1px solid var(--border); border-radius: 12px;
+  z-index: 250; opacity: 0; pointer-events: none; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex; flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+.modal.open { transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto; }
+.modal-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border-soft);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-title { font-size: 16px; font-weight: 600; color: #fff; }
+.modal-content { padding: 24px; overflow-y: auto; color: var(--text-soft); font-size: 14px; line-height: 1.6; }
+.modal-content h3 { color: #fff; font-size: 14px; margin: 20px 0 8px 0; }
+.modal-content ul { padding-left: 20px; margin: 0; }
+.modal-content li { margin-bottom: 4px; }
 
 /* TOAST NOTIFICATION */
 .toast {
@@ -393,8 +417,8 @@ body{
       <span id="last-updated">Syncing...</span>
     </div>
     <div style="display:flex; gap:12px; margin-top:4px;">
-      <a href="#" style="color:inherit; text-decoration:none;">Docs</a>
-      <a href="#" style="color:inherit; text-decoration:none;">Changelog</a>
+      <a class="footer-link" onclick="openInfo('docs')">Docs</a>
+      <a class="footer-link" onclick="openInfo('changelog')">Changelog</a>
     </div>
   </div>
 </nav>
@@ -423,14 +447,22 @@ body{
 
 <div id="toast" class="toast"></div>
 
-<div id="overlay" class="overlay" onclick="closePanel()"></div>
+<div id="overlay" class="overlay" onclick="closeAll()"></div>
 <aside id="panel" class="panel">
   <div class="panel-header">
     <span class="panel-label">Intelligence Detail</span>
-    <button class="panel-close" onclick="closePanel()">×</button>
+    <button class="panel-close" onclick="closeAll()">×</button>
   </div>
   <div class="panel-content" id="panel-body"></div>
 </aside>
+
+<div id="modal" class="modal">
+  <div class="modal-header">
+    <span class="modal-title" id="modal-title">Info</span>
+    <button class="panel-close" onclick="closeAll()">×</button>
+  </div>
+  <div class="modal-content" id="modal-body"></div>
+</div>
 
 <script>
 const SHEET_ID='1OaIx6CeopLNuiYQrDUurO_6B-cCHh3g2QMWtC7UDz5U';
@@ -446,6 +478,7 @@ const globeIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" s
 const ycIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg>`;
 const phIcon=`<svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg>`;
 const starIcon = (fill) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="${fill?'currentColor':'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+const infoIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
 
 function iconFor(src){ return src==='ph' ? phIcon : ycIcon; }
 
@@ -488,7 +521,7 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 /* TOAST */
 function showToast(msg){
   const t = document.getElementById('toast');
-  t.innerHTML = `<span>i</span> ${esc(msg)}`;
+  t.innerHTML = `${infoIcon} ${esc(msg)}`; // UPDATED: proper icon
   t.classList.add('visible');
   setTimeout(()=>t.classList.remove('visible'), 3000);
 }
@@ -515,8 +548,6 @@ function setFilter(source, el){
   STATE.source = source;
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
-  
-  // Update Title
   const titles = {all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC W26', ph:'Product Hunt'};
   document.getElementById('page-title').textContent = titles[source] || 'Inbox';
   render();
@@ -528,7 +559,7 @@ function setView(view, el){
   render();
 }
 
-/* PANEL */
+/* PANELS & MODALS */
 function openPanel(name){
   const item = STATE.rawData.find(r => pick(r,['Correct Name','CorrectName','Name']) === name);
   if(!item) return;
@@ -553,7 +584,7 @@ function openPanel(name){
       <label class="panel-label">Actions</label>
       <div class="panel-actions">
         ${site ? `<a href="${esc(site.startsWith('http')?site:`https://${site}`)}" target="_blank" class="action-btn primary">Visit Website</a>` : ''}
-        <button class="action-btn" onclick="navigator.clipboard.writeText('${esc(site||"")}'); showToast('Link Copied to Clipboard');">Copy Link</button>
+        <button class="action-btn" onclick="navigator.clipboard.writeText('${esc(site||"")}'); showToast('Link Copied');">Copy Link</button>
       </div>
     </div>
     <div class="panel-section">
@@ -565,11 +596,49 @@ function openPanel(name){
   document.getElementById('panel').classList.add('open');
   document.getElementById('overlay').classList.add('open');
 }
-function closePanel(){
+
+function openInfo(type){
+  const titleMap = {docs: 'Documentation', changelog: 'Changelog'};
+  const contentMap = {
+    docs: `
+      <h3>Getting Started</h3>
+      <p>discovery/os is a market intelligence feed that aggregates startups from YC, Product Hunt, and other sources into a single, high-density terminal.</p>
+      <h3>Shortcuts</h3>
+      <ul>
+        <li><strong>/</strong> : Focus search</li>
+        <li><strong>Esc</strong> : Close panels</li>
+      </ul>
+      <h3>Data Sources</h3>
+      <p>Data is synced live from our master Google Sheet every 5 minutes.</p>
+    `,
+    changelog: `
+      <h3>v1.2 (Current)</h3>
+      <ul>
+        <li>Added sidebar navigation layout</li>
+        <li>Added 'Today' view filter</li>
+        <li>Integrated persistent bookmarks</li>
+        <li>Added private notes for startups</li>
+      </ul>
+      <h3>v1.0</h3>
+      <ul>
+        <li>Initial release</li>
+        <li>Basic feed and filtering</li>
+      </ul>
+    `
+  };
+  
+  document.getElementById('modal-title').textContent = titleMap[type];
+  document.getElementById('modal-body').innerHTML = contentMap[type];
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeAll(){
   document.getElementById('panel').classList.remove('open');
+  document.getElementById('modal').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
 }
-document.addEventListener('keydown', (e) => { if(e.key === "Escape") closePanel(); });
+document.addEventListener('keydown', (e) => { if(e.key === "Escape") closeAll(); });
 
 /* RENDER */
 function renderSkeleton(){
@@ -584,14 +653,11 @@ function render(){
   const cont=document.getElementById('content'), sum=document.getElementById('summary-text');
   const dates=Object.keys(g).sort((a,b)=>b.localeCompare(a));
   
-  // TODAY Logic
   const todayStr = new Date().toISOString().slice(0,10);
-
   let total=0;
   const rows=[];
 
   dates.forEach(dt=>{
-    // FILTER: Today
     if(f==='today' && dt !== todayStr) return;
 
     g[dt].forEach(r=>{
@@ -621,7 +687,6 @@ function render(){
   if(vm==='table'){
     let h=`<table class="table-view"><thead><tr><th>Company</th><th>Tagline</th><th>Date</th></tr></thead><tbody>`;
     rows.forEach(x=>{
-      const isSaved = STATE.bookmarks.has(x.n);
       h+=`<tr onclick="openPanel('${esc(x.n)}')" style="cursor:pointer">
         <td><span class="table-company">${esc(x.n)}</span></td>
         <td>${esc(x.tag)}</td>
