@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23ffffff'/><path d='M30 50 L70 50 M50 30 L50 70' stroke='%23000000' stroke-width='8'/></svg>">
-<title>DiscoveryOS</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='0' fill='%23ffffff'/><path d='M35 80 L65 20' stroke='%23000000' stroke-width='8' stroke-linecap='square'/></svg>">
+<title>discovery/os</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,24 +51,36 @@ body{display:flex; flex-direction:column;}
   display:flex; flex-direction:column; gap:10px;
 }
 
-/* HEADER - BRANDING UPDATE */
+/* HEADER - BRANDING OPTION 2 (DIRECTORY) */
 .app-header{display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom: 6px;}
-.brand{display:flex; align-items:center; gap:8px;} /* Adjusted gap */
+.brand{display:flex; align-items:center; gap:10px;}
 
-/* OPTION 1: RADAR BRANDING STYLES */
 .brand-mark {
+  position: relative;
+  width: 32px; height: 32px;
+  background: #F4F4F5; /* Solid white block */
+  border-radius: 6px; /* Sharper corners for dev look */
   display:flex; align-items:center; justify-content:center;
 }
-.brand-text{display:flex; flex-direction:column; gap:0;}
+.brand-mark svg {
+  width: 20px; height: 20px;
+}
+
+.brand-text{display:flex; flex-direction:column; gap:2px;}
 .brand-name{
-  font-family: 'Inter', sans-serif; 
+  font-family: 'JetBrains Mono', monospace; 
   font-size: 15px; 
-  letter-spacing: 0.02em; 
-  font-weight: 800; 
+  letter-spacing: -0.03em; 
+  font-weight: 500; 
   color: #F4F4F5;
   line-height: 1;
+  text-transform: lowercase;
 }
-.brand-sub{font-size:11px; color:var(--text-softer); margin-top: 4px;}
+.brand-sub{
+  font-family: 'JetBrains Mono', monospace;
+  font-size:10px; 
+  color:var(--text-softer);
+}
 
 .app-meta{font-family: var(--font-mono); font-size:10px; color:var(--text-soft); display:flex; flex-direction:column; align-items:flex-end; gap:4px;}
 .app-meta-pill{border-radius:999px; padding:4px 10px; border:1px solid var(--border); background:#050505; display:flex; align-items:center; gap:6px;}
@@ -282,18 +294,16 @@ body{display:flex; flex-direction:column;}
 <div class="app">
   <header class="app-header">
     <div class="brand">
-      <div class="brand-mark" style="border:none; background:transparent;">
-        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="#F4F4F5" stroke-width="2">
-          <circle cx="16" cy="16" r="10" stroke-opacity="0.3"/>
-          <path d="M16 6 V10 M16 22 V26 M6 16 H10 M22 16 H26" stroke-linecap="round"/>
-          <circle cx="16" cy="16" r="2" fill="#F97316" stroke="none"/>
+      <div class="brand-mark">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <path d="M12 22L20 10" stroke="#000" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="brand-text">
         <div class="brand-name">
-          DISCOVERY<span style="font-family:'JetBrains Mono'; font-weight:400; opacity:0.6;">_OS</span>
+          discovery<span style="color:#52525B;">/</span>os
         </div>
-        <div class="brand-sub">Market intelligence feed</div>
+        <div class="brand-sub">~/market-feed</div>
       </div>
     </div>
     <div class="app-meta">
@@ -315,7 +325,8 @@ body{display:flex; flex-direction:column;}
         <div class="chips">
           <button class="chip chip--on" data-filter="all">All</button>
           <button class="chip" data-filter="saved">Saved</button>
-          <button class="chip" data-filter="yc">YC</button> <button class="chip" data-filter="ph">Product Hunt</button>
+          <button class="chip" data-filter="yc">YC</button>
+          <button class="chip" data-filter="ph">Product Hunt</button>
         </div>
         <div class="view-toggle">
           <button class="view-btn view-btn--active" data-view="cards">Cards</button>
@@ -345,7 +356,7 @@ body{display:flex; flex-direction:column;}
 </aside>
 
 <footer class="footer">
-  <span>© DiscoveryOS. Internal scout feed.</span>
+  <span>© discovery/os. Internal scout feed.</span>
   <span><a href="#">Docs</a> · <a href="#">Changelog</a></span>
 </footer>
 
