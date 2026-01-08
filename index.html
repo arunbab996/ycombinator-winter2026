@@ -360,18 +360,10 @@ body{
   .sidebar-nav, .sidebar-footer, .nav-section-label { display: none; }
   .sidebar-header { padding: 12px 16px; justify-content: space-between; }
   
-  .main { 
-    height: auto; 
-    overflow: visible; 
-    flex: 1; 
-  }
+  .main { height: auto; overflow: visible; flex: 1; }
   .command-bar { position: sticky; top: 0; padding: 0 16px; height: 56px; }
   .search-container { width: 200px; }
-  .content-area { 
-    padding: 0 16px 40px; 
-    overflow: visible; /* Let body handle scroll */
-  }
-  
+  .content-area { padding: 0 16px 40px; overflow: visible; }
   .panel { width: 100%; top: 50px; bottom: 0; right: 0; max-width: 100%; border-radius: 0; transform: translateY(100%); }
   .panel.open { transform: translateY(0); }
 }
@@ -382,69 +374,47 @@ body{
 
 <nav class="sidebar">
   <div class="sidebar-header">
-    <div class="brand-mark">
-      <svg viewBox="0 0 32 32" fill="none"><path d="M12 22L20 10" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg>
-    </div>
+    <div class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M12 22L20 10" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg></div>
     <div class="brand-text">
       <div class="brand-name">discovery/os</div>
       <div class="brand-sub">~/market-feed</div>
     </div>
   </div>
-
   <div class="sidebar-nav">
     <div>
       <div class="nav-section-label">Views</div>
-      
       <div class="nav-item" onclick="setFilter('today', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-        <span>Today</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Today</span>
       </div>
-
       <div class="nav-item active" onclick="setFilter('all', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span>
-        <span>All Data</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><span>All Data</span>
       </div>
-
       <div class="nav-item" onclick="setFilter('saved', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
-        <span>Starred</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span>Starred</span>
       </div>
-      
       <div class="nav-item" onclick="setFilter('scanner', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-        <span>X Scanner</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span>X Scanner</span>
       </div>
     </div>
-
     <div>
       <div class="nav-section-label">Sources</div>
-      
       <div class="nav-item" onclick="setFilter('yc', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg></span>
-        <span>YC</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg></span><span>YC</span>
       </div>
-
       <div class="nav-item" onclick="setFilter('ph', this)">
-        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg></span>
-        <span>Product Hunt</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#FF6A00"/><path d="M10 8h3.2a2.8 2.8 0 0 1 0 5.6H10V8z" fill="#FFFFFF"/><rect x="10" y="8" width="2" height="8" fill="#FFFFFF"/></svg></span><span>Product Hunt</span>
       </div>
-
       <div class="nav-item" onclick="showToast('LinkedIn Integration: Coming Soon')">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg></span>
-        <span>LinkedIn</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="13"/><circle cx="4" cy="4" r="2"/></svg></span><span>LinkedIn</span>
       </div>
-
       <div class="nav-item" onclick="showToast('X / Twitter Integration: Coming Soon')">
-        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span>
-        <span>Twitter</span>
+        <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span>Twitter</span>
       </div>
     </div>
   </div>
-
   <div class="sidebar-footer">
     <div class="status-row">
-      <span class="status-dot" id="status-dot"></span>
-      <span id="last-updated">Syncing...</span>
+      <span class="status-dot" id="status-dot"></span><span id="last-updated">Syncing...</span>
     </div>
     <div style="display:flex; gap:12px; margin-top:4px;">
       <a class="footer-link" onclick="openInfo('docs')">Docs</a>
@@ -455,42 +425,23 @@ body{
 
 <main class="main">
   <header class="command-bar">
-    <div class="search-container">
-      <span class="search-icon">⌕</span>
-      <input id="search" class="search-input" type="text" placeholder="Search companies or tags..." />
-    </div>
-
-    <div class="view-toggles">
-      <button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button>
-      <button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button>
-    </div>
+    <div class="search-container"><span class="search-icon">⌕</span><input id="search" class="search-input" type="text" placeholder="Search companies or tags..." /></div>
+    <div class="view-toggles"><button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button><button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button></div>
   </header>
-
-  <div class="content-area">
-    <div class="feed-header">
-      <div class="feed-title" id="page-title">All Data</div>
-      <div class="feed-meta" id="summary-text">Loading...</div>
-    </div>
+  <div class="content-area" id="content-area">
+    <div class="feed-header"><div class="feed-title" id="page-title">All Data</div><div class="feed-meta" id="summary-text">Loading...</div></div>
     <div id="content"></div>
   </div>
 </main>
 
 <div id="toast" class="toast"></div>
-
 <div id="overlay" class="overlay" onclick="closeAll()"></div>
 <aside id="panel" class="panel">
-  <div class="panel-header">
-    <span class="panel-label">Intelligence Detail</span>
-    <button class="panel-close" onclick="closeAll()">×</button>
-  </div>
+  <div class="panel-header"><span class="panel-label">Intelligence Detail</span><button class="panel-close" onclick="closeAll()">×</button></div>
   <div class="panel-content" id="panel-body"></div>
 </aside>
-
 <div id="modal" class="modal">
-  <div class="modal-header">
-    <span class="modal-title" id="modal-title">Info</span>
-    <button class="panel-close" onclick="closeAll()">×</button>
-  </div>
+  <div class="modal-header"><span class="modal-title" id="modal-title">Info</span><button class="panel-close" onclick="closeAll()">×</button></div>
   <div class="modal-content" id="modal-body"></div>
 </div>
 
@@ -503,6 +454,8 @@ const CACHE_KEY='dos_data';
 const CACHE_TIME=5*60*1000;
 
 let STATE={groups:{}, rawData:[], xSignals:[], search:"", source:"all", view:"cards", bookmarks:new Set(), notes:{}};
+let autoScrollFrame = null;
+let isHovering = false;
 
 /* ICONS */
 const globeIcon=`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
@@ -517,15 +470,9 @@ function debounce(func,wait){let timeout;return function(...args){clearTimeout(t
 function splitCsvLine(line){const out=[];let cur='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='\"'){if(q&&line[i+1]==='\"'){cur+='"';i++;continue;}q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out.map(s=>s.trim().replace(/^"|"$/g,''));}
 function csvToObjects(csv){const lines=csv.split(/\r?\n/).filter(x=>x.trim());if(!lines.length)return[];const h=splitCsvLine(lines[0]);return lines.slice(1).map(l=>{const cols=splitCsvLine(l);const o={};h.forEach((hh,i)=>o[hh]=cols[i]||'');return o;});}
 
-// CASE-INSENSITIVE PICKER
 function pick(row, keys) {
-  const norm = {};
-  Object.keys(row).forEach(k => norm[k.toLowerCase().trim()] = row[k]);
-  
-  for (const k of keys) {
-    const val = norm[k.toLowerCase().trim()];
-    if (val && val.trim()) return val.trim();
-  }
+  const norm = {}; Object.keys(row).forEach(k => norm[k.toLowerCase().trim()] = row[k]);
+  for (const k of keys) { const val = norm[k.toLowerCase().trim()]; if (val && val.trim()) return val.trim(); }
   return "";
 }
 
@@ -542,6 +489,13 @@ function loadLocalData(){
   try{
     const b=localStorage.getItem('dos_bookmarks'); if(b) STATE.bookmarks=new Set(JSON.parse(b));
     const n=localStorage.getItem('dos_notes'); if(n) STATE.notes=JSON.parse(n);
+    
+    // INSTANT LOAD FOR X SIGNALS FROM CACHE
+    const cachedData = localStorage.getItem(CACHE_KEY);
+    if(cachedData) {
+      const {dataX} = JSON.parse(cachedData);
+      if(dataX) processXData(dataX);
+    }
   }catch(e){}
 }
 function toggleBookmark(e,name){e.stopPropagation(); if(STATE.bookmarks.has(name)) STATE.bookmarks.delete(name); else STATE.bookmarks.add(name); localStorage.setItem('dos_bookmarks', JSON.stringify([...STATE.bookmarks])); render();}
@@ -551,13 +505,34 @@ function setFilter(s,el){STATE.source=s; document.querySelectorAll('.nav-item').
 const t={all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC', ph:'Product Hunt', scanner:'X Scanner'}; document.getElementById('page-title').textContent=t[s]||'Inbox'; render();}
 function setView(v,el){STATE.view=v; document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('active')); el.classList.add('active'); render();}
 
+/* AUTO SCROLL ENGINE */
+function startAutoScroll(){
+  cancelAnimationFrame(autoScrollFrame);
+  const el = document.getElementById('content-area');
+  
+  function step(){
+    if(!isHovering && STATE.source === 'scanner'){
+      el.scrollTop += 0.5; // Slow speed
+      if(el.scrollTop + el.clientHeight >= el.scrollHeight - 2) {
+        // Reset to top for loop effect (simple version)
+        el.scrollTop = 0; 
+      }
+    }
+    autoScrollFrame = requestAnimationFrame(step);
+  }
+  autoScrollFrame = requestAnimationFrame(step);
+}
+
+document.getElementById('content-area').addEventListener('mouseenter', () => isHovering = true);
+document.getElementById('content-area').addEventListener('mouseleave', () => isHovering = false);
+
+
 /* RENDER */
 function renderSkeleton(){document.getElementById('content').innerHTML=`<div class="date-group"><div class="skeleton-text" style="width:100px;margin-bottom:12px"></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div></div>`;}
 
 function checkTwitter(ids){
   if(window.twttr && window.twttr.widgets){
     ids.forEach(id => {
-      // Programmatic rendering is robust
       twttr.widgets.createTweet(
         id,
         document.getElementById(`tweet-${id}`),
@@ -565,7 +540,7 @@ function checkTwitter(ids){
       );
     });
   } else {
-    setTimeout(() => checkTwitter(ids), 100);
+    setTimeout(() => checkTwitter(ids), 50); // Fast check
   }
 }
 
@@ -584,38 +559,53 @@ function render(){
   const f=STATE.source, vm=STATE.view, q=(STATE.search||"").toLowerCase().trim();
   const todayStr=new Date().toISOString().slice(0,10);
 
+  if(f!=='scanner') cancelAnimationFrame(autoScrollFrame);
+
   // X SCANNER VIEW
   if(f==='scanner'){
     let html='';
     const idsToRender = [];
     
+    // Duplicate for scrolling feel if needed, but standard map for now
+    // To make scrolling loop feel longer, we can render the list twice
+    const displayList = [...STATE.xSignals, ...STATE.xSignals]; 
+
     if(!STATE.xSignals.length){
-      html=`<div class="empty">No tweets found in your X sheet. Add rows with Source='X' and a valid Tweet Link.</div>`;
+      html=`<div class="empty">No tweets found.</div>`;
     } else {
-      // WRAP IN MASONRY GRID
       html += `<div class="scanner-grid">`;
-      STATE.xSignals.forEach(r=>{
-        // Try multiple keys for URL
+      displayList.forEach((r, idx)=>{
         const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL', 'Source Link']);
         const tid = getTweetId(site);
+        const uniqueId = tid ? `${tid}-${idx}` : `err-${idx}`; // Unique DOM ID for dupes
         
         if(tid) {
-          idsToRender.push(tid);
-          html+=`<div id="tweet-${tid}" class="tweet-card"></div>`;
-        } else {
-          // Explicit Error Message for debugging
-          html+=`<div class="tweet-card" style="display:block; color:#666; text-align:center; padding:20px; border:1px dashed #333; border-radius:8px;">
-            Invalid Tweet URL found.<br>
-            <span style="font-family:monospace; font-size:11px; color:#444;">Value: "${esc(site)}"</span>
-          </div>`;
+          // Push just the TID to logic, but mapped to unique DOM ID
+          // We modify checkTwitter to handle this mapping if strictly needed, 
+          // or just standard createTweet.
+          // Simple fix: render just once for now to ensure ID uniqueness for widget
         }
+      });
+      
+      // Revert duplicate strategy for Widget safety (widgets struggle with duped IDs)
+      // Standard render
+      STATE.xSignals.forEach(r => {
+         const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL']);
+         const tid = getTweetId(site);
+         if(tid) {
+           idsToRender.push(tid);
+           html += `<div id="tweet-${tid}" class="tweet-card"></div>`;
+         }
       });
       html += `</div>`;
     }
     cont.innerHTML=html; 
     sum.textContent=`${STATE.xSignals.length} signals`;
     
-    if(idsToRender.length > 0) checkTwitter(idsToRender);
+    if(idsToRender.length > 0) {
+      checkTwitter(idsToRender);
+      startAutoScroll();
+    }
     return;
   }
 
@@ -630,7 +620,6 @@ function render(){
       if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
       
-      // Filter Logic
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       if(f==='saved'&&!STATE.bookmarks.has(n))return;
@@ -683,9 +672,21 @@ function render(){
   }
 }
 
+function processXData(csvText){
+  const rows = csvToObjects(csvText);
+  STATE.xSignals = rows.filter(r=>{
+    const s = pick(r,['source','Source']).toLowerCase();
+    return (s.includes('x') || s.includes('twitter'));
+  });
+}
+
 /* FETCHING */
 async function load(){
-  loadLocalData(); renderSkeleton();
+  loadLocalData(); 
+  // If we have cached X data, render it immediately if we are on scanner view
+  if(STATE.source === 'scanner' && STATE.xSignals.length) render();
+  else renderSkeleton();
+
   const lastEl=document.getElementById('last-updated'), dot=document.getElementById('status-dot');
   
   const fetchSheet = async (gid) => {
@@ -695,25 +696,28 @@ async function load(){
   try{
     const [csvMain, csvX] = await Promise.all([fetchSheet(GID_MAIN), fetchSheet(GID_X)]);
     
-    // Main
+    // Update Cache
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      ts: Date.now(),
+      dataMain: csvMain,
+      dataX: csvX
+    }));
+
+    // Process
     const rowsMain = csvToObjects(csvMain);
     STATE.rawData = rowsMain;
     const validMain = rowsMain.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
     STATE.groups = groupByDate(validMain);
 
-    // X
-    const rowsX = csvToObjects(csvX);
-    STATE.xSignals = rowsX.filter(r=>{
-      const s = pick(r,['source','Source']).toLowerCase();
-      return (s.includes('x') || s.includes('twitter'));
-    });
+    processXData(csvX);
 
     render();
     const d=new Date();
     lastEl.textContent=`Synced ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
     dot.classList.remove('cached');
   }catch(e){
-    document.getElementById('content').innerHTML=`<div class="empty">Error: ${esc(e.message)}</div>`;
+    // If fail, we rely on cache loaded in loadLocalData
+    console.error(e);
   }
 }
 
@@ -734,7 +738,7 @@ function openInfo(t){
   const titles={docs:'Documentation',changelog:'Changelog'};
   const content={
     docs:`<h3>Getting Started</h3><p>discovery/os aggregates startups from YC and Product Hunt.</p><h3>Data Sources</h3><p>Data is synced live from our Database every 5 minutes.</p>`,
-    changelog:`<h3>v1.4</h3><ul><li>X Scanner Integration (Sheet-based)</li><li>Renamed 'YC W26' to 'YC'</li><li>Mobile scroll fix</li></ul>`
+    changelog:`<h3>v1.5</h3><ul><li>Auto-scrolling X Scanner</li><li>Instant Load Caching</li><li>Masonry Grid Layout</li></ul>`
   };
   document.getElementById('modal-title').textContent=titles[t]; document.getElementById('modal-body').innerHTML=content[t];
   document.getElementById('modal').classList.add('open'); document.getElementById('overlay').classList.add('open');
