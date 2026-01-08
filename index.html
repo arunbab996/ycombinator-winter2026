@@ -241,7 +241,7 @@ body{
   background: transparent;
   width: 100%;
   display: inline-block;
-  min-height: 150px; /* Reduces jumping */
+  min-height: 150px;
   position: relative;
 }
 /* Tweet Loading Skeleton */
@@ -392,12 +392,15 @@ body{
   <div class="sidebar-nav">
     <div>
       <div class="nav-section-label">Views</div>
-      <div class="nav-item" onclick="setFilter('today', this)">
+      
+      <div class="nav-item active" onclick="setFilter('today', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span><span>Today</span>
       </div>
-      <div class="nav-item active" onclick="setFilter('all', this)">
+
+      <div class="nav-item" onclick="setFilter('all', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></span><span>All Data</span>
       </div>
+
       <div class="nav-item" onclick="setFilter('saved', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span>Starred</span>
       </div>
@@ -441,7 +444,7 @@ body{
     <div class="view-toggles"><button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button><button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button></div>
   </header>
   <div class="content-area" id="content-area">
-    <div class="feed-header"><div class="feed-title" id="page-title">All Data</div><div class="feed-meta" id="summary-text">Loading...</div></div>
+    <div class="feed-header"><div class="feed-title" id="page-title">Today's Picks</div><div class="feed-meta" id="summary-text">Loading...</div></div>
     <div id="content"></div>
   </div>
 </main>
@@ -465,7 +468,7 @@ const GID_X='1426087291';
 const CACHE_KEY='dos_data';
 const CACHE_TIME=5*60*1000;
 
-let STATE={groups:{}, rawData:[], xSignals:[], search:"", source:"all", view:"cards", bookmarks:new Set(), notes:{}};
+let STATE={groups:{}, rawData:[], xSignals:[], search:"", source:"today", view:"cards", bookmarks:new Set(), notes:{}};
 let autoScrollFrame = null;
 let isHovering = false;
 
@@ -590,10 +593,8 @@ function render(){
         const uniqueId = tid ? `${tid}-${idx}` : null;
         
         if(uniqueId) {
-          // Render Skeleton + Tweet Container
-          idsToRender.push(uniqueId); // We pass the unique DOM ID to checkTwitter, but need real Tweet ID for creation
-          // Wait, createTweet needs the real Tweet ID.
-          // We will store mapping.
+          idsToRender.push(uniqueId); // We pass the unique DOM ID to checkTwitter
+          
           html += `
             <div class="tweet-card">
               <div id="skeleton-${uniqueId}" class="tweet-skeleton">
@@ -611,7 +612,6 @@ function render(){
     sum.textContent=`${STATE.xSignals.length} signals`;
     
     if(idsToRender.length > 0) {
-      // Custom render function for unique IDs
       if(window.twttr && window.twttr.widgets){
          idsToRender.forEach(uid => {
             const realId = uid.split('-')[0];
@@ -619,11 +619,11 @@ function render(){
               .then(()=>{
                  const skel = document.getElementById(`skeleton-${uid}`);
                  if(skel) skel.remove();
+                 // Start scrolling only after some tweets load to avoid jumping
+                 if(!autoScrollFrame) startAutoScroll();
               });
          });
-         startAutoScroll();
       } else {
-         // Simple retry if not ready
          setTimeout(render, 100);
       }
     }
