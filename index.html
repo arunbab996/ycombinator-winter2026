@@ -163,6 +163,7 @@ body{
 .content-area {
   flex: 1; overflow-y: auto; padding: 0 24px 40px;
   max-width: 1200px; width: 100%; margin: 0 auto;
+  position: relative;
 }
 
 .feed-header {
@@ -172,6 +173,16 @@ body{
 }
 .feed-title { font-size: 18px; font-weight: 600; color: #fff; }
 .feed-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-softer); }
+
+/* --- DOM PERSISTENCE LAYERS --- */
+/* We keep both views in DOM, just toggle visibility. 
+   This keeps iframes alive. */
+#view-feed { display: block; }
+#view-scanner { display: none; }
+
+/* When Scanner is Active */
+.mode-scanner #view-feed { display: none; }
+.mode-scanner #view-scanner { display: block; }
 
 
 /* CARDS & TABLES */
@@ -438,14 +449,16 @@ body{
   </div>
 </nav>
 
-<main class="main">
+<main class="main" id="main-container">
   <header class="command-bar">
     <div class="search-container"><span class="search-icon">⌕</span><input id="search" class="search-input" type="text" placeholder="Search companies or tags..." /></div>
     <div class="view-toggles"><button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button><button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button></div>
   </header>
   <div class="content-area" id="content-area">
     <div class="feed-header"><div class="feed-title" id="page-title">Today's Picks</div><div class="feed-meta" id="summary-text">Loading...</div></div>
-    <div id="content"></div>
+    
+    <div id="view-feed"></div>
+    <div id="view-scanner"></div>
   </div>
 </main>
 
@@ -506,23 +519,53 @@ function loadLocalData(){
     const n=localStorage.getItem('dos_notes'); if(n) STATE.notes=JSON.parse(n);
     const cachedData = localStorage.getItem(CACHE_KEY);
     if(cachedData) {
-      const {dataX} = JSON.parse(cachedData);
-      if(dataX) processXData(dataX);
+      const {dataMain, dataX} = JSON.parse(cachedData);
+      // We do not render immediately here because we want to trigger fresh fetch logic
+      // But we could use it for optimism if needed. 
     }
   }catch(e){}
 }
 function toggleBookmark(e,name){e.stopPropagation(); if(STATE.bookmarks.has(name)) STATE.bookmarks.delete(name); else STATE.bookmarks.add(name); localStorage.setItem('dos_bookmarks', JSON.stringify([...STATE.bookmarks])); render();}
 function saveNote(name,val){STATE.notes[name]=val; localStorage.setItem('dos_notes', JSON.stringify(STATE.notes));}
 
-function setFilter(s,el){STATE.source=s; document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); el.classList.add('active'); 
-const t={all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC', ph:'Product Hunt', scanner:'X Scanner'}; document.getElementById('page-title').textContent=t[s]||'Inbox'; render();}
-function setView(v,el){STATE.view=v; document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('active')); el.classList.add('active'); render();}
+function setFilter(s,el){
+  STATE.source=s; 
+  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); 
+  el.classList.add('active'); 
+  
+  const t={all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC', ph:'Product Hunt', scanner:'X Scanner'}; 
+  document.getElementById('page-title').textContent=t[s]||'Inbox'; 
+  
+  // TOGGLE DOM LAYERS (THE SPEED FIX)
+  const main = document.getElementById('main-container');
+  if(s==='scanner') main.classList.add('mode-scanner'); else main.classList.remove('mode-scanner');
+  
+  // Trigger Auto Scroll only if visible
+  if(s==='scanner') {
+    // wait for layout
+    setTimeout(startAutoScroll, 500);
+  } else {
+    cancelAnimationFrame(autoScrollFrame);
+  }
+
+  // If not scanner, we re-render the Feed to apply filters
+  if(s!=='scanner') renderFeed();
+}
+
+function setView(v,el){
+  STATE.view=v; 
+  document.querySelectorAll('.view-btn').forEach(x=>x.classList.remove('active')); 
+  el.classList.add('active'); 
+  renderFeed();
+}
 
 /* AUTO SCROLL ENGINE */
 function startAutoScroll(){
   cancelAnimationFrame(autoScrollFrame);
   const el = document.getElementById('content-area');
-  
+  // Only scroll if we have enough content to scroll
+  if(el.scrollHeight <= el.clientHeight) return;
+
   function step(){
     if(!isHovering && STATE.source === 'scanner'){
       el.scrollTop += 0.5; // Slow speed
@@ -539,25 +582,9 @@ document.getElementById('content-area').addEventListener('mouseenter', () => isH
 document.getElementById('content-area').addEventListener('mouseleave', () => isHovering = false);
 
 
-/* RENDER */
-function renderSkeleton(){document.getElementById('content').innerHTML=`<div class="date-group"><div class="skeleton-text" style="width:100px;margin-bottom:12px"></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div></div>`;}
-
-function checkTwitter(ids){
-  if(window.twttr && window.twttr.widgets){
-    ids.forEach(id => {
-      twttr.widgets.createTweet(
-        id,
-        document.getElementById(`tweet-${id}`),
-        { theme: 'dark', conversation: 'none' }
-      ).then(() => {
-        // Remove skeleton once loaded
-        const el = document.getElementById(`skeleton-${id}`);
-        if(el) el.style.display = 'none';
-      });
-    });
-  } else {
-    setTimeout(() => checkTwitter(ids), 50); 
-  }
+/* RENDERERS */
+function renderSkeleton(){
+  document.getElementById('view-feed').innerHTML=`<div class="date-group"><div class="skeleton-text" style="width:100px;margin-bottom:12px"></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div><div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-lines"><div class="skeleton-text" style="width:40%"></div><div class="skeleton-text" style="width:70%"></div></div></div></div>`;
 }
 
 function getTweetId(url) {
@@ -570,67 +597,68 @@ function getTweetId(url) {
   return null;
 }
 
-function render(){
-  const cont=document.getElementById('content'), sum=document.getElementById('summary-text');
-  const f=STATE.source, vm=STATE.view, q=(STATE.search||"").toLowerCase().trim();
-  const todayStr=new Date().toISOString().slice(0,10);
-
-  if(f!=='scanner') cancelAnimationFrame(autoScrollFrame);
-
-  // X SCANNER VIEW
-  if(f==='scanner'){
-    let html='';
-    const idsToRender = [];
-    const displayList = [...STATE.xSignals, ...STATE.xSignals]; // Loop effect
-
-    if(!STATE.xSignals.length){
-      html=`<div class="empty">No tweets found.</div>`;
-    } else {
-      html += `<div class="scanner-grid">`;
-      displayList.forEach((r, idx)=>{
-        const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL', 'Source Link']);
-        const tid = getTweetId(site);
-        const uniqueId = tid ? `${tid}-${idx}` : null;
-        
-        if(uniqueId) {
-          idsToRender.push(uniqueId); // We pass the unique DOM ID to checkTwitter
-          
-          html += `
-            <div class="tweet-card">
-              <div id="skeleton-${uniqueId}" class="tweet-skeleton">
-                <div class="skeleton-img" style="width:32px; height:32px; border-radius:50%"></div>
-                <div class="skeleton-text" style="width:60%"></div>
-                <div class="skeleton-text" style="width:90%; height:60px; margin-top:8px;"></div>
-              </div>
-              <div id="tweet-${uniqueId}"></div>
-            </div>`;
-        }
-      });
-      html += `</div>`;
-    }
-    cont.innerHTML=html; 
-    sum.textContent=`${STATE.xSignals.length} signals`;
-    
-    if(idsToRender.length > 0) {
-      if(window.twttr && window.twttr.widgets){
-         idsToRender.forEach(uid => {
-            const realId = uid.split('-')[0];
-            twttr.widgets.createTweet(realId, document.getElementById(`tweet-${uid}`), { theme: 'dark', conversation: 'none' })
-              .then(()=>{
-                 const skel = document.getElementById(`skeleton-${uid}`);
-                 if(skel) skel.remove();
-                 // Start scrolling only after some tweets load to avoid jumping
-                 if(!autoScrollFrame) startAutoScroll();
-              });
-         });
-      } else {
-         setTimeout(render, 100);
-      }
-    }
+// Render Twitter Layer Once (Hidden)
+function renderScannerLayer() {
+  const container = document.getElementById('view-scanner');
+  if(!STATE.xSignals.length) {
+    container.innerHTML = `<div class="empty">No tweets found in your X sheet. Add rows with Source='X'.</div>`;
     return;
   }
 
-  // MAIN FEED
+  // Clean container just in case
+  container.innerHTML = '';
+  
+  let html = `<div class="scanner-grid">`;
+  const idsToRender = [];
+  const displayList = [...STATE.xSignals, ...STATE.xSignals]; // Duplicate for loop
+
+  displayList.forEach((r, idx)=>{
+    const site = pick(r, ['Website', 'Link', 'URL', 'Tweet', 'Tweet URL', 'Source Link']);
+    const tid = getTweetId(site);
+    const uniqueId = tid ? `${tid}-${idx}` : null;
+    
+    if(uniqueId) {
+      idsToRender.push(uniqueId);
+      html += `
+        <div class="tweet-card">
+          <div id="skeleton-${uniqueId}" class="tweet-skeleton">
+            <div class="skeleton-img" style="width:32px; height:32px; border-radius:50%"></div>
+            <div class="skeleton-text" style="width:60%"></div>
+            <div class="skeleton-text" style="width:90%; height:60px; margin-top:8px;"></div>
+          </div>
+          <div id="tweet-${uniqueId}"></div>
+        </div>`;
+    }
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+
+  // Batch Render
+  if(window.twttr && window.twttr.widgets){
+     idsToRender.forEach(uid => {
+        const realId = uid.split('-')[0];
+        // We use a small timeout to batch these somewhat in the JS event loop
+        setTimeout(() => {
+            twttr.widgets.createTweet(realId, document.getElementById(`tweet-${uid}`), { theme: 'dark', conversation: 'none' })
+            .then(()=>{
+                const skel = document.getElementById(`skeleton-${uid}`);
+                if(skel) skel.remove();
+            });
+        }, 0);
+     });
+  }
+  
+  document.getElementById('summary-text').textContent = `${STATE.xSignals.length} signals`;
+}
+
+// Render Startup Feed Layer (Normal)
+function renderFeed(){
+  const cont = document.getElementById('view-feed');
+  const sum = document.getElementById('summary-text');
+  
+  const g=STATE.groups, q=(STATE.search||"").toLowerCase().trim(), f=STATE.source, vm=STATE.view;
+  const todayStr=new Date().toISOString().slice(0,10);
+
   const dates=Object.keys(STATE.groups).sort((a,b)=>b.localeCompare(a));
   let total=0; const rows=[];
 
@@ -641,7 +669,6 @@ function render(){
       if(!n||n==='#VALUE!')return;
       const src=pick(r,['source','Source']).toLowerCase();
       
-      // Filter Logic
       if(f==='yc'&&src!=='yc')return;
       if(f==='ph'&&src!=='ph')return;
       if(f==='saved'&&!STATE.bookmarks.has(n))return;
@@ -705,8 +732,7 @@ function processXData(csvText){
 /* FETCHING */
 async function load(){
   loadLocalData(); 
-  if(STATE.source === 'scanner' && STATE.xSignals.length) render();
-  else renderSkeleton();
+  renderSkeleton();
 
   const lastEl=document.getElementById('last-updated'), dot=document.getElementById('status-dot');
   
@@ -717,20 +743,19 @@ async function load(){
   try{
     const [csvMain, csvX] = await Promise.all([fetchSheet(GID_MAIN), fetchSheet(GID_X)]);
     
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
-      ts: Date.now(),
-      dataMain: csvMain,
-      dataX: csvX
-    }));
-
+    // Process Main
     const rowsMain = csvToObjects(csvMain);
     STATE.rawData = rowsMain;
     const validMain = rowsMain.filter(r=>pick(r,['Correct Name','CorrectName','Name']));
     STATE.groups = groupByDate(validMain);
 
+    // Process X
     processXData(csvX);
 
-    render();
+    // RENDER BOTH LAYERS
+    renderFeed(); // Main Feed
+    renderScannerLayer(); // Hidden Scanner Layer (Pre-load)
+
     const d=new Date();
     lastEl.textContent=`Synced ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}`;
     dot.classList.remove('cached');
@@ -764,7 +789,7 @@ function openInfo(t){
 function closeAll(){document.getElementById('panel').classList.remove('open');document.getElementById('modal').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAll();});
 
-document.getElementById('search').addEventListener('input', debounce(e=>{STATE.search=e.target.value; render();},300));
+document.getElementById('search').addEventListener('input', debounce(e=>{STATE.search=e.target.value; renderFeed();},300));
 load();
 </script>
 </body>
