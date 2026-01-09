@@ -58,7 +58,6 @@ body{
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column;
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sidebar-header {
@@ -140,13 +139,6 @@ body{
   backdrop-filter: blur(12px); z-index: 10;
 }
 
-/* Mobile Menu Button */
-.mobile-menu-btn {
-  display: none; /* Hidden on desktop */
-  background: transparent; border: none; color: var(--text);
-  font-size: 20px; cursor: pointer; padding: 8px; margin-right: 8px;
-}
-
 .search-container {
   position: relative; width: 320px;
 }
@@ -171,6 +163,7 @@ body{
 .content-area {
   flex: 1; overflow-y: auto; padding: 0 24px 40px;
   max-width: 1200px; width: 100%; margin: 0 auto;
+  position: relative;
 }
 
 .feed-header {
@@ -181,9 +174,11 @@ body{
 .feed-title { font-size: 18px; font-weight: 600; color: #fff; }
 .feed-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-softer); }
 
-/* DOM LAYERS */
+/* --- DOM PERSISTENCE LAYERS --- */
 #view-feed { display: block; }
 #view-scanner { display: none; }
+
+/* When Scanner is Active */
 .mode-scanner #view-feed { display: none; }
 .mode-scanner #view-scanner { display: block; }
 
@@ -245,7 +240,7 @@ body{
 
 /* MASONRY TWEET GRID */
 .scanner-grid {
-  column-count: 3;
+  column-count: 3; /* 3 Columns for wide screens */
   column-gap: 24px;
   width: 100%;
 }
@@ -258,6 +253,7 @@ body{
   min-height: 150px;
   position: relative;
 }
+/* Tweet Loading Skeleton */
 .tweet-skeleton {
   position: absolute; top:0; left:0; width:100%; height:200px;
   background: #0A0A0A; border: 1px solid var(--border); border-radius: 12px;
@@ -281,7 +277,7 @@ body{
 .table-view td{padding: 12px 0; border-bottom:1px solid var(--border-soft); color: var(--text-soft);}
 .table-company{font-weight:500; color: var(--text);}
 
-/* PANELS & MODALS */
+/* SLIDE-OVER PANEL (Right) */
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6);
   backdrop-filter: blur(4px); z-index: 150;
@@ -328,6 +324,7 @@ body{
 }
 .panel-notes:focus { outline: none; border-color: #444; }
 
+/* INFO MODAL */
 .modal {
   position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
   width: 500px; max-width: 90vw; max-height: 80vh;
@@ -346,6 +343,7 @@ body{
 .modal-content ul { padding-left: 20px; margin: 0; }
 .modal-content li { margin-bottom: 4px; }
 
+/* TOAST */
 .toast {
   position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(100px);
   background: #fff; color: #000; padding: 12px 24px; border-radius: 999px;
@@ -369,53 +367,30 @@ body{
 .content-area::-webkit-scrollbar-thumb { background-color: #222; border-radius: 20px; border: 2px solid #000; }
 .content-area:hover::-webkit-scrollbar-thumb { background-color: #333; }
 
-/* MOBILE NAVIGATION OVERLAY */
-.mobile-nav-overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 998;
-  opacity: 0; pointer-events: none; transition: opacity 0.3s;
-  backdrop-filter: blur(2px);
-}
-.mobile-nav-overlay.open { opacity: 1; pointer-events: auto; }
-
-/* MOBILE RESPONSIVE FIX (Enable Scrolling & Sidebar Drawer) */
+/* MOBILE RESPONSIVE FIX (Enable Scrolling) */
 @media (max-width: 768px) {
   body { 
     flex-direction: column; 
     overflow: auto; /* Allow scrolling on body */
     height: auto;
   }
-  
-  /* Sidebar as Drawer */
-  .sidebar { 
-    position: fixed; top: 0; left: 0; bottom: 0; width: 260px; 
-    z-index: 999; transform: translateX(-100%); /* Hidden by default */
-    border-right: 1px solid var(--border);
-  }
-  .sidebar.open { transform: translateX(0); }
-  
-  /* Hide standard Sidebar UI components initially if needed, but we re-use them */
-  .sidebar-footer { display: flex; } /* Keep footer in drawer */
-
-  .mobile-menu-btn { display: block; } /* Show Hamburger */
+  .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  .sidebar-nav, .sidebar-footer, .nav-section-label { display: none; }
+  .sidebar-header { padding: 12px 16px; justify-content: space-between; }
   
   .main { height: auto; overflow: visible; flex: 1; }
   .command-bar { position: sticky; top: 0; padding: 0 16px; height: 56px; }
-  .search-container { width: 100%; } /* Full width search on mobile */
+  .search-container { width: 200px; }
   .content-area { padding: 0 16px 40px; overflow: visible; }
   .panel { width: 100%; top: 50px; bottom: 0; right: 0; max-width: 100%; border-radius: 0; transform: translateY(100%); }
   .panel.open { transform: translateY(0); }
-  
-  /* Grid Adjustments */
-  .scanner-grid { column-count: 1; }
 }
 </style>
 </head>
 
 <body>
 
-<div class="mobile-nav-overlay" onclick="toggleMobileNav()"></div>
-
-<nav class="sidebar" id="sidebar">
+<nav class="sidebar">
   <div class="sidebar-header">
     <div class="brand-mark"><svg viewBox="0 0 32 32" fill="none"><path d="M12 22L20 10" stroke="#000" stroke-width="2.5" stroke-linecap="round"/></svg></div>
     <div class="brand-text">
@@ -438,14 +413,12 @@ body{
       <div class="nav-item" onclick="setFilter('saved', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span>Starred</span>
       </div>
-    </div>
-    <div>
-      <div class="nav-section-label">Sources</div>
-      
       <div class="nav-item" onclick="setFilter('scanner', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></span><span>X Scanner</span>
       </div>
-
+    </div>
+    <div>
+      <div class="nav-section-label">Sources</div>
       <div class="nav-item" onclick="setFilter('yc', this)">
         <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" fill="#FF8A00"/><text x="12" y="15" text-anchor="middle" font-size="10" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="bold">Y</text></svg></span><span>YC</span>
       </div>
@@ -476,7 +449,6 @@ body{
 
 <main class="main" id="main-container">
   <header class="command-bar">
-    <button class="mobile-menu-btn" onclick="toggleMobileNav()">☰</button>
     <div class="search-container"><span class="search-icon">⌕</span><input id="search" class="search-input" type="text" placeholder="Search companies or tags..." /></div>
     <div class="view-toggles"><button class="view-btn active" data-view="cards" onclick="setView('cards', this)">Cards</button><button class="view-btn" data-view="table" onclick="setView('table', this)">Table</button></div>
   </header>
@@ -555,26 +527,11 @@ function toggleBookmark(e,name){e.stopPropagation(); if(STATE.bookmarks.has(name
 }
 function saveNote(name,val){STATE.notes[name]=val; localStorage.setItem('dos_notes', JSON.stringify(STATE.notes));}
 
-/* MOBILE NAV LOGIC */
-function toggleMobileNav(){
-  const sb = document.getElementById('sidebar');
-  const ov = document.querySelector('.mobile-nav-overlay');
-  if(sb.classList.contains('open')){
-    sb.classList.remove('open'); ov.classList.remove('open');
-  } else {
-    sb.classList.add('open'); ov.classList.add('open');
-  }
-}
-
 function setFilter(s,el){
   STATE.source=s; 
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active')); 
   el.classList.add('active'); 
   
-  // Close Mobile Nav if open
-  const sb = document.getElementById('sidebar');
-  if(sb.classList.contains('open')) toggleMobileNav();
-
   const t={all:'All Data', today:'Today\'s Picks', saved:'Starred', yc:'YC', ph:'Product Hunt', scanner:'X Scanner'}; 
   document.getElementById('page-title').textContent=t[s]||'Inbox'; 
   
@@ -699,13 +656,28 @@ function renderFeed(){
   const sum = document.getElementById('summary-text');
   
   const g=STATE.groups, q=(STATE.search||"").toLowerCase().trim(), f=STATE.source, vm=STATE.view;
-  const todayStr=new Date().toISOString().slice(0,10);
-
+  
   const dates=Object.keys(STATE.groups).sort((a,b)=>b.localeCompare(a));
+  
+  // Smart Fallback for "Today"
+  let targetDate = new Date().toISOString().slice(0,10);
+  if(f==='today') {
+    // If we have data, default to the latest date available
+    if(dates.length > 0) targetDate = dates[0];
+    
+    // Update Title with Date if it's not actually today
+    const realToday = new Date().toISOString().slice(0,10);
+    if(targetDate !== realToday) {
+       document.getElementById('page-title').textContent = `Latest Picks (${formatDate(targetDate)})`;
+    } else {
+       document.getElementById('page-title').textContent = `Today's Picks`;
+    }
+  }
+
   let total=0; const rows=[];
 
   dates.forEach(dt=>{
-    if(f==='today'&&dt!==todayStr)return;
+    if(f==='today'&&dt!==targetDate)return;
     STATE.groups[dt].forEach(r=>{
       const n=pick(r,['Correct Name','CorrectName','Name']);
       if(!n||n==='#VALUE!')return;
@@ -823,7 +795,7 @@ function openInfo(t){
   const titles={docs:'Documentation',changelog:'Changelog'};
   const content={
     docs:`<h3>Getting Started</h3><p>discovery/os aggregates startups from YC and Product Hunt.</p><h3>Data Sources</h3><p>Data is synced live from our Database every 5 minutes.</p>`,
-    changelog:`<h3>v1.6</h3><ul><li>Mobile Navigation Drawer</li><li>Optimized Sidebar Layout</li></ul>`
+    changelog:`<h3>v1.6</h3><ul><li>Smart "Latest Date" Fallback</li><li>Improved Mobile Layout</li><li>Instant Skeleton Loading</li></ul>`
   };
   document.getElementById('modal-title').textContent=titles[t]; document.getElementById('modal-body').innerHTML=content[t];
   document.getElementById('modal').classList.add('open'); document.getElementById('overlay').classList.add('open');
